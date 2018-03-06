@@ -11,6 +11,10 @@ struct Vector2 {
     Vector2 (float x, float y); 
 
     operator std::string () const;
+    Vector2 operator+ (Vector2 other);
+    Vector2 operator- (Vector2 other);
+    Vector2 operator* (float scalar);
+    Vector2 operator/ (float scalar);
 
 };
 

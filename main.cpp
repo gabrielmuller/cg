@@ -1,11 +1,25 @@
 #include <gtk/gtk.h>
-#include "shape.h"
 #include <iostream>
+#include "camera.h"
+#include "display.h"
 
 
+GtkWidget* drawing_area;
+    
+static void draw_shape (cairo_t* cr, Shape shape) {
+    auto it = shape.verts.begin();
+
+    Vector2 coords = Camera::world_to_screen(*it + shape.position);
+    cairo_move_to(cr, coords.x, coords.y);
+
+    for (; it != shape.verts.end(); ++it) {
+        coords = Camera::world_to_screen(*it + shape.position);
+        cairo_line_to(cr, coords.x, coords.y);
+    }
+}
 
 // desenha no drawing area
-gboolean draw_cb(GtkWidget *widget, cairo_t *cr, gpointer* data) {
+gboolean draw_cb(GtkWidget *widget, cairo_t* cr, gpointer* data) {
     // fundo preto
     cairo_set_source_rgb(cr, 0, 0, 0);
     cairo_paint(cr);
@@ -15,65 +29,112 @@ gboolean draw_cb(GtkWidget *widget, cairo_t *cr, gpointer* data) {
     // linha branca
     cairo_set_source_rgb(cr, 1, 1, 1);
 
-    //desenha duas retas
-    /*cairo_move_to(cr, 0, 0);
-    cairo_line_to(cr, 100, 100);
-    cairo_line_to(cr, 100, 40);*/
-
-    float zoom = 20;
-
-    Shape* poly = (Shape*) data;
-
-    std::list<Vector2>::iterator it = poly->verts.begin();
-
-    cairo_move_to(cr, it->x * zoom, it->y * zoom);
-
-    for (; it != poly->verts.end(); ++it) {
-        cairo_line_to(cr, it->x * zoom, it->y * zoom);
+    for (auto it = Display::shapes.begin();
+        it != Display::shapes.end();
+        ++it) {
+        draw_shape(cr, *it);
     }
+
         
     cairo_stroke(cr);
 
     return FALSE;
 }
 
+static void move (Vector2 amount) {
+    Camera::position = Camera::position + amount;
+    gtk_widget_queue_draw(drawing_area);
+}
+static void move_z (float amount) {
+    Camera::size = Camera::size - Vector2(amount, amount);
+    gtk_widget_queue_draw(drawing_area);
+}
+
+static void move_up () {
+    move(Vector2(0, 1));
+}
+static void move_down () {
+    move(Vector2(0, -1));
+}
+static void move_left () {
+    move(Vector2(-1, 0));
+}
+static void move_right () {
+    move(Vector2(1, 0));
+}
+
+static void zoom_in () {
+    move_z(1);
+}
+static void zoom_out () {
+    move_z(-1);
+}
+
+
 static void activate (GtkApplication* app, gpointer user_data) {
-    // polígono Poly na pos 2, 5 
-    Shape* poly = new Shape("Poly", Vector2(2, 5));
-
-    poly->verts.push_back(Vector2(0, 1));
-    poly->verts.push_back(Vector2(0, 3));
-    poly->verts.push_back(Vector2(3, 5));
-    poly->verts.push_back(Vector2(0, 1));
-
     GtkWidget* window;
-    GtkWidget* button;
-    GtkWidget* drawing_area;
     GtkWidget* grid;
-    
+
+    GtkWidget* up_button;
+    GtkWidget* down_button;
+    GtkWidget* left_button;
+    GtkWidget* right_button;
+
+    GtkWidget* in_button;
+    GtkWidget* out_button;
+
+    Display::create_all();
+
+
     // cria janela
     window = gtk_application_window_new (app);
     gtk_window_set_title (GTK_WINDOW (window), "Demo CG");
-    gtk_window_set_default_size (GTK_WINDOW(window), 320, 240);
+    gtk_window_set_default_size (GTK_WINDOW(window), 480, 480);
     
-    // cria botão
-    button = gtk_button_new_with_label("TOP");
-    g_signal_connect_swapped(button, "clicked",
-        G_CALLBACK (gtk_widget_destroy), window);
+    // cria botões
+    up_button = gtk_button_new_with_label("Cima");
+    g_signal_connect_swapped(up_button, "clicked",
+        G_CALLBACK (move_up), window);
         
+    down_button = gtk_button_new_with_label("Baixo");
+    g_signal_connect_swapped(down_button, "clicked",
+        G_CALLBACK (move_down), window);
+    
+    left_button = gtk_button_new_with_label("Esquerda");
+    g_signal_connect_swapped(left_button, "clicked",
+        G_CALLBACK (move_left), window);
+
+    right_button = gtk_button_new_with_label("Direita");
+    g_signal_connect_swapped(right_button, "clicked",
+        G_CALLBACK (move_right), window);
+
+    in_button = gtk_button_new_with_label("Aumentar");
+    g_signal_connect_swapped(in_button, "clicked",
+        G_CALLBACK (zoom_in), window);
+
+    out_button = gtk_button_new_with_label("Diminuir");
+    g_signal_connect_swapped(out_button, "clicked",
+        G_CALLBACK (zoom_out), window);
+
     // cria drawing area
     drawing_area = gtk_drawing_area_new();
-    gtk_widget_set_size_request(drawing_area, 200, 200);
+    gtk_widget_set_size_request(drawing_area, 
+        Camera::viewport.x, Camera::viewport.y);
     g_signal_connect(G_OBJECT(drawing_area), "draw",
-        G_CALLBACK(draw_cb), (gpointer*) poly);
+        G_CALLBACK(draw_cb), nullptr);
 
     //cria grid
     grid = gtk_grid_new();
 
     // coloca widgets nos containers
     gtk_container_add(GTK_CONTAINER(window), grid);
-    gtk_grid_attach(GTK_GRID(grid), button, 0, 0, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), drawing_area, 1, 1, 2, 2);
+    gtk_grid_attach(GTK_GRID(grid), up_button, 1, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), down_button, 1, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), left_button, 0, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), right_button, 2, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), in_button, 2, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), out_button, 0, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), drawing_area, 0, 3, 2, 2);
 
 
     gtk_widget_show_all(window);

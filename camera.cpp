@@ -1,12 +1,12 @@
 #include "camera.h"
 
 Vector2 Camera::position(0, 0);
-    Vector2 Camera::viewport(400, 400);
+Vector2 Camera::viewport(400, 400);
 
-    // tamanho da visão da cãmera (mundo)
-    Vector2 Camera::size(10, 10);
+// tamanho da visão da cãmera (mundo)
+Vector2 Camera::size(10, 10);
 
-    // converte uma coordenada do espaço no mundo para tela
+// converte uma coordenada do espaço no mundo para tela
 Vector2 Camera::world_to_screen(Vector2 coords) {
     Vector2 wmin = Camera::position - (Camera::size / 2);
     Vector2 output(coords - wmin);

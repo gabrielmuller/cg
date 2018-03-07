@@ -1,22 +1,11 @@
-#include <gtk/gtk.h>
 #include <iostream>
-#include "window.h"
 #include "display.h"
+#include "drawer.h"
+#include "window.h"
 
 
 GtkWidget* drawing_area;
     
-static void draw_shape (cairo_t* cr, Polygon shape) {
-    auto it = shape.verts.begin();
-
-    Vector2 coords = Window::world_to_screen(*it + shape.position);
-    cairo_move_to(cr, coords.x, coords.y);
-
-    for (; it != shape.verts.end(); ++it) {
-        coords = Window::world_to_screen(*it + shape.position);
-        cairo_line_to(cr, coords.x, coords.y);
-    }
-}
 
 // desenha no drawing area
 gboolean draw_cb(GtkWidget *widget, cairo_t* cr, gpointer* data) {
@@ -32,11 +21,8 @@ gboolean draw_cb(GtkWidget *widget, cairo_t* cr, gpointer* data) {
     for (auto it = Display::polys.begin();
         it != Display::polys.end();
         ++it) {
-        draw_shape(cr, *it);
+        Drawer::draw(cr, *it);
     }
-
-        
-    cairo_stroke(cr);
 
     return FALSE;
 }

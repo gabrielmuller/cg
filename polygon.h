@@ -1,16 +1,13 @@
 #ifndef POLYGON_H
 #define POLYGON_H
 
-#include <string>
 #include <list>
 #include "vector2.h"
+#include "shape.h"
 
 
-struct Polygon {
-    std::string name;
-    Vector2 position;
+struct Polygon : Shape {
     std::list<Vector2> verts;
-
     Polygon (std::string name, Vector2 position); 
 };
 

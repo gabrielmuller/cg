@@ -1,6 +1,5 @@
 #include <iostream>
 #include "display.h"
-#include "drawer.h"
 #include "window.h"
 
 
@@ -18,10 +17,10 @@ gboolean draw_cb(GtkWidget *widget, cairo_t* cr, gpointer* data) {
     // linha branca
     cairo_set_source_rgb(cr, 1, 1, 1);
 
-    for (auto it = Display::polys.begin();
-        it != Display::polys.end();
+    for (auto it = Display::shapes.begin();
+        it != Display::shapes.end();
         ++it) {
-        Drawer::draw(cr, *it);
+        (*it)->draw(cr);
     }
 
     return FALSE;

@@ -8,6 +8,7 @@
 
 struct Point : Shape {
     Point (std::string name, Vector2 position); 
+    void draw (cairo_t* cr);
 };
 
 #endif

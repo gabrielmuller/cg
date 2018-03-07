@@ -1,11 +1,12 @@
 #ifndef DISPLAY_H
 #define DISPLAY_h
 
-#include "polygon.h"
+#include "shape.h"
+#include <list>
 
 // display file
 namespace Display {
-    extern std::list<Polygon> polys;
+    extern std::list<Shape*> shapes;
     void create_all (); 
 }
 

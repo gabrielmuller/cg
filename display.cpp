@@ -1,7 +1,10 @@
-#include "display.h"
+#include "polygon.h"
+#include "point.h"
+#include "line.h"
 #include <math.h>
+#include "display.h"
 
-std::list<Polygon> Display::polys;
+std::list<Shape*> Display::shapes;
 
 void Display::create_all () {
     Polygon* poly = new Polygon("Poly", Vector2(1, 2));
@@ -20,12 +23,18 @@ void Display::create_all () {
 
     Polygon* wave = new Polygon ("Sinewave", Vector2(-5, -5));
 
+    Point* point = new Point ("Point", Vector2(0, 0));
+    Line* line = new Line ("Straight Line", Vector2(2, -2),
+        Vector2(-1, -1), Vector2(1, 1));
+
     for (int i = 0; i < 20; i++) {
         wave->verts.push_back(Vector2(i, sin(i)));
     }
         
 
-    polys.push_back(*poly);
-    polys.push_back(*square);
-    polys.push_back(*wave);
+    shapes.push_back(poly);
+    shapes.push_back(square);
+    shapes.push_back(wave);
+    shapes.push_back(line);
+    shapes.push_back(point);
 }

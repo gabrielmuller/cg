@@ -9,6 +9,7 @@
 struct Polygon : Shape {
     std::list<Vector2> verts;
     Polygon (std::string name, Vector2 position); 
+    void draw (cairo_t* cr);
 };
 
 #endif

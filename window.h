@@ -1,9 +1,9 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#ifndef WINDOW_H
+#define WINDOW_H
 
 #include "vector2.h"
 
-namespace Camera {
+namespace Window {
     extern Vector2 position;
     extern Vector2 viewport;
     extern Vector2 size;

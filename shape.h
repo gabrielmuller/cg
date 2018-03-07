@@ -2,16 +2,18 @@
 #define SHAPE_H
 
 #include <string>
-#include <list>
+#include <gtk/gtk.h>
 #include "vector2.h"
-
+#include "window.h"
 
 struct Shape {
     std::string name;
     Vector2 position;
-    std::list<Vector2> verts;
 
     Shape (std::string name, Vector2 position); 
+    virtual void draw (cairo_t* ct) = 0;
 };
+
+
 
 #endif

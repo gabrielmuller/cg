@@ -1,22 +1,10 @@
-#include <gtk/gtk.h>
 #include <iostream>
-#include "camera.h"
 #include "display.h"
+#include "window.h"
 
 
 GtkWidget* drawing_area;
     
-static void draw_shape (cairo_t* cr, Shape shape) {
-    auto it = shape.verts.begin();
-
-    Vector2 coords = Camera::world_to_screen(*it + shape.position);
-    cairo_move_to(cr, coords.x, coords.y);
-
-    for (; it != shape.verts.end(); ++it) {
-        coords = Camera::world_to_screen(*it + shape.position);
-        cairo_line_to(cr, coords.x, coords.y);
-    }
-}
 
 // desenha no drawing area
 gboolean draw_cb(GtkWidget *widget, cairo_t* cr, gpointer* data) {
@@ -32,21 +20,18 @@ gboolean draw_cb(GtkWidget *widget, cairo_t* cr, gpointer* data) {
     for (auto it = Display::shapes.begin();
         it != Display::shapes.end();
         ++it) {
-        draw_shape(cr, *it);
+        (*it)->draw(cr);
     }
-
-        
-    cairo_stroke(cr);
 
     return FALSE;
 }
 
 static void move (Vector2 amount) {
-    Camera::position = Camera::position + amount;
+    Window::position = Window::position + amount;
     gtk_widget_queue_draw(drawing_area);
 }
 static void move_z (float amount) {
-    Camera::size = Camera::size - Vector2(amount, amount);
+    Window::size = Window::size - Vector2(amount, amount);
     gtk_widget_queue_draw(drawing_area);
 }
 
@@ -119,7 +104,7 @@ static void activate (GtkApplication* app, gpointer user_data) {
     // cria drawing area
     drawing_area = gtk_drawing_area_new();
     gtk_widget_set_size_request(drawing_area, 
-        Camera::viewport.x, Camera::viewport.y);
+        Window::viewport.x, Window::viewport.y);
     g_signal_connect(G_OBJECT(drawing_area), "draw",
         G_CALLBACK(draw_cb), nullptr);
 

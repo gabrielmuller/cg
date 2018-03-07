@@ -1,17 +1,17 @@
-#ifndef SHAPE_H
-#define SHAPE_H
+#ifndef POLYGON_H
+#define POLYGON_H
 
 #include <string>
 #include <list>
 #include "vector2.h"
 
 
-struct Shape {
+struct Polygon {
     std::string name;
     Vector2 position;
     std::list<Vector2> verts;
 
-    Shape (std::string name, Vector2 position); 
+    Polygon (std::string name, Vector2 position); 
 };
 
 #endif

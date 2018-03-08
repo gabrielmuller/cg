@@ -1,4 +1,4 @@
-#include "ListaEnc.hpp"
+//#include "ListaEnc.hpp"
 
 template<typename T>
 ListaEnc<T>::ListaEnc() {

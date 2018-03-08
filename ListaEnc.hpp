@@ -1,5 +1,5 @@
-#ifndef INCLUDE_LISTAENC_HPP_
-#define INCLUDE_LISTAENC_HPP_
+#ifndef LISTAENC_HPP
+#define LISTAENC_HPP
 
 #include <cstdint>
 #include <stdexcept>
@@ -33,10 +33,20 @@ public:
 	bool menor(T dado1, T dado2);
 	void destroiLista();
 
+    Elemento<T> begin() {
+        return *head;
+    }
+
+    Elemento<T> end() {
+        return *head;
+    }
+
 private:
 	Elemento<T>* head;
 	int size;
 
 };
 
-#endif /* INCLUDE_LISTAENC_HPP_ */
+#include "ListaEnc.tpp"
+
+#endif /* LISTAENC_HPP */

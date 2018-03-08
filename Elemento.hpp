@@ -1,8 +1,12 @@
 #ifndef ELEMENTO_HPP
 #define ELEMENTO_HPP
 
+#include <iterator>
+#include <cstddef>
+
 template<typename T>
-class Elemento {
+class Elemento : std::iterator<std::input_iterator_tag,
+    T, std::nullptr_t, T*, T&> {
 private:
 	T *info;
 	Elemento<T>* _next;
@@ -29,6 +33,13 @@ public:
 	{
 		_next = next;
 	}
+
+    Elemento<T> operator++() { return *_next;}
+    T& operator*() { return *info; }
+    bool operator!=(Elemento<T> e) { info == e.info; }
+    
+
+
 };
 
 #endif

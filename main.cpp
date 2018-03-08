@@ -1,6 +1,7 @@
 #include <iostream>
 #include "display.h"
 #include "window.h"
+//#include "ListaEnc.hpp"
 
 
 GtkWidget* drawing_area;
@@ -126,6 +127,20 @@ static void activate (GtkApplication* app, gpointer user_data) {
 }
 
 int main (int argc, char **argv) {
+
+    //teste
+    /*ListaEnc<int>* lista = new ListaEnc<int>();
+    lista->adiciona(5);
+    lista->adiciona(50);
+    lista->adiciona(40);
+
+    for (auto it = lista->begin();
+        it != lista->end();
+        ++it) {
+        std::cout << *it << std::endl;
+    }*/
+       
+
 
     // inicia app
     GtkApplication *app;

@@ -1,7 +1,7 @@
 #include <iostream>
 #include "display.h"
 #include "window.h"
-//#include "ListaEnc.hpp"
+#include "ListaEnc.hpp"
 
 
 GtkWidget* drawing_area;
@@ -133,14 +133,14 @@ int main (int argc, char **argv) {
     lista->adiciona(5);
     lista->adiciona(50);
     lista->adiciona(40);
+    std::cout << lista->end()->getProximo()->getInfo() << std::endl;
 
+    // Precisa arrumar o end()
     for (auto it = lista->begin();
         it != lista->end();
-        ++it) {
-        std::cout << *it << std::endl;
+        it = it->getProximo()) {
+        std::cout << it->getInfo() << std::endl;
     }*/
-       
-
 
     // inicia app
     GtkApplication *app;

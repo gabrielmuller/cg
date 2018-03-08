@@ -9,10 +9,16 @@ class Elemento : std::iterator<std::input_iterator_tag,
     T, std::nullptr_t, T*, T&> {
 private:
 	T *info;
-	Elemento<T>* _next;
+	Elemento<T>* _next{nullptr};
 
 public:
-	Elemento(const T& info, Elemento<T>* next) : info(new T(info)), _next(next) {}
+	Elemento(const T& info, Elemento<T>* next) : 
+		info(new T(info)), _next(next) 
+	{}
+
+	Elemento(const T& info) : 
+		info(new T(info)) 
+	{}
 
 	~Elemento()
 	{

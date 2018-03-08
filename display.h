@@ -7,7 +7,8 @@
 // display file
 namespace Display {
     extern std::list<Shape*> shapes;
-    void create_all (); 
+    void create_all ();
+    void add(Shape* sh);
 }
 
 #endif

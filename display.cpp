@@ -38,3 +38,7 @@ void Display::create_all () {
     shapes.push_back(line);
     shapes.push_back(point);
 }
+
+void Display::add(Shape* sh) {
+    shapes.push_back(sh);
+}

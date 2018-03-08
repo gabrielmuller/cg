@@ -4,7 +4,6 @@
 
 #include "display.h"
 #include "window.h"
-#include "ListaEnc.hpp"
 #include "polygon.h"
 #include "point.h"
 #include "line.h"
@@ -358,21 +357,6 @@ static void activate (GtkApplication* app, gpointer user_data) {
 }
 
 int main (int argc, char **argv) {
-
-    //teste
-    /*ListaEnc<int>* lista = new ListaEnc<int>();
-    lista->adiciona(5);
-    lista->adiciona(50);
-    lista->adiciona(40);
-    std::cout << lista->end()->getProximo()->getInfo() << std::endl;
-
-    // Precisa arrumar o end() e posicaoMem()
-    for (auto it = lista->begin();
-        it != lista->end();
-        it = it->getProximo()) {
-        std::cout << it->getInfo() << std::endl;
-    }*/
-
     // inicia app
     //GtkApplication *app;
     int status;

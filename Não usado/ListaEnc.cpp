@@ -1,4 +1,5 @@
 //#include "ListaEnc.hpp"
+#ifdef NAO
 
 template<typename T>
 ListaEnc<T>::ListaEnc() {
@@ -182,3 +183,5 @@ void ListaEnc<T>::destroiLista() {
     size = 0;
     head = nullptr;
 }
+
+#endif

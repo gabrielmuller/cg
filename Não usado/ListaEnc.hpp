@@ -38,7 +38,7 @@ public:
     }
 
     Elemento<T>* end() {
-        return head;
+        return nullptr;
     }
 
 private:
@@ -67,6 +67,7 @@ void ListaEnc<T>::adicionaNoInicio(const T& dado) {
         throw std::out_of_range("Full");
     head = added;
     ++size;
+
 }
 
 template<typename T>

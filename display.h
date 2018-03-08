@@ -1,8 +1,8 @@
 #ifndef DISPLAY_H
 #define DISPLAY_h
 
-#include "shape.h"
 #include <list>
+#include "shape.h"
 
 // display file
 namespace Display {

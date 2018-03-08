@@ -11,6 +11,8 @@
 
 GtkWidget* drawing_area;
 GtkApplication *app;
+GtkTextBuffer *buffer;
+GtkTextIter iter;
 
 // desenha no drawing area
 gboolean draw_cb(GtkWidget *widget, cairo_t* cr, gpointer* data) {
@@ -61,6 +63,17 @@ static void zoom_out () {
     move_z(-1);
 }
 
+/**
+ *  Atualiza o GtkBuffer do GtkTextView que mostra os nomes
+ *  dos objetos na janela principal
+ */
+void update_df_buffer(std::string nome) {
+    nome.append("\n");
+    gtk_text_buffer_get_end_iter(buffer, &iter);
+    gtk_text_buffer_insert(buffer, &iter,
+        nome.c_str(), -1);
+}
+
 /*****************************************
  *
  *  Callbacks pra adicionar ponto e reta
@@ -68,28 +81,31 @@ static void zoom_out () {
  *****************************************/
 
 static void add_ponto_callback(GtkWidget **entry, GtkWidget *widget) {
-    auto coord_x = gtk_entry_get_text (GTK_ENTRY(entry[1]));
-    auto coord_y = gtk_entry_get_text (GTK_ENTRY(entry[2]));
+    auto nome = gtk_entry_get_text (GTK_ENTRY(entry[1]));
+    auto coord_x = gtk_entry_get_text (GTK_ENTRY(entry[2]));
+    auto coord_y = gtk_entry_get_text (GTK_ENTRY(entry[3]));
 
-    Point* point = new Point ("Point", Vector2(std::stof(coord_x), 
+    Point* point = new Point (nome, Vector2(std::stof(coord_x), 
         std::stof(coord_y)));
     Display::add(point);
 
     g_signal_connect (G_OBJECT (drawing_area), "draw",
                     G_CALLBACK (draw_cb), NULL);
+    update_df_buffer(nome);
 
     gtk_widget_destroy(GTK_WIDGET(entry[0]));
 }
 
 static void add_reta_callback(GtkWidget **entry, GtkWidget *widget) {
-    auto coord_x0 = gtk_entry_get_text (GTK_ENTRY(entry[1]));
-    auto coord_y0 = gtk_entry_get_text (GTK_ENTRY(entry[2]));
-    auto coord_x1 = gtk_entry_get_text (GTK_ENTRY(entry[3]));
-    auto coord_y1 = gtk_entry_get_text (GTK_ENTRY(entry[4]));
-    auto coord_x2 = gtk_entry_get_text (GTK_ENTRY(entry[5]));
-    auto coord_y2 = gtk_entry_get_text (GTK_ENTRY(entry[6]));
+    auto nome = gtk_entry_get_text (GTK_ENTRY(entry[1]));
+    auto coord_x0 = gtk_entry_get_text (GTK_ENTRY(entry[2]));
+    auto coord_y0 = gtk_entry_get_text (GTK_ENTRY(entry[3]));
+    auto coord_x1 = gtk_entry_get_text (GTK_ENTRY(entry[4]));
+    auto coord_y1 = gtk_entry_get_text (GTK_ENTRY(entry[5]));
+    auto coord_x2 = gtk_entry_get_text (GTK_ENTRY(entry[6]));
+    auto coord_y2 = gtk_entry_get_text (GTK_ENTRY(entry[7]));
 
-    Line* line = new Line ("Straight Line", 
+    Line* line = new Line (nome, 
         Vector2(std::stof(coord_x0), std::stof(coord_y0)),
         Vector2(std::stof(coord_x1), std::stof(coord_y1)), 
         Vector2(std::stof(coord_x2), std::stof(coord_y2)));
@@ -97,6 +113,7 @@ static void add_reta_callback(GtkWidget **entry, GtkWidget *widget) {
 
     g_signal_connect (G_OBJECT (drawing_area), "draw",
                     G_CALLBACK (draw_cb), NULL);
+    update_df_buffer(nome);
 
     gtk_widget_destroy(GTK_WIDGET(entry[0]));
 }
@@ -111,8 +128,8 @@ static void add_ponto_window () {
     GtkWidget* window;
     GtkWidget* grid;
     GtkWidget* ok_button;
-    GtkWidget  *x_label, *y_label;
-    GtkWidget  *x_entry, *y_entry;
+    GtkWidget  *x_label, *y_label, *n_label;
+    GtkWidget  *x_entry, *y_entry, *nome_entry;
 
     // Window
     window = gtk_application_window_new (app);
@@ -122,14 +139,18 @@ static void add_ponto_window () {
     // labels
     x_label = gtk_label_new("Coordenada x");
     y_label = gtk_label_new("Coordenada y");
+    n_label = gtk_label_new("Nome");
 
     // Entries
     x_entry = gtk_entry_new();
     y_entry = gtk_entry_new();
-    static GtkWidget *entries[3];
+    nome_entry = gtk_entry_new();
+
+    static GtkWidget *entries[4];
     entries[0] = window;
-    entries[1] = x_entry;
-    entries[2] = y_entry;
+    entries[1] = nome_entry;
+    entries[2] = x_entry;
+    entries[3] = y_entry;
 
     // Botoes
     ok_button = gtk_button_new_with_label("Criar");
@@ -141,11 +162,14 @@ static void add_ponto_window () {
     // coloca widgets nos containers
     gtk_container_add(GTK_CONTAINER(window), grid);
 
-    gtk_grid_attach(GTK_GRID(grid), x_label, 0, 0, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), x_entry, 0, 1, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), y_label, 1, 0, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), y_entry, 1, 1, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), ok_button, 0, 3, 3, 1);
+    gtk_grid_attach(GTK_GRID(grid), n_label, 0, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), nome_entry, 1, 0, 1, 1);
+
+    gtk_grid_attach(GTK_GRID(grid), x_label, 0, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), x_entry, 0, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), y_label, 1, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), y_entry, 1, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), ok_button, 0, 4, 3, 1);
 
     gtk_widget_show_all(window);
 }
@@ -154,10 +178,11 @@ static void add_reta_window () {
     GtkWidget* window;
     GtkWidget* grid;
     GtkWidget* ok_button;
-    GtkWidget  *x_label, *y_label;
+    GtkWidget  *x_label, *y_label, *n_label;
     GtkWidget *p0_label, *p1_label, *p2_label;
     GtkWidget *x0_entry, *x1_entry, *x2_entry;
     GtkWidget *y0_entry, *y1_entry, *y2_entry;
+    GtkWidget *nome_entry;
 
     // Window
     window = gtk_application_window_new (app);
@@ -167,6 +192,7 @@ static void add_reta_window () {
     // labels
     x_label = gtk_label_new("Coordenada x");
     y_label = gtk_label_new("Coordenada y");
+    n_label = gtk_label_new("Nome");
 
     p0_label = gtk_label_new("Posição");
     p1_label = gtk_label_new("Vetor a");
@@ -179,15 +205,17 @@ static void add_reta_window () {
     y1_entry = gtk_entry_new();
     x2_entry = gtk_entry_new();
     y2_entry = gtk_entry_new();
+    nome_entry = gtk_entry_new();
 
-    static GtkWidget *entries[7];
+    static GtkWidget *entries[8];
     entries[0] = window;
-    entries[1] = x0_entry;
-    entries[2] = y0_entry;
-    entries[3] = x1_entry;
-    entries[4] = y1_entry;
-    entries[5] = x2_entry;
-    entries[6] = y2_entry;
+    entries[1] = nome_entry;
+    entries[2] = x0_entry;
+    entries[3] = y0_entry;
+    entries[4] = x1_entry;
+    entries[5] = y1_entry;
+    entries[6] = x2_entry;
+    entries[7] = y2_entry;
 
     // Botoes
     ok_button = gtk_button_new_with_label("Criar");
@@ -199,25 +227,27 @@ static void add_reta_window () {
     // coloca widgets nos containers
     gtk_container_add(GTK_CONTAINER(window), grid);
 
-    gtk_grid_attach(GTK_GRID(grid), p0_label, 0, 1, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), p1_label, 0, 2, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), p2_label, 0, 3, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), n_label, 0, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), nome_entry, 1, 0, 1, 1);
 
-    gtk_grid_attach(GTK_GRID(grid), x_label, 1, 0, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), x0_entry, 1, 1, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), x1_entry, 1, 2, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), x2_entry, 1, 3, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), p0_label, 0, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), p1_label, 0, 3, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), p2_label, 0, 4, 1, 1);
 
-    gtk_grid_attach(GTK_GRID(grid), y_label, 2, 0, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), y0_entry, 2, 1, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), y1_entry, 2, 2, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), y2_entry, 2, 3, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), x_label, 1, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), x0_entry, 1, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), x1_entry, 1, 3, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), x2_entry, 1, 4, 1, 1);
 
-    gtk_grid_attach(GTK_GRID(grid), ok_button, 0, 4, 3, 1);
+    gtk_grid_attach(GTK_GRID(grid), y_label, 2, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), y0_entry, 2, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), y1_entry, 2, 3, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), y2_entry, 2, 4, 1, 1);
+
+    gtk_grid_attach(GTK_GRID(grid), ok_button, 0, 5, 3, 1);
 
     gtk_widget_show_all(window);
 }
-
 
 static void activate (GtkApplication* app, gpointer user_data) {
     GtkWidget* window;
@@ -234,9 +264,9 @@ static void activate (GtkApplication* app, gpointer user_data) {
     GtkWidget* ponto_button;
     GtkWidget* reta_button;
     GtkWidget* poligono_button;
-
+    GtkWidget* df_text_view;
+    
     Display::create_all();
-
 
     // cria janela
     window = gtk_application_window_new (app);
@@ -268,8 +298,7 @@ static void activate (GtkApplication* app, gpointer user_data) {
     g_signal_connect_swapped(out_button, "clicked",
         G_CALLBACK (zoom_out), window);
 
-
-    // botoes de criacao
+    // Criar botoes para criacao de objetos
     ponto_button = gtk_button_new_with_label("Adicionar Ponto");
     g_signal_connect_swapped(ponto_button, "clicked",
         G_CALLBACK (add_ponto_window), window);
@@ -282,6 +311,22 @@ static void activate (GtkApplication* app, gpointer user_data) {
     /*g_signal_connect_swapped(poligono_button, "clicked",
         G_CALLBACK (add_poligono_window), window);*/
 
+    // Criar TextView
+    df_text_view = gtk_text_view_new();
+    gtk_text_view_set_editable (GTK_TEXT_VIEW (df_text_view), FALSE);
+    buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (df_text_view));
+ 
+    // Inicializa GtkTextBuffer da GtkTextView com os nomes
+    // dos objetos do DisplayFile
+    for (auto it = Display::shapes.begin();
+        it != Display::shapes.end(); ++it) {
+        std::string textobjeto = (*it)->name;
+        textobjeto.append("\n");
+        gtk_text_buffer_get_end_iter(buffer, &iter);
+        gtk_text_buffer_insert(buffer, &iter,
+            textobjeto.c_str(), -1);
+    }
+    
     // cria drawing area
     drawing_area = gtk_drawing_area_new();
     gtk_widget_set_size_request(drawing_area, 
@@ -304,8 +349,9 @@ static void activate (GtkApplication* app, gpointer user_data) {
     gtk_grid_attach(GTK_GRID(grid), ponto_button, 2, 3, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), reta_button, 2, 4, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), poligono_button, 2, 5, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), df_text_view, 2, 6, 1, 1);
     
-    gtk_grid_attach(GTK_GRID(grid), drawing_area, 0, 3, 2, 3);
+    gtk_grid_attach(GTK_GRID(grid), drawing_area, 0, 3, 2, 4);
 
 
     gtk_widget_show_all(window);

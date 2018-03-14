@@ -1,7 +1,15 @@
+CC = g++
+OPT = -O3
+CVER = -std=c++11
+CFLAGS = `pkg-config --cflags gtk+-3.0`
+LIBS = `pkg-config --libs gtk+-3.0`
+SRC = *.cpp
+BIN = cg.o
+
 all: compile run
 
 compile:
-	g++ -O3 -std=c++11 `pkg-config --cflags gtk+-3.0` *.cpp -o cg.o `pkg-config --libs gtk+-3.0`
+	$(CC) $(OPT) $(CVER) $(CFLAGS) $(SRC) -o $(BIN) $(LIBS)
 run:
-	./cg.o
+	./$(BIN)
 	

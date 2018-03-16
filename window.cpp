@@ -10,9 +10,15 @@ Vector2 Window::size(10, 10);
 Vector2 Window::world_to_screen(Vector2 coords) {
     Vector2 wmin = Window::position - (Window::size / 2);
     Vector2 output(coords - wmin);
+<<<<<<< Updated upstream
     output = Vector2(output.x / Window::size.x, output.y / Window::size.y);
     output.y = 1 - output.y;
     output = Vector2(output.x * Window::viewport.x, output.y * Window::viewport.y);
+=======
+    output = Vector2(output.x() / Window::size.x(), output.y() / Window::size.y());
+    output.y() = 1 - output.y();
+    output = output * Window::viewport;
+>>>>>>> Stashed changes
 
     return output;
 }

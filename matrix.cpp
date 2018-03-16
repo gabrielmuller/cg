@@ -2,12 +2,19 @@
 #include "matrix.h"
 
 
+<<<<<<< Updated upstream
 Matrix::Matrix (int sizeX, int sizeY) {
     this->sizeX = sizeX;
     this->sizeY = sizeY;
     data = new float* [sizeY];
     for (int i = 0; i < sizeY; i++) {
        data[i] = new float [sizeX];
+=======
+Matrix::Matrix (int m, int n) : m{m}, n{n} {
+    data = new float* [n];
+    for (int i = 0; i < n; i++) {
+       data[i] = new float [m] {0};
+>>>>>>> Stashed changes
     }
 }
         

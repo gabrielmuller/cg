@@ -22,6 +22,14 @@ int main (int argc, char **argv) {
     Matrix c = Matrix::multiply(a, b);
     std::cout << (std::string) c;*/
     // inicia app
+    /*Vector2 a(5, 6);
+    for (int i = 0; i < 6; i++) {
+        a = a - Vector2(2, 2);
+        a = a + Vector2(1, 1);
+        a = a * Vector2(0.5, 0.5);
+        std::cout << (std::string) a;
+    }*/
+    
     GtkApplication *app;
     int status;
 

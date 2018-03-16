@@ -8,6 +8,11 @@ BIN = cg.o
 
 all: compile run
 
+debug: CFLAGS += -g
+debug: OPT = -O0
+debug: compile
+	gdb $(BIN)
+
 compile:
 	$(CC) $(OPT) $(CVER) $(CFLAGS) $(SRC) -o $(BIN) $(LIBS)
 run:

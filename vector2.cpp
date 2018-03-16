@@ -19,14 +19,6 @@ Vector2 Vector2::operator- (Vector2 other) {
     return Vector2(this->x - other.x, this->y - other.y);
 }
 
-<<<<<<< Updated upstream
-Vector2 Vector2::operator* (float scalar) {
-    return Vector2(this->x * scalar, this->y * scalar);
-}
-
-Vector2 Vector2::operator/ (float scalar) {
-    return Vector2(this->x / scalar, this->y / scalar);
-=======
 // translação
 Vector2 Vector2::operator+ (Vector2 other) {
     Matrix transformation = Matrix(3, 3);
@@ -52,5 +44,4 @@ Vector2 Vector2::operator* (Vector2 other) {
     for (int i = 0; i < 3; i++) transformation[i][i] = other[i];
     Matrix result = *((Matrix*) this) * transformation;
     return *((Vector2*) &result);
->>>>>>> Stashed changes
 }

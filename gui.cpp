@@ -322,7 +322,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     // cria drawing area
     drawing_area = gtk_drawing_area_new();
     gtk_widget_set_size_request(drawing_area, 
-        Window::viewport.x, Window::viewport.y);
+        Window::viewport.x(), Window::viewport.y());
     g_signal_connect(G_OBJECT(drawing_area), "draw",
         G_CALLBACK(draw_cb), nullptr);
 

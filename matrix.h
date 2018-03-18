@@ -12,9 +12,12 @@ struct Matrix {
     int n;
 
     Matrix (int m, int n);
+    ~Matrix ();
+    Matrix (const Matrix& other);
     Matrix operator* (Matrix other);
     operator std::string () const;
-    float* operator[] (int i);
+    float* operator[] (int i) const ;
+    Matrix& operator= (Matrix& other);
 };
 
 #endif

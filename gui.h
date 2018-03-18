@@ -18,8 +18,7 @@
 namespace GUI {
 	extern GtkWidget* drawing_area;
 	extern GtkApplication* app;
-	extern GtkTextBuffer* buffer;
-	extern GtkTextIter iter;
+    extern GtkWidget* combo;
     
     gboolean draw_cb(GtkWidget *widget, cairo_t* cr, gpointer* data);
 
@@ -31,8 +30,10 @@ namespace GUI {
     void move_down ();
     void zoom_out ();
     void zoom_in ();
-    
-    void update_df_buffer(std::string nome);
+
+    // TESTES sem interface
+    void translacao();
+    void rotacao();
 
     void add_reta_callback(GtkWidget **entry, GtkWidget *widget);
     void add_ponto_callback(GtkWidget **entry, GtkWidget *widget);

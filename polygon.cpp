@@ -1,6 +1,7 @@
 #include "polygon.h"
 
 Polygon::Polygon (std::string name, Vector2 position) : Shape::Shape(name, position) {}
+
 void Polygon::draw (cairo_t* cr) {
     auto it = this->verts.begin();
 
@@ -12,5 +13,44 @@ void Polygon::draw (cairo_t* cr) {
         cairo_line_to(cr, coords.x, coords.y);
     }
     cairo_stroke(cr);
+}
+
+void Polygon::transform(
+        std::vector<std::vector<float>> matrix) {
+    for (auto it = this->verts.begin(); it != this->verts.end(); ++it) {
+        std::vector<float> old_coord = {it->x, it->y, 1};
+        std::vector<float> new_coord(3);
+        for (int i = 0; i < 3; ++i) {
+            new_coord[i] = 0;
+            for (int j = 0; j < 3; ++j) {
+                new_coord[i] += old_coord[j] * matrix[j][i];
+            }
+        }
+        it->x = new_coord[0];
+        it->y = new_coord[1];
+    }
+}
+
+void Polygon::translation(float dx, float dy) {
+    std::vector<std::vector<float>> transform_matrix;
+    transform_matrix = {{1,0,0},{0,1,0},{dx,dy,1}};
+    transform(transform_matrix);
+}
+
+// Precisa ajustar
+// Mover pro centro mover de volta sei la o que
+void Polygon::scaling(float sx, float sy) {
+    std::vector<std::vector<float>> transform_matrix;
+    transform_matrix = {{sx,0,0},{0,sy,0},{0,0,1}};
+    transform(transform_matrix);
+}
+
+// Precisa ajustar
+// Mover pro centro mover de volta sei la o que
+void Polygon::rotation(float degrees) {
+    float radian = (M_PI/180)*degrees;
+    std::vector<std::vector<float>> transform_matrix;
+    transform_matrix = {{std::cos(radian),-std::sin(radian),0},{std::sin(radian),std::cos(radian),0},{0,0,1}};
+    transform(transform_matrix);
 }
 

@@ -1,6 +1,3 @@
-#ifndef MATRIX_H
-#define MATRIX_H
-
 #include <string>
 
 // Unfortunately, no one can be told what the Matrix is.
@@ -8,13 +5,11 @@
 
 struct Matrix {
     float** data;
-    int m;
-    int n;
+    int sizeX;
+    int sizeY;
 
-    Matrix (int m, int n);
-    Matrix operator* (Matrix other);
+    Matrix (int sizeX, int sizeY);
+    static Matrix multiply (Matrix a, Matrix b);
     operator std::string () const;
     float* operator[] (int i);
 };
-
-#endif

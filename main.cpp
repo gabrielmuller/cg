@@ -21,7 +21,6 @@ int main (int argc, char **argv) {
     }
     Matrix c = Matrix::multiply(a, b);
     std::cout << (std::string) c;*/
-    //std::cout << (std::string) (Vector2(0.4, 0.3) - Vector2(3, 3));
     // inicia app
     GtkApplication *app;
     int status;

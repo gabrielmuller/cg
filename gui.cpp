@@ -89,7 +89,7 @@ void GUI::translation_window () {
     // labels
     x_label = gtk_label_new("Coordenada x");
     y_label = gtk_label_new("Coordenada y");
-    n_label = gtk_label_new("Vetor");
+    n_label = gtk_label_new("Vetor de translação");
 
     // Entries
     x_entry = gtk_entry_new();
@@ -106,15 +106,17 @@ void GUI::translation_window () {
         G_CALLBACK (translation_cb), entries);
 
     grid = gtk_grid_new();
+    gtk_grid_set_row_spacing (GTK_GRID(grid), (guint)10);
+    gtk_grid_set_column_spacing (GTK_GRID(grid), (guint)10);
 
     // coloca widgets nos containers
     gtk_container_add(GTK_CONTAINER(window), grid);
 
-    gtk_grid_attach(GTK_GRID(grid), n_label, 0, 0, 1, 1);
-
+    // (grid, widget, coluna, linha, tamanhox, tamanhoy)
+    gtk_grid_attach(GTK_GRID(grid), n_label, 0, 0, 2, 1);
     gtk_grid_attach(GTK_GRID(grid), x_label, 0, 1, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), x_entry, 0, 2, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), y_label, 1, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), x_entry, 1, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), y_label, 0, 2, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), y_entry, 1, 2, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), ok_button, 0, 4, 3, 1);
 
@@ -168,15 +170,17 @@ void GUI::scaling_window() {
         G_CALLBACK (scaling_cb), entries);
 
     grid = gtk_grid_new();
+    gtk_grid_set_row_spacing (GTK_GRID(grid), (guint)10);
+    gtk_grid_set_column_spacing (GTK_GRID(grid), (guint)10);
 
     // coloca widgets nos containers
     gtk_container_add(GTK_CONTAINER(window), grid);
 
-    gtk_grid_attach(GTK_GRID(grid), n_label, 0, 0, 1, 1);
-
+    // (grid, widget, coluna, linha, tamanhox, tamanhoy)
+    gtk_grid_attach(GTK_GRID(grid), n_label, 0, 0, 2, 1);
     gtk_grid_attach(GTK_GRID(grid), x_label, 0, 1, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), x_entry, 0, 2, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), y_label, 1, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), x_entry, 1, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), y_label, 0, 2, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), y_entry, 1, 2, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), ok_button, 0, 4, 3, 1);
 
@@ -185,11 +189,22 @@ void GUI::scaling_window() {
 
 void GUI::rotation_cb(GtkWidget **entry, GtkWidget *widget) {
     auto graus = gtk_entry_get_text (GTK_ENTRY(entry[1]));
+    std::string dx = gtk_entry_get_text (GTK_ENTRY(entry[2]));
+    std::string dy = gtk_entry_get_text (GTK_ENTRY(entry[3]));
+    bool center = false;
 
+    /* Se os campos x e y estiverem em branco, a rotação é
+     * em relação ao centro geométrico
+     */
+    if (dx == "") {
+        dx = "0";
+        dy = "0";
+        center = true;
+    }
     auto selected_id = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
     auto it = Display::shapes.begin();
     std::advance(it, selected_id);
-    (*it)->rotation(std::stof(graus));
+    (*it)->rotation(std::stof(dx), std::stof(dy), std::stof(graus), center);
 
     g_signal_connect (G_OBJECT (drawing_area), "draw",
                     G_CALLBACK (draw_cb), NULL);
@@ -199,6 +214,8 @@ void GUI::rotation_cb(GtkWidget **entry, GtkWidget *widget) {
 
 void GUI::rotation_window () {
     GtkWidget *window, *grid, *ok_button, *d_label, *d_entry;
+    GtkWidget *x_label, *y_label, *x_entry, *y_entry;
+    GtkWidget *help_label, *help_frame;
 
     // Window
     window = gtk_application_window_new (app);
@@ -207,13 +224,22 @@ void GUI::rotation_window () {
 
     // labels
     d_label = gtk_label_new("Graus");
+    x_label = gtk_label_new("Coordenada x");
+    y_label = gtk_label_new("Coordenada y");
+    help_frame = gtk_frame_new(" Ajuda");
+    help_label = gtk_label_new(" Para rotação em relação ao centro do objeto,\n deixe os campos x, y em branco.");
+    gtk_container_add(GTK_CONTAINER(help_frame), help_label);
 
     // Entries
     d_entry = gtk_entry_new();
+    x_entry = gtk_entry_new();
+    y_entry = gtk_entry_new();
 
     static GtkWidget *entries[2];
     entries[0] = window;
     entries[1] = d_entry;
+    entries[2] = x_entry;
+    entries[3] = y_entry;
 
     // Botoes
     ok_button = gtk_button_new_with_label("Ok");
@@ -221,13 +247,21 @@ void GUI::rotation_window () {
         G_CALLBACK (rotation_cb), entries);
 
     grid = gtk_grid_new();
-
+    gtk_grid_set_row_spacing (GTK_GRID(grid), (guint)10);
+    gtk_grid_set_column_spacing (GTK_GRID(grid), (guint)10);
+    
     // coloca widgets nos containers
     gtk_container_add(GTK_CONTAINER(window), grid);
 
+    // (grid, widget, coluna, linha, tamanho?, ??)
     gtk_grid_attach(GTK_GRID(grid), d_label, 0, 0, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), d_entry, 0, 1, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), ok_button, 0, 2, 3, 1);
+    gtk_grid_attach(GTK_GRID(grid), d_entry, 1, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), x_label, 0, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), x_entry, 1, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), y_label, 0, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), y_entry, 1, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), help_frame, 0, 3, 2, 2);
+    gtk_grid_attach(GTK_GRID(grid), ok_button, 0, 5, 3, 1);
 
     gtk_widget_show_all(window);
 }
@@ -316,6 +350,9 @@ void GUI::add_point_window () {
         G_CALLBACK (add_point_cb), entries);
 
     grid = gtk_grid_new();
+    gtk_grid_set_row_spacing (GTK_GRID(grid), (guint)10);
+    gtk_grid_set_column_spacing (GTK_GRID(grid), (guint)10);
+
 
     // coloca widgets nos containers
     gtk_container_add(GTK_CONTAINER(window), grid);
@@ -381,6 +418,7 @@ void GUI::add_line_window () {
         G_CALLBACK (add_line_cb), entries);
 
     grid = gtk_grid_new();
+    gtk_grid_set_row_spacing (GTK_GRID(grid), (guint)10);
 
     // coloca widgets nos containers
     gtk_container_add(GTK_CONTAINER(window), grid);
@@ -416,7 +454,7 @@ void GUI::add_line_window () {
 void GUI::activate (GtkApplication* app, gpointer user_data) {
     GUI::app = app;
     GtkWidget* window;
-    GtkWidget* grid;
+    GtkWidget *grid, *small_grid;
     GtkWidget *up_button, *down_button, *left_button, *right_button;
     GtkWidget *in_button, *out_button;
     GtkWidget *point_button, *line_button, *polygon_button;
@@ -428,29 +466,37 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     window = gtk_application_window_new (app);
     gtk_window_set_title (GTK_WINDOW (window), "Demo CG");
     gtk_window_set_default_size (GTK_WINDOW(window), 480, 480);
-    
-    // cria botões
-    up_button = gtk_button_new_with_label("Cima");
+
+    // cria botões de movimentação
+    up_button = gtk_button_new_with_label("^");
     g_signal_connect_swapped(up_button, "clicked",
         G_CALLBACK (move_up), window);
         
-    down_button = gtk_button_new_with_label("Baixo");
+    down_button = gtk_button_new_with_label("v");
     g_signal_connect_swapped(down_button, "clicked",
         G_CALLBACK (move_down), window);
     
-    left_button = gtk_button_new_with_label("Esquerda");
+    left_button = gtk_button_new_with_label("<");
     g_signal_connect_swapped(left_button, "clicked",
         G_CALLBACK (move_left), window);
 
-    right_button = gtk_button_new_with_label("Direita");
+    right_button = gtk_button_new_with_label(">");
     g_signal_connect_swapped(right_button, "clicked",
         G_CALLBACK (move_right), window);
 
-    in_button = gtk_button_new_with_label("Aumentar");
+    // cria grid de botões de movimentação
+    small_grid = gtk_grid_new();
+    gtk_grid_attach(GTK_GRID(small_grid), up_button, 1, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(small_grid), down_button, 1, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(small_grid), left_button, 0, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(small_grid), right_button, 2, 1, 1, 1);
+
+    // cria botões de zoom
+    in_button = gtk_button_new_with_label("Zoom in");
     g_signal_connect_swapped(in_button, "clicked",
         G_CALLBACK (zoom_in), window);
 
-    out_button = gtk_button_new_with_label("Diminuir");
+    out_button = gtk_button_new_with_label("Zoom out");
     g_signal_connect_swapped(out_button, "clicked",
         G_CALLBACK (zoom_out), window);
 
@@ -501,24 +547,20 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
 
     // coloca widgets nos containers
     gtk_container_add(GTK_CONTAINER(window), grid);
-    gtk_grid_attach(GTK_GRID(grid), up_button, 1, 0, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), down_button, 1, 1, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), left_button, 0, 1, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), right_button, 2, 1, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), in_button, 2, 0, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), out_button, 0, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), small_grid, 1, 0, 2, 2);
+    gtk_grid_attach(GTK_GRID(grid), in_button, 1, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), out_button, 2, 2, 1, 1);
 
-    gtk_grid_attach(GTK_GRID(grid), point_button, 2, 3, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), line_button, 2, 4, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), polygon_button, 2, 5, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), point_button, 1, 4, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), line_button, 1, 5, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), polygon_button, 1, 6, 2, 1);
 
-    gtk_grid_attach(GTK_GRID(grid), combo, 2, 6, 1, 1);
-
-    gtk_grid_attach(GTK_GRID(grid), translation_b, 2, 7, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), scaling_b, 2, 8, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), rotation_b, 2, 9, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), combo, 1, 7, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), translation_b, 1, 8, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), scaling_b, 1, 9, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), rotation_b, 1, 10, 2, 1);
     
-    gtk_grid_attach(GTK_GRID(grid), drawing_area, 0, 3, 2, 7);
+    gtk_grid_attach(GTK_GRID(grid), drawing_area, 0, 0, 1, 11);
 
 
     gtk_widget_show_all(window);

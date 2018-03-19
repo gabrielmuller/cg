@@ -15,7 +15,7 @@ struct Shape {
 
     virtual void translation(float dx, float dy) = 0;
     virtual void scaling(float sx, float sy) = 0;
-    virtual void rotation(float degree) = 0;
+    virtual void rotation(float dx, float dy, float degrees, bool center) = 0;
 };
 
 #endif

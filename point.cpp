@@ -29,5 +29,5 @@ void Point::translation (float dx, float dy) {
 
 void Point::scaling(float sx, float sy) {}
 
-void Point::rotation(float degree) {}
+void Point::rotation(float dx, float dy, float degrees, bool center) {}
 

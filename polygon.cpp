@@ -16,6 +16,12 @@ void Polygon::draw (cairo_t* cr) {
     cairo_stroke(cr);
 }
 
+/**
+ * @brief       Realiza transformação 2D dos pontos do polígono multiplicando-os
+ *              pela matriz de transformação.
+ *
+ * @param[in]   matrix      matriz de transformação
+ */
 void Polygon::transform(
         std::vector<std::vector<float>> matrix) {
     for (auto it = verts.begin(); it != verts.end(); ++it) {
@@ -32,12 +38,23 @@ void Polygon::transform(
     }
 }
 
+/**
+ * @brief       Translaciona um polígono a partir de um vetor (Dx,Dy).
+ *
+ * @param[in]   dx,dy       coordenadas do vetor de translação
+ */
 void Polygon::translation(float dx, float dy) {
     std::vector<std::vector<float>> transform_matrix;
     transform_matrix = {{1,0,0},{0,1,0},{dx,dy,1}};
     transform(transform_matrix);
 }
 
+/**
+ * @brief       Escalona um polígono a partir de dois fatores de escala Sx e Sy,
+ *              em relação ao centro geométrico, utilizando duas translações.
+ *
+ * @param[in]   sx,sy       fatores de escala
+ */
 void Polygon::scaling(float sx, float sy) {
     float cx, cy = 0;
     for (auto it = this->verts.begin(); it != this->verts.end(); ++it) {
@@ -46,21 +63,37 @@ void Polygon::scaling(float sx, float sy) {
     } 
     cx = cx/(float)(this->verts.size()-1); //??
     cy = cy/(float)(this->verts.size()-1); //??
-    std::vector<std::vector<float>> scale_matrix, t1_matrix, t2_matrix;
-    t1_matrix = {{1,0,0},{0,1,0},{-cx,-cy,1}};
+    std::vector<std::vector<float>> scale_matrix;
     scale_matrix = {{sx,0,0},{0,sy,0},{0,0,1}};
-    t2_matrix = {{1,0,0},{0,1,0},{cx,cy,1}};
-    transform(t1_matrix);
+    translation(-cx, -cy);
     transform(scale_matrix);
-    transform(t2_matrix);
+    translation(cx, cy);
 }
 
-// Precisa ajustar
-// Mover pro centro mover de volta sei la o que
-void Polygon::rotation(float degrees) {
+/**
+ * @brief       Rotaciona um polígono em relação a origem, ao centro geométrico
+ *              ou a um ponto arbitrário, utilizando duas translações.
+ *
+ * @param[in]   dx,dy       coordenadas do ponto de rotação
+ *              degrees     graus de rotação
+ *              center      true se rotação em relação ao centro geométrico
+ */
+void Polygon::rotation(float dx, float dy, float degrees, bool center) {
+    if(center) {
+        dx, dy = 0;
+        for (auto it = this->verts.begin(); it != this->verts.end(); ++it) {
+            dx += it->x;
+            dy += it->y;
+        } 
+        dx = dx/(float)(this->verts.size()-1); //??
+        dy = dy/(float)(this->verts.size()-1); //??
+    }
     float radian = (M_PI/180)*degrees;
     std::vector<std::vector<float>> transform_matrix;
-    transform_matrix = {{std::cos(radian),-std::sin(radian),0},{std::sin(radian),std::cos(radian),0},{0,0,1}};
+    transform_matrix = {{std::cos(radian),-std::sin(radian),0},
+        {std::sin(radian),std::cos(radian),0},{0,0,1}};
+    translation(-dx,-dy);
     transform(transform_matrix);
+    translation(dx,dy);
 }
 

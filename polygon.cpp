@@ -3,13 +3,13 @@
 Polygon::Polygon (std::string name, Vector2 position) : Shape::Shape(name, position) {}
 
 void Polygon::draw (cairo_t* cr) {
-    auto it = this->verts.begin();
+    auto it = verts.begin();
 
-    Vector2 coords = Window::world_to_screen(*it + this->position);
+    Vector2 coords = Window::world_to_screen(*it + position);
     cairo_move_to(cr, coords.x, coords.y);
 
-    for (; it != this->verts.end(); ++it) {
-        coords = Window::world_to_screen(*it + this->position);
+    for (; it != verts.end(); ++it) {
+        coords = Window::world_to_screen(*it + position);
         cairo_line_to(cr, coords.x, coords.y);
     }
     cairo_stroke(cr);
@@ -17,7 +17,7 @@ void Polygon::draw (cairo_t* cr) {
 
 void Polygon::transform(
         std::vector<std::vector<float>> matrix) {
-    for (auto it = this->verts.begin(); it != this->verts.end(); ++it) {
+    for (auto it = verts.begin(); it != verts.end(); ++it) {
         std::vector<float> old_coord = {it->x, it->y, 1};
         std::vector<float> new_coord(3);
         for (int i = 0; i < 3; ++i) {

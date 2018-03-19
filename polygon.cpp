@@ -46,13 +46,11 @@ void Polygon::scaling(float sx, float sy) {
     } 
     cx = cx/(float)(this->verts.size()-1); //??
     cy = cy/(float)(this->verts.size()-1); //??
-    std::vector<std::vector<float>> scale_matrix, t1_matrix, t2_matrix;
-    t1_matrix = {{1,0,0},{0,1,0},{-cx,-cy,1}};
+    std::vector<std::vector<float>> scale_matrix;
     scale_matrix = {{sx,0,0},{0,sy,0},{0,0,1}};
-    t2_matrix = {{1,0,0},{0,1,0},{cx,cy,1}};
-    transform(t1_matrix);
+    translation(-cx, -cy);
     transform(scale_matrix);
-    transform(t2_matrix);
+    translation(cx, cy);
 }
 
 // Precisa ajustar

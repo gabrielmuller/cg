@@ -16,7 +16,7 @@ struct Polygon : Shape {
     	std::vector<std::vector<float>> matrix);
     void translation(float dx, float dy);
     void scaling(float sx, float sy);
-    void rotation(float degree);
+    void rotation(float dx, float dy, float degrees, bool center);
 };
 
 #endif

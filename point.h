@@ -11,7 +11,7 @@ struct Point : Shape {
     void draw (cairo_t* cr);
     void translation (float dx, float dy);
     void scaling(float sx, float sy);
-    void rotation(float degree);
+    void rotation(float dx, float dy, float degrees, bool center);
 };
 
 #endif

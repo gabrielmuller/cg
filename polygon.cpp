@@ -53,12 +53,21 @@ void Polygon::scaling(float sx, float sy) {
     translation(cx, cy);
 }
 
-// Precisa ajustar
-// Mover pro centro mover de volta sei la o que
-void Polygon::rotation(float degrees) {
+void Polygon::rotation(float dx, float dy, float degrees, bool center) {
+    if(center) {
+        dx, dy = 0;
+        for (auto it = this->verts.begin(); it != this->verts.end(); ++it) {
+            dx += it->x;
+            dy += it->y;
+        } 
+        dx = dx/(float)(this->verts.size()-1); //??
+        dy = dy/(float)(this->verts.size()-1); //??
+    }
     float radian = (M_PI/180)*degrees;
     std::vector<std::vector<float>> transform_matrix;
     transform_matrix = {{std::cos(radian),-std::sin(radian),0},{std::sin(radian),std::cos(radian),0},{0,0,1}};
+    translation(-dx,-dy);
     transform(transform_matrix);
+    translation(dx,dy);
 }
 

@@ -185,11 +185,20 @@ void GUI::scaling_window() {
 
 void GUI::rotation_cb(GtkWidget **entry, GtkWidget *widget) {
     auto graus = gtk_entry_get_text (GTK_ENTRY(entry[1]));
+    std::string dx = gtk_entry_get_text (GTK_ENTRY(entry[2]));
+    std::string dy = gtk_entry_get_text (GTK_ENTRY(entry[3]));
+    bool center = false;
+
+    if (dx == "") {
+        dx = "0";
+        dy = "0";
+        center = true;
+    }
 
     auto selected_id = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
     auto it = Display::shapes.begin();
     std::advance(it, selected_id);
-    (*it)->rotation(std::stof(graus));
+    (*it)->rotation(std::stof(dx), std::stof(dy), std::stof(graus), center);
 
     g_signal_connect (G_OBJECT (drawing_area), "draw",
                     G_CALLBACK (draw_cb), NULL);
@@ -199,6 +208,8 @@ void GUI::rotation_cb(GtkWidget **entry, GtkWidget *widget) {
 
 void GUI::rotation_window () {
     GtkWidget *window, *grid, *ok_button, *d_label, *d_entry;
+    GtkWidget *x_label, *y_label, *x_entry, *y_entry;
+    GtkWidget *help_label;
 
     // Window
     window = gtk_application_window_new (app);
@@ -207,13 +218,20 @@ void GUI::rotation_window () {
 
     // labels
     d_label = gtk_label_new("Graus");
+    x_label = gtk_label_new("Coord X");
+    y_label = gtk_label_new("Coord Y");
+    help_label = gtk_label_new("Para rotação em torno do centro do objeto, deixe os campos x,y em branco");
 
     // Entries
     d_entry = gtk_entry_new();
+    x_entry = gtk_entry_new();
+    y_entry = gtk_entry_new();
 
     static GtkWidget *entries[2];
     entries[0] = window;
     entries[1] = d_entry;
+    entries[2] = x_entry;
+    entries[3] = y_entry;
 
     // Botoes
     ok_button = gtk_button_new_with_label("Ok");
@@ -225,9 +243,15 @@ void GUI::rotation_window () {
     // coloca widgets nos containers
     gtk_container_add(GTK_CONTAINER(window), grid);
 
+    // (grid, widget, coluna, linha, tamanho?, ??)
     gtk_grid_attach(GTK_GRID(grid), d_label, 0, 0, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), d_entry, 0, 1, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), ok_button, 0, 2, 3, 1);
+    gtk_grid_attach(GTK_GRID(grid), d_entry, 1, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), x_label, 0, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), x_entry, 1, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), y_label, 0, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), y_entry, 1, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), help_label, 0, 3, 3, 1);
+    gtk_grid_attach(GTK_GRID(grid), ok_button, 0, 4, 3, 1);
 
     gtk_widget_show_all(window);
 }

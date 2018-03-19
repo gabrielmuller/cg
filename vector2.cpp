@@ -2,7 +2,9 @@
 
 Vector2::Vector2 () : Vector2::Vector2(0, 0) {}
   
-Vector2::Vector2 (float x, float y) : x(x), y(y) {}
+Vector2::Vector2 (float x, float y) : x(x), y(y), Transformation(1, 3) {
+    matrix = {{x, y, 1}};
+}
 
 Vector2::operator std::string () const {
     return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";

@@ -3,7 +3,9 @@
 
 #include <string>
 
-struct Vector2 {
+#include "transformation.h"
+
+struct Vector2 : Transformation {
     float x;
     float y;
 
@@ -15,7 +17,6 @@ struct Vector2 {
     Vector2 operator- (Vector2 other);
     Vector2 operator* (float scalar);
     Vector2 operator/ (float scalar);
-
 };
 
 #endif

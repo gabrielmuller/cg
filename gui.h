@@ -31,15 +31,18 @@ namespace GUI {
     void zoom_out ();
     void zoom_in ();
 
-    // TESTES sem interface
-    void translacao();
-    void rotacao();
+    void translation_cb(GtkWidget **entry, GtkWidget *widget);
+    void translation_window();
+    void scaling_cb(GtkWidget **entry, GtkWidget *widget);
+    void scaling_window();
+    void rotation_cb(GtkWidget **entry, GtkWidget *widget);
+    void rotation_window();
 
-    void add_reta_callback(GtkWidget **entry, GtkWidget *widget);
-    void add_ponto_callback(GtkWidget **entry, GtkWidget *widget);
+    void add_line_cb(GtkWidget **entry, GtkWidget *widget);
+    void add_point_cb(GtkWidget **entry, GtkWidget *widget);
 
-    void add_reta_window ();
-    void add_ponto_window ();
+    void add_line_window ();
+    void add_point_window ();
     
     void activate(GtkApplication* app, gpointer user_data);
 }

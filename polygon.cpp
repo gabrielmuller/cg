@@ -16,6 +16,12 @@ void Polygon::draw (cairo_t* cr) {
     cairo_stroke(cr);
 }
 
+/**
+ * @brief       Realiza transformação 2D dos pontos do polígono multiplicando-os
+ *              pela matriz de transformação.
+ *
+ * @param[in]   matrix      matriz de transformação
+ */
 void Polygon::transform(
         std::vector<std::vector<float>> matrix) {
     for (auto it = this->verts.begin(); it != this->verts.end(); ++it) {
@@ -32,12 +38,23 @@ void Polygon::transform(
     }
 }
 
+/**
+ * @brief       Translaciona um polígono a partir de um vetor (Dx,Dy).
+ *
+ * @param[in]   dx,dy       coordenadas do vetor de translação
+ */
 void Polygon::translation(float dx, float dy) {
     std::vector<std::vector<float>> transform_matrix;
     transform_matrix = {{1,0,0},{0,1,0},{dx,dy,1}};
     transform(transform_matrix);
 }
 
+/**
+ * @brief       Escalona um polígono a partir de dois fatores de escala Sx e Sy,
+ *              em relação ao centro geométrico, utilizando duas translações.
+ *
+ * @param[in]   sx,sy       fatores de escala
+ */
 void Polygon::scaling(float sx, float sy) {
     float cx, cy = 0;
     for (auto it = this->verts.begin(); it != this->verts.end(); ++it) {
@@ -53,6 +70,14 @@ void Polygon::scaling(float sx, float sy) {
     translation(cx, cy);
 }
 
+/**
+ * @brief       Rotaciona um polígono em relação a origem, ao centro geométrico
+ *              ou a um ponto arbitrário, utilizando duas translações.
+ *
+ * @param[in]   dx,dy       coordenadas do ponto de rotação
+ *              degrees     graus de rotação
+ *              center      true se rotação em relação ao centro geométrico
+ */
 void Polygon::rotation(float dx, float dy, float degrees, bool center) {
     if(center) {
         dx, dy = 0;
@@ -65,7 +90,8 @@ void Polygon::rotation(float dx, float dy, float degrees, bool center) {
     }
     float radian = (M_PI/180)*degrees;
     std::vector<std::vector<float>> transform_matrix;
-    transform_matrix = {{std::cos(radian),-std::sin(radian),0},{std::sin(radian),std::cos(radian),0},{0,0,1}};
+    transform_matrix = {{std::cos(radian),-std::sin(radian),0},
+        {std::sin(radian),std::cos(radian),0},{0,0,1}};
     translation(-dx,-dy);
     transform(transform_matrix);
     translation(dx,dy);

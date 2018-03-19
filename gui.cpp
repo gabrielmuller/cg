@@ -193,12 +193,14 @@ void GUI::rotation_cb(GtkWidget **entry, GtkWidget *widget) {
     std::string dy = gtk_entry_get_text (GTK_ENTRY(entry[3]));
     bool center = false;
 
+    /* Se os campos x e y estiverem em branco, a rotação é
+     * em relação ao centro geométrico
+     */
     if (dx == "") {
         dx = "0";
         dy = "0";
         center = true;
     }
-    std::cout << center << std::endl;
     auto selected_id = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
     auto it = Display::shapes.begin();
     std::advance(it, selected_id);
@@ -225,7 +227,8 @@ void GUI::rotation_window () {
     x_label = gtk_label_new("Coordenada x");
     y_label = gtk_label_new("Coordenada y");
     help_frame = gtk_frame_new(" Ajuda");
-    help_label = gtk_label_new(" Para rotação em relação ao centro do objeto,\n deixe os campos x,y em branco.");
+    help_label = gtk_label_new(" Para rotação em relação ao centro do objeto,
+        \n deixe os campos x, y em branco.");
     gtk_container_add(GTK_CONTAINER(help_frame), help_label);
 
     // Entries
@@ -350,7 +353,7 @@ void GUI::add_point_window () {
     grid = gtk_grid_new();
     gtk_grid_set_row_spacing (GTK_GRID(grid), (guint)10);
     gtk_grid_set_column_spacing (GTK_GRID(grid), (guint)10);
-    
+
 
     // coloca widgets nos containers
     gtk_container_add(GTK_CONTAINER(window), grid);

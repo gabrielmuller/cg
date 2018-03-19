@@ -1,4 +1,5 @@
 #include "polygon.h"
+#include <iostream>
 
 Polygon::Polygon (std::string name, Vector2 position) : Shape::Shape(name, position) {}
 
@@ -37,12 +38,21 @@ void Polygon::translation(float dx, float dy) {
     transform(transform_matrix);
 }
 
-// Precisa ajustar
-// Mover pro centro mover de volta sei la o que
 void Polygon::scaling(float sx, float sy) {
-    std::vector<std::vector<float>> transform_matrix;
-    transform_matrix = {{sx,0,0},{0,sy,0},{0,0,1}};
-    transform(transform_matrix);
+    float cx, cy = 0;
+    for (auto it = this->verts.begin(); it != this->verts.end(); ++it) {
+        cx += it->x;
+        cy += it->y;
+    } 
+    cx = cx/(float)(this->verts.size()-1); //??
+    cy = cy/(float)(this->verts.size()-1); //??
+    std::vector<std::vector<float>> scale_matrix, t1_matrix, t2_matrix;
+    t1_matrix = {{1,0,0},{0,1,0},{-cx,-cy,1}};
+    scale_matrix = {{sx,0,0},{0,sy,0},{0,0,1}};
+    t2_matrix = {{1,0,0},{0,1,0},{cx,cy,1}};
+    transform(t1_matrix);
+    transform(scale_matrix);
+    transform(t2_matrix);
 }
 
 // Precisa ajustar

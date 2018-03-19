@@ -227,8 +227,7 @@ void GUI::rotation_window () {
     x_label = gtk_label_new("Coordenada x");
     y_label = gtk_label_new("Coordenada y");
     help_frame = gtk_frame_new(" Ajuda");
-    help_label = gtk_label_new(" Para rotação em relação ao centro do objeto,
-        \n deixe os campos x, y em branco.");
+    help_label = gtk_label_new(" Para rotação em relação ao centro do objeto,\n deixe os campos x, y em branco.");
     gtk_container_add(GTK_CONTAINER(help_frame), help_label);
 
     // Entries

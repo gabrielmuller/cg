@@ -454,7 +454,7 @@ void GUI::add_line_window () {
 void GUI::activate (GtkApplication* app, gpointer user_data) {
     GUI::app = app;
     GtkWidget* window;
-    GtkWidget* grid;
+    GtkWidget *grid, *small_grid;
     GtkWidget *up_button, *down_button, *left_button, *right_button;
     GtkWidget *in_button, *out_button;
     GtkWidget *point_button, *line_button, *polygon_button;
@@ -466,29 +466,37 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     window = gtk_application_window_new (app);
     gtk_window_set_title (GTK_WINDOW (window), "Demo CG");
     gtk_window_set_default_size (GTK_WINDOW(window), 480, 480);
-    
-    // cria botões
-    up_button = gtk_button_new_with_label("Cima");
+
+    // cria botões de movimentação
+    up_button = gtk_button_new_with_label("^");
     g_signal_connect_swapped(up_button, "clicked",
         G_CALLBACK (move_up), window);
         
-    down_button = gtk_button_new_with_label("Baixo");
+    down_button = gtk_button_new_with_label("v");
     g_signal_connect_swapped(down_button, "clicked",
         G_CALLBACK (move_down), window);
     
-    left_button = gtk_button_new_with_label("Esquerda");
+    left_button = gtk_button_new_with_label("<");
     g_signal_connect_swapped(left_button, "clicked",
         G_CALLBACK (move_left), window);
 
-    right_button = gtk_button_new_with_label("Direita");
+    right_button = gtk_button_new_with_label(">");
     g_signal_connect_swapped(right_button, "clicked",
         G_CALLBACK (move_right), window);
 
-    in_button = gtk_button_new_with_label("Aumentar");
+    // cria grid de botões de movimentação
+    small_grid = gtk_grid_new();
+    gtk_grid_attach(GTK_GRID(small_grid), up_button, 1, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(small_grid), down_button, 1, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(small_grid), left_button, 0, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(small_grid), right_button, 2, 1, 1, 1);
+
+    // cria botões de zoom
+    in_button = gtk_button_new_with_label("Zoom in");
     g_signal_connect_swapped(in_button, "clicked",
         G_CALLBACK (zoom_in), window);
 
-    out_button = gtk_button_new_with_label("Diminuir");
+    out_button = gtk_button_new_with_label("Zoom out");
     g_signal_connect_swapped(out_button, "clicked",
         G_CALLBACK (zoom_out), window);
 
@@ -539,24 +547,20 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
 
     // coloca widgets nos containers
     gtk_container_add(GTK_CONTAINER(window), grid);
-    gtk_grid_attach(GTK_GRID(grid), up_button, 1, 0, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), down_button, 1, 1, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), left_button, 0, 1, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), right_button, 2, 1, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), in_button, 2, 0, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), out_button, 0, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), small_grid, 1, 0, 2, 2);
+    gtk_grid_attach(GTK_GRID(grid), in_button, 1, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), out_button, 2, 2, 1, 1);
 
-    gtk_grid_attach(GTK_GRID(grid), point_button, 2, 3, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), line_button, 2, 4, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), polygon_button, 2, 5, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), point_button, 1, 4, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), line_button, 1, 5, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), polygon_button, 1, 6, 2, 1);
 
-    gtk_grid_attach(GTK_GRID(grid), combo, 2, 6, 1, 1);
-
-    gtk_grid_attach(GTK_GRID(grid), translation_b, 2, 7, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), scaling_b, 2, 8, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), rotation_b, 2, 9, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), combo, 1, 7, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), translation_b, 1, 8, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), scaling_b, 1, 9, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), rotation_b, 1, 10, 2, 1);
     
-    gtk_grid_attach(GTK_GRID(grid), drawing_area, 0, 3, 2, 7);
+    gtk_grid_attach(GTK_GRID(grid), drawing_area, 0, 0, 1, 11);
 
 
     gtk_widget_show_all(window);

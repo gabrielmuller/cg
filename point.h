@@ -7,8 +7,9 @@
 #include "shape.h"
 
 struct Point : Shape {
-    Point (std::string name, Vector2 position); 
+    Point (std::string name, std::list<Vector2> verts); 
     void draw (cairo_t* cr);
+    
     void translation (float dx, float dy);
     void scaling(float sx, float sy);
     void rotation(float dx, float dy, float degrees, bool center);

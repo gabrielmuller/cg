@@ -32,11 +32,11 @@ namespace GUI {
     void zoom_in ();
 
     void translation_cb(GtkWidget **entry, GtkWidget *widget);
-    void translation_window(GtkWidget* frame);
+    void translation_page(GtkWidget* frame);
     void scaling_cb(GtkWidget **entry, GtkWidget *widget);
-    void scaling_window(GtkWidget* frame);
+    void scaling_page(GtkWidget* frame);
     void rotation_cb(GtkWidget **entry, GtkWidget *widget);
-    void rotation_window(GtkWidget* frame);
+    void rotation_page(GtkWidget* frame);
 
     void add_line_cb(GtkWidget **entry, GtkWidget *widget);
     void add_point_cb(GtkWidget **entry, GtkWidget *widget);

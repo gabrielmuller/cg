@@ -8,12 +8,11 @@
 #include "shape.h"
 
 struct Polygon : Shape {
-    std::list<Vector2> verts;
-    Polygon (std::string name, Vector2 position); 
+    Polygon (std::string name, std::list<Vector2> verts); 
+    Polygon (std::string name); 
     void draw (cairo_t* cr);
 
-    void transform(
-    	std::vector<std::vector<float>> matrix);
+    void transform(std::vector<std::vector<float>> matrix);
     void translation(float dx, float dy);
     void scaling(float sx, float sy);
     void rotation(float dx, float dy, float degrees, bool center);

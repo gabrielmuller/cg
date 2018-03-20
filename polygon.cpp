@@ -1,16 +1,20 @@
 #include "polygon.h"
 #include <iostream>
 
-Polygon::Polygon (std::string name, Vector2 position) : Shape::Shape(name, position) {}
+Polygon::Polygon (std::string name, std::list<Vector2> verts) : 
+    Shape::Shape(name, verts) {}
+
+Polygon::Polygon (std::string name) :
+    Shape::Shape(name) {}
 
 void Polygon::draw (cairo_t* cr) {
     auto it = verts.begin();
 
-    Vector2 coords = Window::world_to_screen(*it + position);
+    Vector2 coords = Window::world_to_screen(*it);
     cairo_move_to(cr, coords.x, coords.y);
 
     for (; it != verts.end(); ++it) {
-        coords = Window::world_to_screen(*it + position);
+        coords = Window::world_to_screen(*it);
         cairo_line_to(cr, coords.x, coords.y);
     }
     cairo_stroke(cr);

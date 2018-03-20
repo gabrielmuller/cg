@@ -470,26 +470,24 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     }
     gtk_combo_box_set_active (GTK_COMBO_BOX (combo), 0);
     
-    // ----------testando gtknotebook
+    // ----------GtkNotebook
     GtkWidget *notebook, *frame, *label;
     notebook = gtk_notebook_new();
     gtk_notebook_set_tab_pos (GTK_NOTEBOOK(notebook), GTK_POS_TOP);
     
     frame = gtk_frame_new("");
-    translation_window(frame);
+    translation_page(frame);
     label = gtk_label_new ("Translação");
     gtk_notebook_append_page (GTK_NOTEBOOK (notebook), frame, label);
     frame = gtk_frame_new("");
-    scaling_window(frame);
+    scaling_page(frame);
     label = gtk_label_new ("Escalonamento");
     gtk_notebook_append_page (GTK_NOTEBOOK (notebook), frame, label);
     frame = gtk_frame_new("");
-    rotation_window(frame);
+    rotation_page(frame);
     label = gtk_label_new ("Rotação");
     gtk_notebook_append_page (GTK_NOTEBOOK (notebook), frame, label);
-
-    gtk_notebook_set_current_page (GTK_NOTEBOOK (notebook), 2);
-    // ---------testando gtknotebook
+    // ---------GtkNotebook
 
     // cria drawing area
     drawing_area = gtk_drawing_area_new();

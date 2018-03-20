@@ -16,6 +16,12 @@ void Polygon::draw (cairo_t* cr) {
     for (; it != verts.end(); ++it) {
         coords = Window::world_to_screen(*it);
         cairo_line_to(cr, coords.x, coords.y);
+        // Se quiser definir sem repetir o ponto inicial:
+        /*if (it == prev(verts.end())) {
+            coords = verts.front();
+            coords = Window::world_to_screen(coords);
+            cairo_line_to(cr, coords.x, coords.y);
+        }*/
     }
     cairo_stroke(cr);
 }

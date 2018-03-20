@@ -3,6 +3,8 @@
 GtkWidget* GUI::drawing_area;
 GtkApplication* GUI::app;
 GtkWidget* GUI::combo;
+GtkTextBuffer* GUI::buffer;
+GtkTextIter GUI::iter;
 
 // desenha no drawing area
 gboolean GUI::draw_cb(GtkWidget *widget, cairo_t* cr, gpointer* data) {
@@ -55,7 +57,8 @@ void GUI::zoom_out () {
 
 /*****************************************
  *
- *   Janelas e callbacks de transformação
+ *   "Páginas" ou frames 
+ *   e callbacks de transformação
  *
  *****************************************/
 
@@ -111,8 +114,11 @@ void GUI::translation_page (GtkWidget* frame) {
 }
 
 void GUI::scaling_cb(GtkWidget **entry, GtkWidget *widget) {
-    auto coord_x = gtk_entry_get_text (GTK_ENTRY(entry[0]));
-    auto coord_y = gtk_entry_get_text (GTK_ENTRY(entry[1]));
+    std::string coord_x = gtk_entry_get_text (GTK_ENTRY(entry[0]));
+    std::string coord_y = gtk_entry_get_text (GTK_ENTRY(entry[1]));
+
+    if (coord_x == "") coord_x = "1";
+    if (coord_y == "") coord_y = "1";
 
     auto selected_id = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
     auto it = Display::shapes.begin();
@@ -230,7 +236,7 @@ void GUI::rotation_page (GtkWidget* frame) {
 
 /*****************************************
  *
- *  Callbacks pra adicionar ponto e reta
+ *  Janela e callbacks pra criar ponto 
  *
  *****************************************/
 
@@ -248,30 +254,6 @@ void GUI::add_point_cb(GtkWidget **entry, GtkWidget *widget) {
 
     gtk_widget_destroy(GTK_WIDGET(entry[0]));
 }
-
-void GUI::add_line_cb(GtkWidget **entry, GtkWidget *widget) {
-    std::string nome = gtk_entry_get_text (GTK_ENTRY(entry[1]));
-    auto coord_x1 = gtk_entry_get_text (GTK_ENTRY(entry[2]));
-    auto coord_y1 = gtk_entry_get_text (GTK_ENTRY(entry[3]));
-    auto coord_x2 = gtk_entry_get_text (GTK_ENTRY(entry[4]));
-    auto coord_y2 = gtk_entry_get_text (GTK_ENTRY(entry[5]));
-
-    Line* line = new Line (nome, 
-        {Vector2(std::stof(coord_x1), std::stof(coord_y1)), 
-        Vector2(std::stof(coord_x2), std::stof(coord_y2))});
-    Display::add(line);
-
-    gtk_widget_queue_draw(drawing_area);
-    gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), nome.c_str());
-
-    gtk_widget_destroy(GTK_WIDGET(entry[0]));
-}
-
-/*****************************************
- *
- *  Janelas pra adicionar ponto e reta
- *
- *****************************************/
 
 void GUI::add_point_window () {
     GtkWidget* window;
@@ -324,6 +306,30 @@ void GUI::add_point_window () {
     gtk_grid_attach(GTK_GRID(grid), ok_button, 0, 4, 3, 1);
 
     gtk_widget_show_all(window);
+}
+
+/*****************************************
+ *
+ *  Janela e callbacks pra criar linha 
+ *
+ *****************************************/
+
+void GUI::add_line_cb(GtkWidget **entry, GtkWidget *widget) {
+    std::string nome = gtk_entry_get_text (GTK_ENTRY(entry[1]));
+    auto coord_x1 = gtk_entry_get_text (GTK_ENTRY(entry[2]));
+    auto coord_y1 = gtk_entry_get_text (GTK_ENTRY(entry[3]));
+    auto coord_x2 = gtk_entry_get_text (GTK_ENTRY(entry[4]));
+    auto coord_y2 = gtk_entry_get_text (GTK_ENTRY(entry[5]));
+
+    Line* line = new Line (nome, 
+        {Vector2(std::stof(coord_x1), std::stof(coord_y1)), 
+        Vector2(std::stof(coord_x2), std::stof(coord_y2))});
+    Display::add(line);
+
+    gtk_widget_queue_draw(drawing_area);
+    gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), nome.c_str());
+
+    gtk_widget_destroy(GTK_WIDGET(entry[0]));
 }
 
 void GUI::add_line_window () {
@@ -395,6 +401,152 @@ void GUI::add_line_window () {
 
 /*****************************************
  *
+ *  Janela e callbacks pra criar polígono 
+ *
+ *****************************************/
+
+// Termina criação de polígono e desenha na tela
+void GUI::add_poly_cb(GtkWidget *window, GtkWidget *widget) {
+    if (Display::shapes.back()->verts.size() < 3) {
+        Display::shapes.pop_back();
+    } else {
+        gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), Display::shapes.back()->name.c_str());
+        gtk_widget_queue_draw(drawing_area);
+    }
+    gtk_widget_destroy(GTK_WIDGET(window));
+}
+
+// Adiciona vértice ao polígono
+void GUI::add_vert_cb(GtkWidget **entry, GtkWidget *widget) {
+    auto x = gtk_entry_get_text (GTK_ENTRY(entry[0]));
+    auto y = gtk_entry_get_text (GTK_ENTRY(entry[1]));
+    Display::shapes.back()->verts.push_back(Vector2(std::stof(x), std::stof(y)));
+    
+    // Simplificar isso depois
+    std::ostringstream s;
+    s << "(" << x << ", " << y << ")";
+    std::string ss = s.str(); //
+    gtk_text_buffer_get_end_iter(buffer, &iter);
+    gtk_text_buffer_insert(buffer, &iter, ss.c_str(), -1);
+}
+
+// Janela para adicionar múltiplos vértices ao polígono criado
+void GUI::add_verts_window(Polygon* poly) {
+    GtkWidget* window;
+    GtkWidget* grid;
+    GtkWidget *add_vert_b, *add_poly_b;
+    GtkWidget *x_label, *y_label, *t1_label, *t2_label;
+    GtkWidget *x_entry, *y_entry;
+
+    // Window
+    window = gtk_application_window_new (app);
+    gtk_window_set_title (GTK_WINDOW (window), "Adicionar Polígono");
+    gtk_window_set_default_size (GTK_WINDOW(window), 100, 100);
+    
+    // labels
+    t1_label = gtk_label_new("Adicionar vértice");
+    t2_label = gtk_label_new("Vetores");
+    x_label = gtk_label_new("Posição x");
+    y_label = gtk_label_new("Posição y");
+    
+    // Entries
+    x_entry = gtk_entry_new();
+    y_entry = gtk_entry_new();
+
+    static GtkWidget *entries[2];
+    entries[0] = x_entry;
+    entries[1] = y_entry;
+
+    // TextView com vértices adicionados
+    GtkWidget* text_view = gtk_text_view_new();
+    gtk_text_view_set_editable (GTK_TEXT_VIEW (text_view), FALSE);
+    gtk_text_view_set_cursor_visible (GTK_TEXT_VIEW (text_view), FALSE);
+    buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text_view));
+
+    // Botoes
+    add_vert_b = gtk_button_new_with_label("Adicionar vértice");
+    g_signal_connect_swapped(add_vert_b, "clicked",
+        G_CALLBACK (add_vert_cb), entries);
+    add_poly_b = gtk_button_new_with_label("Confirmar");
+    g_signal_connect_swapped(add_poly_b, "clicked",
+        G_CALLBACK (add_poly_cb), window);
+
+    grid = gtk_grid_new();
+    gtk_grid_set_row_spacing (GTK_GRID(grid), (guint)10);
+    gtk_grid_set_column_homogeneous (GTK_GRID(grid), TRUE);
+
+    // coloca widgets nos containers
+    gtk_container_add(GTK_CONTAINER(window), grid);
+
+    gtk_grid_attach(GTK_GRID(grid), t1_label, 0, 0, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), t2_label, 2, 0, 1, 1);
+
+    gtk_grid_attach(GTK_GRID(grid), x_label, 0, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), x_entry, 1, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), y_label, 0, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), y_entry, 1, 2, 1, 1);
+
+    gtk_grid_attach(GTK_GRID(grid), text_view, 2, 1, 1, 3);       
+
+    gtk_grid_attach(GTK_GRID(grid), add_vert_b, 0, 4, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), add_poly_b, 2, 4, 1, 1);
+
+    gtk_widget_show_all(window);
+}
+
+// Cria polígono com nome
+void GUI::create_poly_cb(GtkWidget **entry, GtkWidget *widget) {
+    std::string nome = gtk_entry_get_text (GTK_ENTRY(entry[1]));
+    Polygon* poly = new Polygon (nome);
+    Display::add(poly);
+
+    gtk_widget_destroy(GTK_WIDGET(entry[0]));
+    add_verts_window(poly);
+}
+
+// Janela pra criar polígono com nome
+void GUI::add_poly_window () {
+    GtkWidget* window;
+    GtkWidget* grid;
+    GtkWidget *add_poly_b;
+    GtkWidget *nome_entry, *nome_label;
+
+    // Window
+    window = gtk_application_window_new (app);
+    gtk_window_set_title (GTK_WINDOW (window), "Adicionar Polígono");
+    gtk_window_set_default_size (GTK_WINDOW(window), 100, 100);
+    
+    // labels
+    nome_label = gtk_label_new("Nome");
+    
+    // Entries
+    nome_entry = gtk_entry_new();
+
+    static GtkWidget *entries[4];
+    entries[0] = window;
+    entries[1] = nome_entry;
+
+    // Botoes
+    add_poly_b = gtk_button_new_with_label("Criar polígono");
+    g_signal_connect_swapped(add_poly_b, "clicked",
+        G_CALLBACK (create_poly_cb), entries);
+
+    grid = gtk_grid_new();
+    //gtk_grid_set_row_spacing (GTK_GRID(grid), (guint)10);
+
+    // coloca widgets nos containers
+    gtk_container_add(GTK_CONTAINER(window), grid);
+    
+    gtk_grid_attach(GTK_GRID(grid), nome_label, 0, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), nome_entry, 1, 0, 1, 1); 
+    gtk_grid_attach(GTK_GRID(grid), add_poly_b, 0, 1, 2, 1);
+
+    gtk_widget_show_all(window);
+}
+
+
+/*****************************************
+ *
  *  Janela principal
  *
  *****************************************/
@@ -458,8 +610,8 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
         G_CALLBACK (add_line_window), window);
 
     polygon_button = gtk_button_new_with_label("Adicionar Poligono");
-    /*g_signal_connect_swapped(polygon_button, "clicked",
-        G_CALLBACK (add_poly_window), window);*/
+    g_signal_connect_swapped(polygon_button, "clicked",
+        G_CALLBACK (add_poly_window), window);
 
     // Criar ComboBox
     combo = gtk_combo_box_text_new();

@@ -16,7 +16,7 @@ void Polygon::draw (cairo_t* cr) {
     for (; it != verts.end(); ++it) {
         coords = Window::world_to_screen(*it);
         cairo_line_to(cr, coords.x, coords.y);
-        // Se quiser definir sem repetir o ponto inicial:
+        // Definir sem repetir o ponto inicial:
         /*if (it == prev(verts.end())) {
             coords = verts.front();
             coords = Window::world_to_screen(coords);
@@ -27,10 +27,26 @@ void Polygon::draw (cairo_t* cr) {
 }
 
 /**
+ * @brief       Retorna o centro geométrico do polígono.
+ */
+Vector2 Polygon::getCenter() {
+    float cx = 0;
+    float cy = 0;
+    for (auto it = verts.begin(); it != verts.end(); ++it) {
+        cx += it->x;
+        cy += it->y;
+    } 
+    cx = cx/(float)(verts.size());
+    cy = cy/(float)(verts.size());
+    return Vector2(cx, cy);
+}
+
+/**
  * @brief       Realiza transformação 2D dos pontos do polígono multiplicando-os
  *              pela matriz de transformação.
+ *              Obs: definida apenas pra matriz 3x3.
  *
- * @param[in]   matrix      matriz de transformação
+ * @param[in]   matrix      matriz 3x3 de transformação
  */
 void Polygon::transform(
         std::vector<std::vector<float>> matrix) {
@@ -66,14 +82,8 @@ void Polygon::translation(float dx, float dy) {
  * @param[in]   sx,sy       fatores de escala
  */
 void Polygon::scaling(float sx, float sy) {
-    float cx = 0;
-    float cy = 0;
-    for (auto it = this->verts.begin(); it != this->verts.end(); ++it) {
-        cx += it->x;
-        cy += it->y;
-    } 
-    cx = cx/(float)(this->verts.size()-1); //??
-    cy = cy/(float)(this->verts.size()-1); //??
+    float cx = getCenter().x;
+    float cy = getCenter().y;
     std::vector<std::vector<float>> scale_matrix;
     scale_matrix = {{sx,0,0},{0,sy,0},{0,0,1}};
     translation(-cx, -cy);
@@ -91,14 +101,8 @@ void Polygon::scaling(float sx, float sy) {
  */
 void Polygon::rotation(float dx, float dy, float degrees, bool center) {
     if(center) {
-        dx = 0;
-        dy = 0;
-        for (auto it = this->verts.begin(); it != this->verts.end(); ++it) {
-            dx += it->x;
-            dy += it->y;
-        } 
-        dx = dx/(float)(this->verts.size()-1); //??
-        dy = dy/(float)(this->verts.size()-1); //??
+        dx = getCenter().x;
+        dy = getCenter().y;
     }
     float radian = (M_PI/180)*degrees;
     std::vector<std::vector<float>> transform_matrix;

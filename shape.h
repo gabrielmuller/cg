@@ -1,6 +1,7 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
+#include <list>
 #include <string>
 #include <gtk/gtk.h>
 #include "vector2.h"
@@ -8,9 +9,10 @@
 
 struct Shape {
     std::string name;
-    Vector2 position;
+    std::list<Vector2> verts;
 
-    Shape (std::string name, Vector2 position); 
+    Shape (std::string name, std::list<Vector2> verts); 
+    Shape (std::string name); 
     virtual void draw (cairo_t* ct) = 0;
 
     virtual void transform (const Transformation& t) = 0;

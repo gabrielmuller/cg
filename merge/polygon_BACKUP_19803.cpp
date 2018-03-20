@@ -12,10 +12,6 @@ void Polygon::draw (cairo_t* cr) {
     Vector2 coords = Window::world_to_screen(*it + position);
     cairo_move_to(cr, coords.x(), coords.y());
 
-    if (name == "Square") {
-        ;
-    }
-
     for (; it != verts.end(); ++it) {
         coords = Window::world_to_screen(*it + position);
         cairo_line_to(cr, coords.x(), coords.y());
@@ -54,12 +50,12 @@ void Polygon::transform(const Transformation& t) {
 Vector2 Polygon::center() const {
     float dx = 0;
     float dy = 0;
-    for (auto it = verts.begin(); it != verts.end(); ++it) {
+    for (auto it = verts.begin(); it != this->verts.end(); ++it) {
         dx += it->x();
         dy += it->y();
     } 
     dx /= (float)(verts.size()-1); //??
-    dy /= (float)(verts.size()-1); //??
+    dy /= (float)(this->verts.size()-1); //??
 
     return Vector2(dx, dy);
 }

@@ -7,31 +7,29 @@
 std::list<Shape*> Display::shapes;
 
 void Display::create_all () {
-    Polygon* poly = new Polygon("Poly", Vector2(1, 2));
+    Polygon* poly = new Polygon("Poly");
 
-    poly->verts.push_back(Vector2(0, 0));
-    poly->verts.push_back(Vector2(0, 3));
-    poly->verts.push_back(Vector2(3, 5));
-    poly->verts.push_back(Vector2(0, 0));
+    poly->verts.push_back(Vector2(1, 2));
+    poly->verts.push_back(Vector2(1, 5));
+    poly->verts.push_back(Vector2(5, 7));
+    poly->verts.push_back(Vector2(1, 2));
 
-    Polygon* square = new Polygon("Square", Vector2(-1, -1));
-    square->verts.push_back(Vector2(0, 0));
-    square->verts.push_back(Vector2(0, 2));
-    square->verts.push_back(Vector2(2, 2));
-    square->verts.push_back(Vector2(2, 0));
-    square->verts.push_back(Vector2(0, 0));
+    Polygon* square = new Polygon("Square");
+    square->verts.push_back(Vector2(-1, -1));
+    square->verts.push_back(Vector2(-1, 1));
+    square->verts.push_back(Vector2(1, 1));
+    square->verts.push_back(Vector2(1, -1));
+    square->verts.push_back(Vector2(-1, -1));
 
-    square->rotate(3.14/4);
-    Polygon* wave = new Polygon ("Sinewave", Vector2(-5, -5));
+    Polygon* wave = new Polygon ("Sinewave");
 
-    Point* point = new Point ("Point", Vector2(0, 0));
-    Line* line = new Line ("Straight Line", Vector2(2, -2),
-        Vector2(-1, -1), Vector2(1, 1));
+    Point* point = new Point ("Point", {Vector2(0, 0)});
+    Line* line = new Line ("Straight Line",
+        {Vector2(1, -3), Vector2(3, -1)});
 
     for (int i = 0; i < 20; i++) {
-        wave->verts.push_back(Vector2(i, sin(i)));
+        wave->verts.push_back(Vector2(i-5, sin(i)-5));
     }
-        
 
     shapes.push_back(poly);
     shapes.push_back(square);

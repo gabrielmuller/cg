@@ -1,6 +1,7 @@
 #include "point.h"
 
-Point::Point (std::string name, Vector2 position) : Shape::Shape(name, position) {}
+Point::Point (std::string name, std::list<Vector2> verts) : 
+    Shape::Shape(name, verts) {}
 
 void Point::draw (cairo_t* cr) {
     Vector2 coords = Window::world_to_screen(position);

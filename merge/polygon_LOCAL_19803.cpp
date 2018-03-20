@@ -1,10 +1,6 @@
 #include "polygon.h"
 
-Polygon::Polygon (std::string name, std::list<Vector2> verts) : 
-    Shape::Shape(name, verts) {}
-
-Polygon::Polygon (std::string name) :
-    Shape::Shape(name) {}
+Polygon::Polygon (std::string name, Vector2 position) : Shape::Shape(name, position) {}
 
 void Polygon::draw (cairo_t* cr) {
     auto it = verts.begin();
@@ -24,26 +20,10 @@ void Polygon::draw (cairo_t* cr) {
 }
 
 /**
- * @brief       Retorna o centro geométrico do polígono.
- */
-Vector2 Polygon::getCenter() {
-    float cx = 0;
-    float cy = 0;
-    for (auto it = verts.begin(); it != verts.end(); ++it) {
-        cx += it->x;
-        cy += it->y;
-    } 
-    cx = cx/(float)(verts.size());
-    cy = cy/(float)(verts.size());
-    return Vector2(cx, cy);
-}
-
-/**
  * @brief       Realiza transformação 2D dos pontos do polígono multiplicando-os
  *              pela matriz de transformação.
- *              Obs: definida apenas pra matriz 3x3.
  *
- * @param[in]   matrix      matriz 3x3 de transformação
+ * @param[in]   matrix      matriz de transformação
  */
 void Polygon::transform(const Transformation& t) {
     for (auto it = verts.begin(); it != verts.end(); ++it) {
@@ -54,12 +34,12 @@ void Polygon::transform(const Transformation& t) {
 Vector2 Polygon::center() const {
     float dx = 0;
     float dy = 0;
-    for (auto it = verts.begin(); it != verts.end(); ++it) {
+    for (auto it = verts.begin(); it != this->verts.end(); ++it) {
         dx += it->x();
         dy += it->y();
     } 
     dx /= (float)(verts.size()-1); //??
-    dy /= (float)(verts.size()-1); //??
+    dy /= (float)(this->verts.size()-1); //??
 
     return Vector2(dx, dy);
 }

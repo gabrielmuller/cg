@@ -6,8 +6,8 @@
 #include "transformation.h"
 
 struct Vector2 : Transformation {
-    float x;
-    float y;
+    float x() const;
+    float y() const;
 
     Vector2();
     Vector2 (float x, float y); 

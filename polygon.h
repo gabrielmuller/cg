@@ -10,13 +10,11 @@
 struct Polygon : Shape {
     std::list<Vector2> verts;
     Polygon (std::string name, Vector2 position); 
-    void draw (cairo_t* cr);
+    void draw (cairo_t* cr) override;
 
-    void transform(
-    	std::vector<std::vector<float>> matrix);
-    void translation(float dx, float dy);
-    void scaling(float sx, float sy);
-    void rotation(float dx, float dy, float degrees, bool center);
+    void transform (const Transformation& t) override;
+
+    Vector2 center() const override;
 };
 
 #endif

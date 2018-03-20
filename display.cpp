@@ -21,6 +21,7 @@ void Display::create_all () {
     square->verts.push_back(Vector2(2, 0));
     square->verts.push_back(Vector2(0, 0));
 
+    square->rotate(3.14/4);
     Polygon* wave = new Polygon ("Sinewave", Vector2(-5, -5));
 
     Point* point = new Point ("Point", Vector2(0, 0));

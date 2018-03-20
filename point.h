@@ -8,10 +8,13 @@
 
 struct Point : Shape {
     Point (std::string name, Vector2 position); 
-    void draw (cairo_t* cr);
-    void translation (float dx, float dy);
-    void scaling(float sx, float sy);
-    void rotation(float dx, float dy, float degrees, bool center);
+    void draw (cairo_t* ct) override;
+
+    void transform (const Transformation& t) override;
+    void translate (const Vector2& distance);
+    void scale (const Vector2& amount);
+    void rotate (float rad);
+    Vector2 center () const override;
 };
 
 #endif

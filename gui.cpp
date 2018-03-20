@@ -1,4 +1,5 @@
 #include "gui.h"
+#include "vector2.h"
 
 GtkWidget* GUI::drawing_area;
 GtkApplication* GUI::app;
@@ -66,7 +67,7 @@ void GUI::translation_cb(GtkWidget **entry, GtkWidget *widget) {
     auto selected_id = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
     auto it = Display::shapes.begin();
     std::advance(it, selected_id);
-    (*it)->translation(std::stof(coord_x), std::stof(coord_y));
+    (*it)->translate(Vector2(std::stof(coord_x), std::stof(coord_y)));
 
     g_signal_connect (G_OBJECT (drawing_area), "draw",
                     G_CALLBACK (draw_cb), NULL);
@@ -130,7 +131,7 @@ void GUI::scaling_cb(GtkWidget **entry, GtkWidget *widget) {
     auto selected_id = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
     auto it = Display::shapes.begin();
     std::advance(it, selected_id);
-    (*it)->scaling(std::stof(coord_x), std::stof(coord_y));
+    (*it)->scale(Vector2(std::stof(coord_x), std::stof(coord_y)));
 
     g_signal_connect (G_OBJECT (drawing_area), "draw",
                     G_CALLBACK (draw_cb), NULL);
@@ -204,8 +205,7 @@ void GUI::rotation_cb(GtkWidget **entry, GtkWidget *widget) {
     auto selected_id = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
     auto it = Display::shapes.begin();
     std::advance(it, selected_id);
-    (*it)->rotation(std::stof(dx), std::stof(dy), std::stof(graus), center);
-
+    (*it)->rotate(std::stof(graus));
     g_signal_connect (G_OBJECT (drawing_area), "draw",
                     G_CALLBACK (draw_cb), NULL);
 
@@ -538,7 +538,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     // cria drawing area
     drawing_area = gtk_drawing_area_new();
     gtk_widget_set_size_request(drawing_area, 
-        Window::viewport.x, Window::viewport.y);
+        Window::viewport.x(), Window::viewport.y());
     g_signal_connect(G_OBJECT(drawing_area), "draw",
         G_CALLBACK(draw_cb), nullptr);
 

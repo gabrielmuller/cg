@@ -11,12 +11,14 @@ struct Vector2 : Transformation {
 
     Vector2();
     Vector2 (float x, float y); 
+    Vector2 (const Transformation& other); 
 
     operator std::string () const;
     Vector2 operator+ (Vector2 other);
     Vector2 operator- (Vector2 other);
     Vector2 operator* (float scalar);
     Vector2 operator/ (float scalar);
+
 };
 
 #endif

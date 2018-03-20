@@ -56,7 +56,8 @@ void Polygon::translation(float dx, float dy) {
  * @param[in]   sx,sy       fatores de escala
  */
 void Polygon::scaling(float sx, float sy) {
-    float cx, cy = 0;
+    float cx = 0;
+    float cy = 0;
     for (auto it = this->verts.begin(); it != this->verts.end(); ++it) {
         cx += it->x;
         cy += it->y;
@@ -80,7 +81,8 @@ void Polygon::scaling(float sx, float sy) {
  */
 void Polygon::rotation(float dx, float dy, float degrees, bool center) {
     if(center) {
-        dx, dy = 0;
+        dx = 0;
+        dy = 0;
         for (auto it = this->verts.begin(); it != this->verts.end(); ++it) {
             dx += it->x;
             dy += it->y;
@@ -90,8 +92,8 @@ void Polygon::rotation(float dx, float dy, float degrees, bool center) {
     }
     float radian = (M_PI/180)*degrees;
     std::vector<std::vector<float>> transform_matrix;
-    transform_matrix = {{std::cos(radian),-std::sin(radian),0},
-        {std::sin(radian),std::cos(radian),0},{0,0,1}};
+    transform_matrix = {{(float)cos(radian),(float)(-sin(radian)),0},
+         {(float)sin(radian),(float)cos(radian),0},{0,0,1}};
     translation(-dx,-dy);
     transform(transform_matrix);
     translation(dx,dy);

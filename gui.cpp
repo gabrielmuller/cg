@@ -68,8 +68,7 @@ void GUI::translation_cb(GtkWidget **entry, GtkWidget *widget) {
     std::advance(it, selected_id);
     (*it)->translation(std::stof(coord_x), std::stof(coord_y));
 
-    g_signal_connect (G_OBJECT (drawing_area), "draw",
-                    G_CALLBACK (draw_cb), NULL);
+    gtk_widget_queue_draw(drawing_area);
 
     gtk_widget_destroy(GTK_WIDGET(entry[0]));
 }
@@ -132,8 +131,7 @@ void GUI::scaling_cb(GtkWidget **entry, GtkWidget *widget) {
     std::advance(it, selected_id);
     (*it)->scaling(std::stof(coord_x), std::stof(coord_y));
 
-    g_signal_connect (G_OBJECT (drawing_area), "draw",
-                    G_CALLBACK (draw_cb), NULL);
+    gtk_widget_queue_draw(drawing_area);
 
     gtk_widget_destroy(GTK_WIDGET(entry[0]));
 }
@@ -206,8 +204,7 @@ void GUI::rotation_cb(GtkWidget **entry, GtkWidget *widget) {
     std::advance(it, selected_id);
     (*it)->rotation(std::stof(dx), std::stof(dy), std::stof(graus), center);
 
-    g_signal_connect (G_OBJECT (drawing_area), "draw",
-                    G_CALLBACK (draw_cb), NULL);
+    gtk_widget_queue_draw(drawing_area);
 
     gtk_widget_destroy(GTK_WIDGET(entry[0]));
 }
@@ -281,8 +278,7 @@ void GUI::add_point_cb(GtkWidget **entry, GtkWidget *widget) {
         std::stof(coord_y)));
     Display::add(point);
 
-    g_signal_connect (G_OBJECT (drawing_area), "draw",
-                    G_CALLBACK (draw_cb), NULL);
+    gtk_widget_queue_draw(drawing_area);
     gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), nome.c_str());
 
     gtk_widget_destroy(GTK_WIDGET(entry[0]));
@@ -303,8 +299,7 @@ void GUI::add_line_cb(GtkWidget **entry, GtkWidget *widget) {
         Vector2(std::stof(coord_x2), std::stof(coord_y2)));
     Display::add(line);
 
-    g_signal_connect (G_OBJECT (drawing_area), "draw",
-                    G_CALLBACK (draw_cb), NULL);
+    gtk_widget_queue_draw(drawing_area);
     gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), nome.c_str());
 
     gtk_widget_destroy(GTK_WIDGET(entry[0]));

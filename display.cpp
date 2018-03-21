@@ -23,7 +23,7 @@ void Display::create_all () {
 
     Polygon* wave = new Polygon ("Sinewave");
 
-    Point* point = new Point ("Point", {Vector2(0, 0)});
+    Point* point = new Point ("Point", 0, 0);
     Line* line = new Line ("Straight Line",
         {Vector2(1, -3), Vector2(3, -1)});
 

@@ -1,40 +1,47 @@
 #include "shape.h"
 
-Shape::Shape (std::string name, Vector2 position) : name(name), position(position) {}
+Shape::Shape (std::string name) : name(name) {}
 
 /**
- * @brief       Translaciona um polígono a partir de um vetor (Dx,Dy).
+ * @brief       Translaciona uma forma a partir de um vetor distância.
  *
- * @param[in]   dx,dy       coordenadas do vetor de translação
+ * @param[in]   distance     coordenadas do vetor de translação
  */
-void Shape::translate(const Vector2& distance) {
+void Shape::translate (const Vector2& distance) {
     Transformation* t = Transformation::translation(distance);
     transform(*t);
     delete t;
 }
 
 /**
- * @brief       Escalona um polígono a partir de dois fatores de escala Sx e Sy,
- *              em relação ao centro geométrico, utilizando duas translações.
+ * @brief       Escalona uma forma a partir dos fatores de escala,
+ *              em relação ao centro geométrico.
  *
- * @param[in]   sx,sy       fatores de escala
+ * @param[in]   amount       fatores de escala
  */
-void Shape::scale(const Vector2& amount) {
+void Shape::scale (const Vector2& amount) {
     Transformation* t = Transformation::scaling(amount, center());
     transform(*t);
     delete t;
 }
 
 /**
- * @brief       Rotaciona um polígono em relação a origem, ao centro geométrico
- *              ou a um ponto arbitrário, utilizando duas translações.
+ * @brief       Rotaciona uma forma em relação a um ponto arbitrário.
  *
- * @param[in]   dx,dy       coordenadas do ponto de rotação
- *              degrees     graus de rotação
- *              center      true se rotação em relação ao centro geométrico
+ * @param[in]   center       coordenadas do ponto de rotação
+ *              rad          graus de rotação
  */
-void Shape::rotate(float rad) {
-    Transformation* t = Transformation::rotation(rad, center());
+void Shape::rotate (float rad, const Vector2& center) {
+    Transformation* t = Transformation::rotation(rad, center);
     transform(*t);
     delete t;
+}
+
+/**
+ * @brief       Rotaciona uma forma em relação ao centro geométrico.
+ *
+ * @param[in]   rad     graus de rotação
+ */
+void Shape::rotate (float rad) {
+    rotate(rad, center());
 }

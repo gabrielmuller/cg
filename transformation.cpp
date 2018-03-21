@@ -45,8 +45,8 @@ Transformation* Transformation::scaling (const Vector2& amount, const Vector2& c
 Transformation* Transformation::rotation (const float rad, const Vector2& center) {
     Transformation* t = new Transformation (3, 3);
     //pré calcular trigonometria
-    float c = std::cos(rad);
-    float s = std::sin(rad);
+    float c = cos(rad);
+    float s = sin(rad);
 
     //matriz pré calculada
     t->matrix = {

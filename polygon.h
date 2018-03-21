@@ -9,7 +9,8 @@
 
 struct Polygon : Shape {
     std::list<Vector2> verts;
-    Polygon (std::string name, Vector2 position); 
+    Polygon (std::string name, std::list<Vector2> verts); 
+    Polygon (std::string name); 
     void draw (cairo_t* cr) override;
 
     void transform (const Transformation& t) override;

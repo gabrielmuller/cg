@@ -7,7 +7,9 @@
 #include "shape.h"
 
 struct Point : Shape {
-    Point (std::string name, Vector2 position); 
+    Vector2 position;
+
+    Point (std::string name, float x, float y); 
     void draw (cairo_t* ct) override;
 
     void transform (const Transformation& t) override;

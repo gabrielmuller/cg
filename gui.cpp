@@ -186,7 +186,13 @@ void GUI::rotation_cb(GtkWidget **entry, GtkWidget *widget) {
     auto it = Display::shapes.begin();
     std::advance(it, selected_id);
 
-    (*it)->rotate(std::stof(graus));
+    float rad = std::stof(graus) * (M_PI/180);
+    if (center) {
+        (*it)->rotate(rad);
+    } else {
+        (*it)->rotate(rad, Vector2(std::stof(dx), std::stof(dy)));
+    }
+
     g_signal_connect (G_OBJECT (drawing_area), "draw",
                     G_CALLBACK (draw_cb), NULL);
     gtk_widget_queue_draw(drawing_area);
@@ -248,8 +254,7 @@ void GUI::add_point_cb(GtkWidget **entry, GtkWidget *widget) {
     auto coord_x = gtk_entry_get_text (GTK_ENTRY(entry[2]));
     auto coord_y = gtk_entry_get_text (GTK_ENTRY(entry[3]));
 
-    Point* point = new Point (nome, {Vector2(std::stof(coord_x), 
-        std::stof(coord_y))});
+    Point* point = new Point (nome, std::stof(coord_x), std::stof(coord_y));
     Display::add(point);
 
     gtk_widget_queue_draw(drawing_area);
@@ -410,7 +415,8 @@ void GUI::add_line_window () {
 
 // Termina criação de polígono e desenha na tela
 void GUI::add_poly_cb(GtkWidget *window, GtkWidget *widget) {
-    if (Display::shapes.back()->verts.size() < 3) {
+    Polygon* p = dynamic_cast<Polygon*>(Display::shapes.back());
+    if (p->verts.size() < 3) {
         Display::shapes.pop_back();
     } else {
         gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), Display::shapes.back()->name.c_str());
@@ -423,7 +429,8 @@ void GUI::add_poly_cb(GtkWidget *window, GtkWidget *widget) {
 void GUI::add_vert_cb(GtkWidget **entry, GtkWidget *widget) {
     auto x = gtk_entry_get_text (GTK_ENTRY(entry[0]));
     auto y = gtk_entry_get_text (GTK_ENTRY(entry[1]));
-    Display::shapes.back()->verts.push_back(Vector2(std::stof(x), std::stof(y)));
+    Polygon* p = dynamic_cast<Polygon*>(Display::shapes.back());
+    p->verts.push_back(Vector2(std::stof(x), std::stof(y)));
     
     // Simplificar isso depois
     std::ostringstream s;

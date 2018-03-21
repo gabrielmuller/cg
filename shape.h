@@ -9,15 +9,26 @@
 
 struct Shape {
     std::string name;
-    std::list<Vector2> verts;
 
-    Shape (std::string name, std::list<Vector2> verts); 
     Shape (std::string name); 
+
+    /**
+     * @brief       Desenha o polígono no viewport. 
+     *
+     * @param[in]   ct          contexto cairo onde desenhar
+     */
     virtual void draw (cairo_t* ct) = 0;
 
+    /**
+     * @brief       Realiza uma transformação qualquer na forma. 
+     *
+     * @param[in]   t           transformação
+     */
     virtual void transform (const Transformation& t) = 0;
+
     void translate (const Vector2& distance);
     void scale (const Vector2& amount);
+    void rotate (float rad, const Vector2& center);
     void rotate (float rad);
     virtual Vector2 center () const = 0;
 };

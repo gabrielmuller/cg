@@ -56,6 +56,16 @@ void GUI::zoom_out () {
     GUI::move_z(-1);
 }
 
+void GUI::rotate_right() {
+    Window::angle += 0.1;
+    gtk_widget_queue_draw(drawing_area);
+}
+
+void GUI::rotate_left() {
+    Window::angle -= 0.1;
+    gtk_widget_queue_draw(drawing_area);
+}
+
 /*****************************************
  *
  *   "Páginas" ou frames 
@@ -567,6 +577,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     GtkWidget *grid, *small_grid;
     GtkWidget *up_button, *down_button, *left_button, *right_button;
     GtkWidget *in_button, *out_button;
+    GtkWidget *rot_left_button, *rot_right_button;
     GtkWidget *point_button, *line_button, *polygon_button; 
     
     Display::create_all();
@@ -609,6 +620,15 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     out_button = gtk_button_new_with_label("Zoom out");
     g_signal_connect_swapped(out_button, "clicked",
         G_CALLBACK (zoom_out), window);
+
+    // botoes de rotação
+    rot_right_button = gtk_button_new_with_label("Horário");
+    g_signal_connect_swapped(rot_right_button, "clicked",
+        G_CALLBACK (rotate_right), window);
+
+    rot_left_button = gtk_button_new_with_label("Anti-horário");
+    g_signal_connect_swapped(rot_left_button, "clicked",
+        G_CALLBACK (rotate_left), window);
 
     // Criar botoes para criacao de objetos
     point_button = gtk_button_new_with_label("Adicionar Ponto");
@@ -668,6 +688,9 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     gtk_grid_attach(GTK_GRID(grid), small_grid, 1, 0, 2, 2);
     gtk_grid_attach(GTK_GRID(grid), in_button, 1, 2, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), out_button, 2, 2, 1, 1);
+
+    gtk_grid_attach(GTK_GRID(grid), rot_right_button, 1, 3, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), rot_left_button, 2, 3, 1, 1);
 
     gtk_grid_attach(GTK_GRID(grid), point_button, 1, 4, 2, 1);
     gtk_grid_attach(GTK_GRID(grid), line_button, 1, 5, 2, 1);

@@ -2,12 +2,16 @@
 
 Vector2 Window::position(0, 0);
 Vector2 Window::viewport(400, 400);
+float Window::angle = 0;
 
 // tamanho da visão da cãmera (mundo)
 Vector2 Window::size(10, 10);
 
 // converte uma coordenada do espaço no mundo para tela
 Vector2 Window::world_to_screen(Vector2 coords) {
+	Transformation* rot = Transformation::rotation(angle, Window::position);
+	coords = *((Transformation) coords * *rot);
+
     Vector2 wmin = Window::position - (Window::size / 2);
     Vector2 output(coords - wmin);
     output = Vector2(output.x() / Window::size.x(), output.y() / Window::size.y());

@@ -33,6 +33,8 @@ namespace GUI {
     void move_down ();
     void zoom_out ();
     void zoom_in ();
+    void rotate_right ();
+    void rotate_left ();
 
     void translation_cb(GtkWidget **entry, GtkWidget *widget);
     void translation_page(GtkWidget* frame);

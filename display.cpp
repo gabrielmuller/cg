@@ -9,8 +9,8 @@ std::list<Shape*> Display::shapes;
 
 void Display::create_all () {
 
-    Shape* poly = DescOBJ::read_obj("obj/tri.obj");
-    Shape* square = DescOBJ::read_obj("obj/square.obj");
+    Shape* poly = DescOBJ::read_obj("tri.obj");
+    Shape* square = DescOBJ::read_obj("square.obj");
 
     Polygon* wave = new Polygon ("Sinewave");
 

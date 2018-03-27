@@ -25,6 +25,10 @@ Transformation* Transformation::operator* (const Transformation& t) const {
     return result;
 }
 
+Transformation* Transformation::operator* (const Transformation* t) const {
+    return *this * *t;
+}
+
 Transformation* Transformation::translation (const Vector2& distance) {
     Transformation* t = new Transformation (3, 3);
     t->matrix = {{1,0,0},{0,1,0},{distance.x(), distance.y(), 1}};

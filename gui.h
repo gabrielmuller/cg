@@ -11,6 +11,7 @@
 #include "polygon.h"
 #include "point.h"
 #include "line.h"
+#include "descobj.h"
 
 /**
  *  Funções de interface gráfica com GTK.
@@ -54,6 +55,9 @@ namespace GUI {
     void create_poly_cb(GtkWidget **entry, GtkWidget *widget);
     void add_verts_window (Polygon* poly);
     void add_poly_window ();
+
+    void on_import_button(GtkWidget *widget, GtkWidget *window);
+    void on_export_button(GtkWidget *widget, GtkWidget *window);
     
     void activate(GtkApplication* app, gpointer user_data);
 }

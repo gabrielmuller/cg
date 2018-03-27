@@ -74,8 +74,11 @@ void GUI::rotate_left() {
  *****************************************/
 
 void GUI::translation_cb(GtkWidget **entry, GtkWidget *widget) {
-    auto coord_x = gtk_entry_get_text (GTK_ENTRY(entry[0]));
-    auto coord_y = gtk_entry_get_text (GTK_ENTRY(entry[1]));
+    std::string coord_x = gtk_entry_get_text (GTK_ENTRY(entry[0]));
+    std::string coord_y = gtk_entry_get_text (GTK_ENTRY(entry[1]));
+
+    if (coord_x == "") coord_x = "0";
+    if (coord_y == "") coord_y = "0";
 
     auto selected_id = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
     auto it = Display::shapes.begin();
@@ -461,7 +464,6 @@ void GUI::add_verts_window(Polygon* poly) {
     // Window
     window = gtk_application_window_new (app);
     gtk_window_set_title (GTK_WINDOW (window), "Adicionar Polígono");
-    gtk_window_set_default_size (GTK_WINDOW(window), 100, 100);
     
     // labels
     t1_label = gtk_label_new("Adicionar vértice");
@@ -534,7 +536,6 @@ void GUI::add_poly_window () {
     // Window
     window = gtk_application_window_new (app);
     gtk_window_set_title (GTK_WINDOW (window), "Adicionar Polígono");
-    gtk_window_set_default_size (GTK_WINDOW(window), 100, 100);
     
     // labels
     nome_label = gtk_label_new("Nome");
@@ -567,10 +568,70 @@ void GUI::add_poly_window () {
 
 /*****************************************
  *
+ *  Leitura e escrita de arquivos .obj
+ *
+ *****************************************/
+void GUI::on_import_button(GtkWidget *widget, GtkWidget *window) {
+    // Não parece ser o melhor jeito de fazer isso...
+    GtkWidget *chooser;
+    chooser = gtk_file_chooser_dialog_new(
+        "Abrir objeto",
+        GTK_WINDOW(widget),
+        GTK_FILE_CHOOSER_ACTION_OPEN, 
+        ("_Cancel"),  
+        GTK_RESPONSE_CANCEL,
+        ("_Open"),
+        GTK_RESPONSE_ACCEPT,
+        NULL);
+
+    gint res = gtk_dialog_run (GTK_DIALOG (chooser));
+
+    if (res == GTK_RESPONSE_ACCEPT) {
+        gchar* filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(chooser));
+        auto sh = DescOBJ::read_obj(filename);
+        Display::add(sh);
+        gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), sh->name.c_str());
+        gtk_widget_queue_draw(drawing_area);
+    }
+
+    gtk_widget_destroy(chooser);
+}
+
+void GUI::on_export_button(GtkWidget *widget, GtkWidget *window) {
+    auto selected_id = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
+    auto it = Display::shapes.begin();
+    std::advance(it, selected_id);
+    std::string path = (*it)->name + ".obj";   
+
+    GtkWidget *chooser;
+    chooser = gtk_file_chooser_dialog_new(
+        "Salvar objeto",
+        GTK_WINDOW(widget),
+        GTK_FILE_CHOOSER_ACTION_SAVE, 
+        ("_Cancel"),  
+        GTK_RESPONSE_CANCEL,
+        ("_Save"),
+        GTK_RESPONSE_ACCEPT,
+        NULL);
+
+    gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(chooser), TRUE);
+    gint res = gtk_dialog_run (GTK_DIALOG (chooser));
+
+    if (res == GTK_RESPONSE_ACCEPT) {
+        std::string filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(chooser));
+        if (filename.find(".")==std::string::npos)
+            filename += ".obj";
+        DescOBJ::save_obj(filename, *it);
+    }
+    
+    gtk_widget_destroy(chooser);
+}
+
+/*****************************************
+ *
  *  Janela principal
  *
  *****************************************/
-
 void GUI::activate (GtkApplication* app, gpointer user_data) {
     GUI::app = app;
     GtkWidget* window;
@@ -579,6 +640,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     GtkWidget *in_button, *out_button;
     GtkWidget *rot_left_button, *rot_right_button;
     GtkWidget *point_button, *line_button, *polygon_button; 
+    GtkWidget *import_button, *export_button;
     
     Display::create_all();
 
@@ -643,6 +705,14 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     g_signal_connect_swapped(polygon_button, "clicked",
         G_CALLBACK (add_poly_window), window);
 
+    import_button = gtk_button_new_with_label("Importar");
+    g_signal_connect_swapped(import_button, "clicked",
+        G_CALLBACK (on_import_button), window);
+
+    export_button = gtk_button_new_with_label("Exportar");
+    g_signal_connect_swapped(export_button, "clicked",
+        G_CALLBACK (on_export_button), window);
+
     // Criar ComboBox
     combo = gtk_combo_box_text_new();
     for (auto it = Display::shapes.begin();
@@ -695,11 +765,15 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     gtk_grid_attach(GTK_GRID(grid), point_button, 1, 4, 2, 1);
     gtk_grid_attach(GTK_GRID(grid), line_button, 1, 5, 2, 1);
     gtk_grid_attach(GTK_GRID(grid), polygon_button, 1, 6, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), import_button, 1, 7, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), export_button, 2, 7, 1, 1);
 
-    gtk_grid_attach(GTK_GRID(grid), combo, 1, 7, 2, 1);
-    gtk_grid_attach(GTK_GRID(grid), notebook, 1, 11, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), combo, 1, 8, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), notebook, 1, 9, 2, 1);
     
     gtk_grid_attach(GTK_GRID(grid), drawing_area, 0, 0, 1, 12);
 
     gtk_widget_show_all(window);
 }
+
+// Devia ter feito isso com glade :thinking:

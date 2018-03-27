@@ -1,8 +1,4 @@
 #include "gui.h"
-#include <iostream>
-#include "vector2.h"
-#include "descobj.h"
-#include "shape.h"
 
 /**
  *	Ativa funções de interface do GTK no namespace GUI.

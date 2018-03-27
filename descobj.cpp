@@ -41,7 +41,7 @@ Shape* DescOBJ::read_obj(const std::string &path) {
         sh = new Line(name, verts);
     } else {
         // TODO retirar gambiarra porque Polygon não se fecha sozinho
-        verts.push_back(verts.front());
+        //verts.push_back(verts.front());
         sh = new Polygon(name, verts);
     }
 

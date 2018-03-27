@@ -8,7 +8,9 @@
 #include "shape.h"
 
 struct Polygon : Shape {
+    bool open;
     std::list<Vector2> verts;
+
     Polygon (std::string name, std::list<Vector2> verts); 
     Polygon (std::string name); 
     void draw (cairo_t* cr) override;

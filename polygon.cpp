@@ -20,6 +20,10 @@ void Polygon::draw (cairo_t* cr) {
         coords = Window::world_to_screen(*it);
         cairo_line_to(cr, coords.x(), coords.y());
     }
+    if (!open) {
+        coords = Window::world_to_screen(verts.front());
+        cairo_line_to(cr, coords.x(), coords.y());
+    }
     cairo_stroke(cr);
 }
 

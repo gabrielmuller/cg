@@ -8,9 +8,8 @@ Shape::Shape (std::string name) : name(name) {}
  * @param[in]   distance     coordenadas do vetor de translação
  */
 void Shape::translate (const Vector2& distance) {
-    Transformation* t = Transformation::translation(distance);
-    transform(*t);
-    delete t;
+    Transformation t = Transformation::translation(distance);
+    transform(t);
 }
 
 /**
@@ -20,9 +19,8 @@ void Shape::translate (const Vector2& distance) {
  * @param[in]   amount       fatores de escala
  */
 void Shape::scale (const Vector2& amount) {
-    Transformation* t = Transformation::scaling(amount, center());
-    transform(*t);
-    delete t;
+    Transformation t = Transformation::scaling(amount, center());
+    transform(t);
 }
 
 /**
@@ -32,9 +30,8 @@ void Shape::scale (const Vector2& amount) {
  *              rad          graus de rotação
  */
 void Shape::rotate (float rad, const Vector2& center) {
-    Transformation* t = Transformation::rotation(rad, center);
-    transform(*t);
-    delete t;
+    Transformation t = Transformation::rotation(rad, center);
+    transform(t);
 }
 
 /**

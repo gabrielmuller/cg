@@ -23,9 +23,8 @@ Vector2::operator std::string () const {
 }
 
 Vector2 Vector2::operator+ (Vector2 other) {
-    Transformation* t = Transformation::translation(other);
-    Vector2 result = *(*((Transformation*) this) * *t);
-    delete t;
+    Transformation t = Transformation::translation(other);
+    Vector2 result = (Transformation) *this * t;
     return result;
 }
 
@@ -36,9 +35,8 @@ Vector2 Vector2::operator- (Vector2 other) {
 }
 
 Vector2 Vector2::operator* (float scalar) {
-    Transformation* t = Transformation::scaling(Vector2(scalar, scalar), Vector2(0, 0));
-    Vector2 result = *(*((Transformation*) this) * *t);
-    delete t;
+    Transformation t = Transformation::scaling(Vector2(scalar, scalar), Vector2(0, 0));
+    Vector2 result = (Transformation) *this * t;
     return result;
 }
 

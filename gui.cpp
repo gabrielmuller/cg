@@ -27,10 +27,9 @@ gboolean GUI::draw_cb(GtkWidget *widget, cairo_t* cr, gpointer* data) {
 }
 
 void GUI::move (Vector2 amount) {
-    Transformation* rot = Transformation::rotation(-Window::angle, Vector2(0, 0));
-    amount = *((Transformation) amount * *rot);
+    Transformation rot = Transformation::rotation(-Window::angle, Vector2(0, 0));
+    amount = (Transformation) amount * rot;
     Window::position = Window::position + amount;
-    delete rot;
     gtk_widget_queue_draw(drawing_area);
 }
 void GUI::move_z (float amount) {

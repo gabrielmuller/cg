@@ -5,7 +5,9 @@
 #include <vector>
 #include <string>
 #include <sstream> 
+#include <unistd.h>
 
+#include "vector2.h"
 #include "display.h"
 #include "window.h"
 #include "polygon.h"

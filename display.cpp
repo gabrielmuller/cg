@@ -3,23 +3,14 @@
 #include "line.h"
 #include <math.h>
 #include "display.h"
+#include "descobj.h"
 
 std::list<Shape*> Display::shapes;
 
 void Display::create_all () {
-    Polygon* poly = new Polygon("Poly");
 
-    poly->verts.push_back(Vector2(1, 2));
-    poly->verts.push_back(Vector2(1, 5));
-    poly->verts.push_back(Vector2(5, 7));
-    poly->verts.push_back(Vector2(1, 2));
-
-    Polygon* square = new Polygon("Square");
-    square->verts.push_back(Vector2(-1, -1));
-    square->verts.push_back(Vector2(-1, 1));
-    square->verts.push_back(Vector2(1, 1));
-    square->verts.push_back(Vector2(1, -1));
-    square->verts.push_back(Vector2(-1, -1));
+    Shape* poly = DescOBJ::read_obj("tri.obj");
+    Shape* square = DescOBJ::read_obj("square.obj");
 
     Polygon* wave = new Polygon ("Sinewave");
 
@@ -30,6 +21,8 @@ void Display::create_all () {
     for (int i = 0; i < 20; i++) {
         wave->verts.push_back(Vector2(i-5, sin(i)-5));
     }
+
+    wave->open = true;
 
     shapes.push_back(poly);
     shapes.push_back(square);

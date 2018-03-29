@@ -13,6 +13,8 @@ static gboolean test (void* data) {
     return TRUE;
 }
 int main (int argc, char **argv) {
+    std::cout << (std::string) Transformation::mb << "\n";
+    return 0;
     GtkApplication *app;
     int status;
 

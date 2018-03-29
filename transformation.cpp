@@ -2,11 +2,24 @@
 #include <stdexcept>
 #include "math.h"
 
+const Transformation Transformation::mb ({
+    {-1,  3, -3,  1},
+    { 3, -6,  3,  0},
+    {-3,  3,  0,  0},
+    { 1,  0,  0,  0}
+});
+
 Transformation::Transformation (int m, int n) : m(m), n(n) {
     matrix = std::vector<std::vector<float>> (m);
     for (int i = 0; i < m; i++) {
         matrix[i] = std::vector<float> (n);
     }
+}
+
+Transformation::Transformation (std::vector<std::vector<float>> matrix) :
+    Transformation(matrix.size(), matrix.front().size()) {
+
+    this->matrix = matrix;
 }
 
 Transformation Transformation::operator* (const Transformation& t) const {

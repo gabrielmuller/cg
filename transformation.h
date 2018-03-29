@@ -9,8 +9,10 @@ struct Transformation {
     std::vector<std::vector<float>> matrix;
     int m; //linhas
     int n; //colunas
+    static const Transformation mb;
 
     Transformation (int m, int n);
+    Transformation (std::vector<std::vector<float>> matrix);
     Transformation operator* (const Transformation& t) const;
 
     static Transformation translation (const Vector2& distance);

@@ -31,6 +31,10 @@ void Display::create_all () {
     shapes.push_back(point);
 }
 
+/*void Display::destroy_all() {
+    shapes.clear();
+}*/
+
 void Display::add(Shape* sh) {
     shapes.push_back(sh);
 }

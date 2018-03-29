@@ -22,26 +22,32 @@ Vector2::operator std::string () const {
     return "(" + std::to_string(x()) + ", " + std::to_string(y()) + ")";
 }
 
-Vector2 Vector2::operator+ (Vector2 other) {
+Vector2 Vector2::operator+ (Vector2 other) const {
     Transformation t = Transformation::translation(other);
     Vector2 result = (Transformation) *this * t;
     return result;
 }
 
-Vector2 Vector2::operator- (Vector2 other) {
+Vector2 Vector2::operator- (Vector2 other) const {
     other.matrix[0][0] *= -1;
     other.matrix[0][1] *= -1;
     return *this + other;
 }
 
-Vector2 Vector2::operator* (float scalar) {
+Vector2 Vector2::operator* (float scalar) const {
     Transformation t = Transformation::scaling(Vector2(scalar, scalar), Vector2(0, 0));
     Vector2 result = (Transformation) *this * t;
     return result;
 }
 
-Vector2 Vector2::operator/ (float scalar) {
+Vector2 Vector2::operator/ (float scalar) const {
     return *this * (1/scalar);
+}
+
+Vector2 Vector2::lerp (const Vector2& a, const Vector2& b, float p) {
+    p = p > 1 ? 1 : p;
+    p = p < 0 ? 0 : p;
+    return (a * (1-p) + b * p);
 }
 
     

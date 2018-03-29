@@ -27,13 +27,13 @@ gboolean GUI::draw_cb(GtkWidget *widget, cairo_t* cr, gpointer* data) {
 }
 
 void GUI::move (Vector2 amount) {
-    Transformation rot = Transformation::rotation(-Window::angle, Vector2(0, 0));
+    Transformation rot = Transformation::rotation(-Window::goal.angle, Vector2(0, 0));
     amount = (Transformation) amount * rot;
-    Window::position = Window::position + amount;
+    Window::goal.position = Window::goal.position + amount;
     gtk_widget_queue_draw(drawing_area);
 }
 void GUI::move_z (float amount) {
-    Window::size = Window::size - Vector2(amount, amount);
+    Window::goal.size = Window::goal.size - Vector2(amount, amount);
     gtk_widget_queue_draw(drawing_area);
 }
 
@@ -58,12 +58,12 @@ void GUI::zoom_out () {
 }
 
 void GUI::rotate_right() {
-    Window::angle += 0.1;
+    Window::goal.angle += 0.1;
     gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::rotate_left() {
-    Window::angle -= 0.1;
+    Window::goal.angle -= 0.1;
     gtk_widget_queue_draw(drawing_area);
 }
 

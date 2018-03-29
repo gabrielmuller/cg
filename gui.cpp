@@ -30,11 +30,15 @@ void GUI::move (Vector2 amount) {
     Transformation rot = Transformation::rotation(-Window::goal.angle, Vector2(0, 0));
     amount = (Transformation) amount * rot;
     Window::goal.position = Window::goal.position + amount;
-    gtk_widget_queue_draw(drawing_area);
+    //gtk_widget_queue_draw(drawing_area);
 }
 void GUI::move_z (float amount) {
-    Window::goal.size = Window::goal.size - Vector2(amount, amount);
-    gtk_widget_queue_draw(drawing_area);
+    if (Window::goal.size.x() > amount && 
+        Window::goal.size.y() > amount) {
+        Window::goal.size = Window::goal.size - Vector2(amount, amount);
+    }
+
+    //gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::move_up () {
@@ -59,12 +63,12 @@ void GUI::zoom_out () {
 
 void GUI::rotate_right() {
     Window::goal.angle += 0.1;
-    gtk_widget_queue_draw(drawing_area);
+    //gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::rotate_left() {
     Window::goal.angle -= 0.1;
-    gtk_widget_queue_draw(drawing_area);
+    //gtk_widget_queue_draw(drawing_area);
 }
 
 /*****************************************
@@ -86,7 +90,7 @@ void GUI::translation_cb(GtkWidget **entry, GtkWidget *widget) {
     std::advance(it, selected_id);
     (*it)->translate(Vector2(std::stof(coord_x), std::stof(coord_y)));
 
-    gtk_widget_queue_draw(drawing_area);
+    //gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::translation_page (GtkWidget* frame) {
@@ -140,7 +144,7 @@ void GUI::scaling_cb(GtkWidget **entry, GtkWidget *widget) {
     std::advance(it, selected_id);
     (*it)->scale(Vector2(std::stof(coord_x), std::stof(coord_y)));
 
-    gtk_widget_queue_draw(drawing_area);
+    //gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::scaling_page(GtkWidget* frame) {
@@ -209,7 +213,7 @@ void GUI::rotation_cb(GtkWidget **entry, GtkWidget *widget) {
 
     g_signal_connect (G_OBJECT (drawing_area), "draw",
                     G_CALLBACK (draw_cb), NULL);
-    gtk_widget_queue_draw(drawing_area);
+    //gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::rotation_page (GtkWidget* frame) {
@@ -271,7 +275,7 @@ void GUI::add_point_cb(GtkWidget **entry, GtkWidget *widget) {
     Point* point = new Point (nome, std::stof(coord_x), std::stof(coord_y));
     Display::add(point);
 
-    gtk_widget_queue_draw(drawing_area);
+    //gtk_widget_queue_draw(drawing_area);
     gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), nome.c_str());
 
     gtk_widget_destroy(GTK_WIDGET(entry[0]));
@@ -348,7 +352,7 @@ void GUI::add_line_cb(GtkWidget **entry, GtkWidget *widget) {
         Vector2(std::stof(coord_x2), std::stof(coord_y2))});
     Display::add(line);
 
-    gtk_widget_queue_draw(drawing_area);
+    //gtk_widget_queue_draw(drawing_area);
     gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), nome.c_str());
 
     gtk_widget_destroy(GTK_WIDGET(entry[0]));
@@ -434,7 +438,7 @@ void GUI::add_poly_cb(GtkWidget *window, GtkWidget *widget) {
         Display::shapes.pop_back();
     } else {
         gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), Display::shapes.back()->name.c_str());
-        gtk_widget_queue_draw(drawing_area);
+        //gtk_widget_queue_draw(drawing_area);
     }
     gtk_widget_destroy(GTK_WIDGET(window));
 }
@@ -592,7 +596,7 @@ void GUI::on_import_button(GtkWidget *widget, GtkWidget *window) {
         auto sh = DescOBJ::read_obj(filename);
         Display::add(sh);
         gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), sh->name.c_str());
-        gtk_widget_queue_draw(drawing_area);
+        //gtk_widget_queue_draw(drawing_area);
     }
 
     gtk_widget_destroy(chooser);

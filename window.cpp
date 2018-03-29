@@ -61,7 +61,7 @@ void Window::animate () {
     float& largest = a > b ? a : b;
     float& smallest = a < b ? a : b;
     if (largest - smallest > M_PI) {
-        largest -= 180;
+        largest -= M_PI * 2;
     }
     real.angle = a * (1-smooth) + b * smooth;
 }

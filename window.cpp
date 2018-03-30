@@ -3,7 +3,7 @@
 
 Vector2 Window::viewport(400, 400);
 float Window::smooth = 0.2;
-
+float Window::xl, Window::xr, Window::yd, Window::yu;
 // converte uma coordenada do espaço no mundo para tela
 Vector2 Window::world_to_screen(Vector2 coords) {
     return norm_to_vp(world_to_norm(coords));
@@ -49,6 +49,53 @@ Vector2 Window::norm_to_vp (Vector2 coords) {
 
     coords = (Transformation) coords * t;
     return coords;
+}
+
+AB Window::clip_line (AB line) {
+    int a_rc = get_rc(line.a);
+    int b_rc = get_rc(line.b);
+    
+    // se os dois RC são 0000, não ocorre clipping
+    if (!a_rc && !b_rc) {
+        return line;
+    }
+
+    // se o AND dos dois RC é diferente de 0000, está fora da janela
+    // retorna empty = true
+    if (a_rc & b_rc) {
+        return AB();
+    }
+
+    // clipping de fato
+    // TODO
+    return line;
+}
+
+/* Exemplo de RC:
+ * 0000 0110
+ *      NSLO (pontos cardeais)
+ * valor 6 (sudeste)
+ */
+int Window::get_rc (Vector2 point) {
+    // TODO: chamar update_boundaries num local melhor
+    update_boundaries();
+    float x = point.x();
+    float y = point.y();
+    int rc = 0;
+
+    rc |= (x < xl) << 0;
+    rc |= (x > xr) << 1;
+    rc |= (y < yd) << 2;
+    rc |= (y > yu) << 3;
+
+    return rc;
+}
+
+void Window::update_boundaries () {
+    xl = real.position.x() - real.size.x()/2;
+    xr = real.position.x() + real.size.x()/2;
+    yd = real.position.y() - real.size.y()/2;
+    yu = real.position.y() + real.size.y()/2;
 }
 
 void Window::animate () {

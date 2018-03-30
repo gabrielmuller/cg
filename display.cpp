@@ -1,8 +1,9 @@
+#include "display.h"
+
 #include "polygon.h"
 #include "point.h"
 #include "line.h"
 #include <math.h>
-#include "display.h"
 #include "descobj.h"
 
 std::list<Shape*> Display::shapes;
@@ -34,6 +35,13 @@ void Display::create_all () {
 /*void Display::destroy_all() {
     shapes.clear();
 }*/
+void Display::draw_all(cairo_t* cr) {
+    for (auto it = shapes.begin();
+        it != shapes.end();
+        ++it) {
+        (*it)->draw(cr);
+    }
+}
 
 void Display::add(Shape* sh) {
     shapes.push_back(sh);

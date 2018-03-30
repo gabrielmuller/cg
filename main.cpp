@@ -13,8 +13,13 @@ static gboolean test (void* data) {
     return TRUE;
 }
 int main (int argc, char **argv) {
-    std::cout << (std::string) Transformation::mb << "\n";
+    /*
+    AB teste (Vector2(-10, -10), Vector2(-10, 20));
+    AB outro (Vector2(3, 3), Vector2(-2, -1));
+    std::cout << "UM: " << Window::clip_line(teste).empty << std::endl; 
+    std::cout << "ZERO: " << Window::clip_line(outro).empty << std::endl;
     return 0;
+    */
     GtkApplication *app;
     int status;
 

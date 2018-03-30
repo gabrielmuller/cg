@@ -17,12 +17,7 @@ gboolean GUI::draw_cb(GtkWidget *widget, cairo_t* cr, gpointer* data) {
     // linha branca
     cairo_set_source_rgb(cr, 1, 1, 1);
 
-    for (auto it = Display::shapes.begin();
-        it != Display::shapes.end();
-        ++it) {
-        (*it)->draw(cr);
-    }
-
+    Display::draw_all(cr);
     return FALSE;
 }
 

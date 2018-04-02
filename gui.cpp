@@ -426,6 +426,12 @@ void GUI::add_line_window () {
  *
  *****************************************/
 
+/**  
+ *  1: add_poly_window -> create_poly_cb -> add_verts_window
+ *  2: add_verts_window -> add_vert_cb OR add_poly_cb
+ *  (Mais um exemplo de boa nomeação...)
+ */
+
 // Termina criação de polígono e desenha na tela
 void GUI::add_poly_cb(GtkWidget *window, GtkWidget *widget) {
     Polygon* p = dynamic_cast<Polygon*>(Display::shapes.back());
@@ -519,7 +525,8 @@ void GUI::add_verts_window(Polygon* poly) {
 // Cria polígono com nome
 void GUI::create_poly_cb(GtkWidget **entry, GtkWidget *widget) {
     std::string nome = gtk_entry_get_text (GTK_ENTRY(entry[1]));
-    Polygon* poly = new Polygon (nome);
+    bool fill = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(entry[2]));
+    Polygon* poly = new Polygon (nome, fill);
     Display::add(poly);
 
     gtk_widget_destroy(GTK_WIDGET(entry[0]));
@@ -528,28 +535,29 @@ void GUI::create_poly_cb(GtkWidget **entry, GtkWidget *widget) {
 
 // Janela pra criar polígono com nome
 void GUI::add_poly_window () {
-    GtkWidget* window;
-    GtkWidget* grid;
-    GtkWidget *add_poly_b;
-    GtkWidget *nome_entry, *nome_label;
+    GtkWidget *window, *grid;
+    GtkWidget *ok_button;
+    GtkWidget *name_entry, *name_label, *fill_check;
 
     // Window
     window = gtk_application_window_new (app);
     gtk_window_set_title (GTK_WINDOW (window), "Adicionar Polígono");
     
     // labels
-    nome_label = gtk_label_new("Nome");
+    name_label = gtk_label_new("Nome");
     
     // Entries
-    nome_entry = gtk_entry_new();
+    name_entry = gtk_entry_new();
+    fill_check = gtk_check_button_new_with_label("Preencher?");
 
-    static GtkWidget *entries[4];
+    static GtkWidget *entries[3];
     entries[0] = window;
-    entries[1] = nome_entry;
+    entries[1] = name_entry;
+    entries[2] = fill_check;
 
     // Botoes
-    add_poly_b = gtk_button_new_with_label("Criar polígono");
-    g_signal_connect_swapped(add_poly_b, "clicked",
+    ok_button = gtk_button_new_with_label("Criar polígono");
+    g_signal_connect_swapped(ok_button, "clicked",
         G_CALLBACK (create_poly_cb), entries);
 
     grid = gtk_grid_new();
@@ -558,9 +566,10 @@ void GUI::add_poly_window () {
     // coloca widgets nos containers
     gtk_container_add(GTK_CONTAINER(window), grid);
     
-    gtk_grid_attach(GTK_GRID(grid), nome_label, 0, 0, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), nome_entry, 1, 0, 1, 1); 
-    gtk_grid_attach(GTK_GRID(grid), add_poly_b, 0, 1, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), name_label, 0, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), name_entry, 1, 0, 1, 1); 
+    gtk_grid_attach(GTK_GRID(grid), fill_check, 0, 1, 2, 1); 
+    gtk_grid_attach(GTK_GRID(grid), ok_button, 0, 2, 2, 1);
 
     gtk_widget_show_all(window);
 }
@@ -707,7 +716,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     g_signal_connect_swapped(polygon_button, "clicked",
         G_CALLBACK (add_poly_window), window);
 
-    box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1);
     gtk_box_pack_start(GTK_BOX(box), point_button, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), line_button, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), polygon_button, TRUE, TRUE, 0);
@@ -721,7 +730,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     g_signal_connect_swapped(export_button, "clicked",
         G_CALLBACK (on_export_button), window);
 
-    box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 1);
     gtk_box_pack_start(GTK_BOX(box), import_button, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), export_button, TRUE, TRUE, 0);
     add_frame = gtk_frame_new("Arquivo .obj");

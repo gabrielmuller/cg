@@ -1,10 +1,19 @@
 #include "polygon.h"
 
 Polygon::Polygon (std::string name, std::list<Vector2> verts) : 
+    open(false),
+    fill(false),
     verts(verts),
     Shape::Shape(name) {}
 
 Polygon::Polygon (std::string name) :
+    open(false),
+    fill(false),
+    Shape::Shape(name) {}
+
+Polygon::Polygon (std::string name, bool fill) :
+    open(false),
+    fill(fill),
     Shape::Shape(name) {}
 
 void Polygon::draw (cairo_t* cr) {
@@ -24,6 +33,7 @@ void Polygon::draw (cairo_t* cr) {
         coords = Window::world_to_screen(verts.front());
         cairo_line_to(cr, coords.x(), coords.y());
     }
+    if (fill) cairo_fill(cr);
     cairo_stroke(cr);
 }
 

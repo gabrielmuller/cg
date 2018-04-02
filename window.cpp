@@ -4,6 +4,7 @@
 Vector2 Window::viewport(400, 400);
 float Window::smooth = 0.2;
 float Window::xl, Window::xr, Window::yd, Window::yu;
+cairo_t* Window::cr;
 // converte uma coordenada do espaço no mundo para tela
 Vector2 Window::world_to_screen(Vector2 coords) {
     return norm_to_vp(world_to_norm(coords));
@@ -51,6 +52,39 @@ Vector2 Window::norm_to_vp (Vector2 coords) {
     return coords;
 }
 
+// Recebe uma linha em coordenadas de mundo,
+// transforma em coordenadas normalizadas,
+// faz clipping e desenha no viewport
+void Window::draw_line (AB line) {
+    line.a = world_to_norm(line.a);
+    line.b = world_to_norm(line.b);
+
+    line = clip_line(line);
+
+    line.a = norm_to_vp(line.a);
+    line.b = norm_to_vp(line.b);
+
+    cairo_move_to(cr, line.a.x(), line.a.y());
+    cairo_line_to(cr, line.b.x(), line.b.y());
+    cairo_stroke(cr);
+}
+
+void Window::draw_point (Vector2 point) {
+    point = world_to_norm(point);
+
+    // C L I P P
+    if (point.x() < xl || point.x() > xr ||
+        point.y() < yd || point.y() > yu) {
+
+        return;
+    }
+
+    point = norm_to_vp(point);
+    cairo_move_to(cr, point.x() - 1, point.y());
+    cairo_line_to(cr, point.x() + 1, point.y());
+    cairo_stroke(cr);
+}
+
 AB Window::clip_line (AB line) {
     int a_rc = get_rc(line.a);
     int b_rc = get_rc(line.b);
@@ -68,49 +102,90 @@ AB Window::clip_line (AB line) {
 
     // clipping de fato
 
-    // outside é o ponto que está fora da window e será alterado
-    Vector2& out_point = a_rc ? line.a : line.b;
-    int& out_rc = a_rc ? a_rc : b_rc;
-    // por enquanto só pela esquerda
-    if (out_rc & (1 << 0)) {
-        float m = (line.a.x() - line.b.x()) / (line.a.y() - line.b.y());
-        out_point = Vector2(xl, m*(xl - out_point.x()) + out_point.y());
+    // coeficiente angular
+    float m = (line.a.y() - line.b.y()) / (line.a.x() - line.b.x());
+
+    // colocar em arrays para poder fazer loop
+    Vector2* p[2] = {&line.a, &line.b};
+    int rc[2] = {a_rc, b_rc};
+
+    // houve mudança em um dos pontos?
+    bool changed = false;
+
+    for (int i = 0; i < 2; i++) {
+        if (!rc[i]) {
+            continue;
+        }
+
+        // TODO código repetido, dá pra parametrizar
+        if (rc[i] & (1 << XL)) {
+            float y = m*(xl - p[i]->x()) + p[i]->y();
+            if (y < yu && y > yd) {
+                *p[i] = Vector2(xl, y);
+                changed = true;
+            }
+        }
+        if (rc[i] & (1 << XR)) {
+            float y = m*(xr - p[i]->x()) + p[i]->y();
+            if (y < yu && y > yd) {
+                *p[i] = Vector2(xr, y);
+                changed = true;
+            }
+        }
+        if (rc[i] & (1 << YD)) {
+            float x = (yd - p[i]->y())/m + p[i]->x();
+            if (x < xr && x > xl) {
+                *p[i] = Vector2(x, yd);
+                changed = true;
+            }
+        }
+        if (rc[i] & (1 << YU)) {
+            float x = (yu - p[i]->y())/m + p[i]->x();
+            if (x < xr && x > xl) {
+                *p[i] = Vector2(x, yu);
+                changed = true;
+            }
+        }
     }
 
+    // se não houve, a reta está completamente fora
+    if (!changed) {
+        line = AB();
+    }
     return line;
 }
-
+    
 /* Exemplo de RC:
  * 0000 0110
  *      NSLO (pontos cardeais)
  * valor 6 (sudeste)
  */
 int Window::get_rc (Vector2 point) {
-    // TODO: chamar update_boundaries num local melhor
-    update_boundaries();
     float x = point.x();
     float y = point.y();
     int rc = 0;
 
-    rc |= (x < xl) << 0;
-    rc |= (x > xr) << 1;
-    rc |= (y < yd) << 2;
-    rc |= (y > yu) << 3;
+    rc |= (x < xl) << XL;
+    rc |= (x > xr) << XR;
+    rc |= (y < yd) << YD;
+    rc |= (y > yu) << YU;
 
     return rc;
 }
 
 void Window::update_boundaries () {
     // margem para ver se clipping realmente funciona
-    Vector2 mock_size = real.size - Vector2(1, 1);
+    // em coordenadas normalizadas
+    Vector2 mock_size = Vector2(1.8, 1.8);
 
-    xl = real.position.x() - mock_size.x()/2;
-    xr = real.position.x() + mock_size.x()/2;
-    yd = real.position.y() - mock_size.y()/2;
-    yu = real.position.y() + mock_size.y()/2;
+    xl = -mock_size.x()/2;
+    xr =  mock_size.x()/2;
+    yd = -mock_size.y()/2;
+    yu =  mock_size.y()/2;
 }
 
 void Window::animate () {
+    update_boundaries();
     real.position = Vector2::lerp(real.position, goal.position, smooth);
     real.size = Vector2::lerp(real.size, goal.size, smooth);
 

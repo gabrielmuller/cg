@@ -3,7 +3,6 @@
 
 #include <list>
 #include <string>
-#include <gtk/gtk.h>
 #include "vector2.h"
 #include "window.h"
 
@@ -14,10 +13,8 @@ struct Shape {
 
     /**
      * @brief       Desenha o polígono no viewport. 
-     *
-     * @param[in]   ct          contexto cairo onde desenhar
      */
-    virtual void draw (cairo_t* ct) = 0;
+    virtual void draw () = 0;
 
     /**
      * @brief       Realiza uma transformação qualquer na forma. 

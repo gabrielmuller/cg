@@ -6,7 +6,6 @@
 
 struct Line : Polygon {
 	Line (std::string name, std::list<Vector2> verts);
-        void draw (cairo_t* cr) override;
 };
 
 

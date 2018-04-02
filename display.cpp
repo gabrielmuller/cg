@@ -15,7 +15,7 @@ void Display::create_all () {
 
     Polygon* wave = new Polygon ("Sinewave");
 
-    Point* point = new Point ("Point", 0, 0);
+    Point* point = new Point ("Point", -1.5, 0);
     Line* line = new Line ("Straight Line",
         {Vector2(1, -3), Vector2(3, -1)});
 
@@ -32,14 +32,11 @@ void Display::create_all () {
     shapes.push_back(point);
 }
 
-/*void Display::destroy_all() {
-    shapes.clear();
-}*/
-void Display::draw_all(cairo_t* cr) {
+void Display::draw_all() {
     for (auto it = shapes.begin();
         it != shapes.end();
         ++it) {
-        (*it)->draw(cr);
+        (*it)->draw();
     }
 }
 

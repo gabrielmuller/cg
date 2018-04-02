@@ -7,24 +7,31 @@ Polygon::Polygon (std::string name, std::list<Vector2> verts) :
 Polygon::Polygon (std::string name) :
     Shape::Shape(name) {}
 
-void Polygon::draw (cairo_t* cr) {
+void Polygon::draw () {
     if (verts.empty()) {
         return;
     }
     auto it = verts.begin();
 
-    Vector2 coords = Window::world_to_screen(*it);
-    cairo_move_to(cr, coords.x(), coords.y());
+    //Vector2 coords = Window::world_to_screen(*it);
+    //cairo_move_to(cr, coords.x(), coords.y());
+    Vector2 pos = *it;
 
     for (; it != verts.end(); ++it) {
+        /*cairo_move_to(cr, coords.x(), coords.y());
         coords = Window::world_to_screen(*it);
-        cairo_line_to(cr, coords.x(), coords.y());
+        cairo_line_to(cr, coords.x(), coords.y());*/
+        AB edge (pos, *it);
+        Window::draw_line(edge);
+        pos = *it;
     }
     if (!open) {
-        coords = Window::world_to_screen(verts.front());
-        cairo_line_to(cr, coords.x(), coords.y());
+        /*coords = Window::world_to_screen(verts.front());
+        cairo_line_to(cr, coords.x(), coords.y());*/
+        AB edge (verts.back(), verts.front());
+        Window::draw_line(edge);
     }
-    cairo_stroke(cr);
+    //cairo_stroke(cr);
 }
 
 void Polygon::transform(const Transformation& t) {

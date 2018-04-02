@@ -67,7 +67,16 @@ AB Window::clip_line (AB line) {
     }
 
     // clipping de fato
-    // TODO
+
+    // outside é o ponto que está fora da window e será alterado
+    Vector2& out_point = a_rc ? line.a : line.b;
+    int& out_rc = a_rc ? a_rc : b_rc;
+    // por enquanto só pela esquerda
+    if (out_rc & (1 << 0)) {
+        float m = (line.a.x() - line.b.x()) / (line.a.y() - line.b.y());
+        out_point = Vector2(xl, m*(xl - out_point.x()) + out_point.y());
+    }
+
     return line;
 }
 
@@ -92,10 +101,13 @@ int Window::get_rc (Vector2 point) {
 }
 
 void Window::update_boundaries () {
-    xl = real.position.x() - real.size.x()/2;
-    xr = real.position.x() + real.size.x()/2;
-    yd = real.position.y() - real.size.y()/2;
-    yu = real.position.y() + real.size.y()/2;
+    // margem para ver se clipping realmente funciona
+    Vector2 mock_size = real.size - Vector2(1, 1);
+
+    xl = real.position.x() - mock_size.x()/2;
+    xr = real.position.x() + mock_size.x()/2;
+    yd = real.position.y() - mock_size.y()/2;
+    yu = real.position.y() + mock_size.y()/2;
 }
 
 void Window::animate () {

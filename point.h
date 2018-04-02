@@ -10,7 +10,7 @@ struct Point : Shape {
     Vector2 position;
 
     Point (std::string name, float x, float y); 
-    void draw (cairo_t* ct) override;
+    void draw () override;
 
     void transform (const Transformation& t) override;
     void translate (const Vector2& distance);

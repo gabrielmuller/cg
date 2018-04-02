@@ -5,4 +5,3 @@ Line::Line (std::string name, std::list<Vector2> verts) :
         open = true;
         fill = false;
     }
-

@@ -15,7 +15,7 @@ struct Polygon : Shape {
     Polygon (std::string name, std::list<Vector2> verts); 
     Polygon (std::string name); 
     Polygon (std::string name, bool fill); 
-    void draw (cairo_t* cr) override;
+    void draw () override;
 
     void transform (const Transformation& t) override;
 

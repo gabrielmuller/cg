@@ -3,14 +3,13 @@
 
 #include <list>
 #include "shape.h"
-#include <gtk/gtk.h>
 
 // display file
 namespace Display {
     extern std::list<Shape*> shapes;
     void create_all ();
     void add(Shape* sh);
-    void draw_all (cairo_t* cr);
+    void draw_all ();
 }
 
 #endif

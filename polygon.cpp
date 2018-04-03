@@ -69,6 +69,9 @@ void Polygon::draw_fill() {
     }
     // close poly
 
+    // Evitar bad_alloc na linha 75
+    if (clipVerts.empty()) return;
+
     it = clipVerts.begin();
     pos = *it;
     for (; it != clipVerts.end(); ++it) {

@@ -217,15 +217,11 @@ void GUI::rotation_cb(GtkWidget **entry, GtkWidget *widget) {
 void GUI::rotation_page (GtkWidget* frame) {
     GtkWidget *grid, *ok_button, *d_label, *d_entry;
     GtkWidget *x_label, *y_label, *x_entry, *y_entry;
-    GtkWidget *help_label, *help_frame;
 
     // labels
     d_label = gtk_label_new("Graus");
     x_label = gtk_label_new("Coordenada x");
     y_label = gtk_label_new("Coordenada y");
-    help_frame = gtk_frame_new(" Ajuda");
-    help_label = gtk_label_new(" Para rotação em relação ao centro do\n objeto, deixe os campos x, y em\n branco.");
-    gtk_container_add(GTK_CONTAINER(help_frame), help_label);
 
     // Entries
     d_entry = gtk_entry_new();
@@ -242,6 +238,8 @@ void GUI::rotation_page (GtkWidget* frame) {
     g_signal_connect_swapped(ok_button, "clicked",
         G_CALLBACK (rotation_cb), entries);
 
+    gtk_widget_set_tooltip_text (GTK_WIDGET(ok_button),
+        "Para rotação em relação ao centro do\n objeto, deixe os campos x, y em\n branco.");
     grid = gtk_grid_new();
     //gtk_grid_set_row_spacing (GTK_GRID(grid), (guint)10);
     //gtk_grid_set_column_spacing (GTK_GRID(grid), (guint)10);
@@ -253,8 +251,7 @@ void GUI::rotation_page (GtkWidget* frame) {
     gtk_grid_attach(GTK_GRID(grid), x_entry, 1, 1, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), y_label, 0, 2, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), y_entry, 1, 2, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), help_frame, 0, 3, 2, 2);
-    gtk_grid_attach(GTK_GRID(grid), ok_button, 0, 5, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), ok_button, 0, 3, 2, 1);
 
     gtk_container_add(GTK_CONTAINER(frame), grid);
 }
@@ -476,7 +473,7 @@ void GUI::add_verts_window(Polygon* poly) {
     
     // labels
     t1_label = gtk_label_new("Adicionar vértice");
-    t2_label = gtk_label_new("Vetores");
+    t2_label = gtk_label_new("Vértices");
     x_label = gtk_label_new("Posição x");
     y_label = gtk_label_new("Posição y");
     
@@ -719,7 +716,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     g_signal_connect_swapped(polygon_button, "clicked",
         G_CALLBACK (add_poly_window), window);
 
-    box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1);
+    box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 1);
     gtk_box_pack_start(GTK_BOX(box), point_button, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), line_button, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), polygon_button, TRUE, TRUE, 0);

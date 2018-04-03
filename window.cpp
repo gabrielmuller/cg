@@ -1,5 +1,6 @@
 #include "window.h"
 #include "math.h"
+#include <iostream>
 
 Vector2 Window::viewport(400, 400);
 float Window::smooth = 0.2;
@@ -55,7 +56,7 @@ Vector2 Window::norm_to_vp (Vector2 coords) {
 // Recebe uma linha em coordenadas de mundo,
 // transforma em coordenadas normalizadas,
 // faz clipping e desenha no viewport
-void Window::draw_line (AB line) {
+void Window::draw_line (AB line, bool last) {
     line.a = world_to_norm(line.a);
     line.b = world_to_norm(line.b);
 
@@ -66,6 +67,26 @@ void Window::draw_line (AB line) {
 
     cairo_move_to(cr, line.a.x(), line.a.y());
     cairo_line_to(cr, line.b.x(), line.b.y());
+    //cairo_stroke_preserve(cr);
+    //if (last) cairo_fill(cr);
+}
+
+void Window::draw_pline (AB line, bool last) {
+    line.a = norm_to_vp(line.a);
+    line.b = norm_to_vp(line.b);
+    cairo_move_to(cr, line.a.x(), line.a.y());
+    cairo_line_to(cr, line.b.x(), line.b.y());
+    //cairo_stroke(cr);
+    cairo_stroke_preserve(cr);
+    //if (last) cairo_fill(cr);
+}
+
+void Window::fill () {
+    cairo_set_source_rgb(cr, 1, 1, 1);
+    cairo_fill(cr);
+}
+
+void Window::stroke () {
     cairo_stroke(cr);
 }
 

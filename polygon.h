@@ -16,6 +16,7 @@ struct Polygon : Shape {
     Polygon (std::string name); 
     Polygon (std::string name, bool fill); 
     void draw () override;
+    void drawf ();
 
     void transform (const Transformation& t) override;
 

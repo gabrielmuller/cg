@@ -30,6 +30,10 @@ void Display::create_all () {
     shapes.push_back(wave);
     shapes.push_back(line);
     shapes.push_back(point);
+
+    Polygon* fsquare = dynamic_cast<Polygon*>(DescOBJ::read_obj("fsquare.obj"));
+    fsquare->fill = true;
+    shapes.push_back(fsquare);
 }
 
 void Display::draw_all() {

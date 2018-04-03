@@ -50,4 +50,8 @@ Vector2 Vector2::lerp (const Vector2& a, const Vector2& b, float p) {
     return (a * (1-p) + b * p);
 }
 
+bool Vector2::operator== (Vector2 other) const {
+    return x() == other.x()  && y() == other.y();
+}
+
     

@@ -23,8 +23,8 @@ void Polygon::draw () {
     }
 
     if (fill) {
-        //drawf();
-        //return;
+        draw_fill();
+        return;
     }
 
     auto it = verts.begin();
@@ -32,22 +32,22 @@ void Polygon::draw () {
 
     for (; it != verts.end(); ++it) {
         AB edge (pos, *it);
-        Window::draw_line(edge, FALSE);
+        Window::draw_line(edge, fill);
         pos = *it;
         //cairo_stroke_preserve( Window::cr);
         //if (fill) std::cout << std::string(Window::norm_to_vp(Window::world_to_norm(*it))) << std::endl;
     }
     if (!open) {
         AB edge (verts.back(), verts.front());
-        if (fill) Window::draw_line(edge, TRUE);
-        else Window::draw_line(edge, FALSE);
-        cairo_close_path( Window::cr);
+        Window::draw_line(edge, fill);
+        if (fill) {
+            std::cout << "fill " << name << std::endl;
+            cairo_fill(Window::cr);
+        }
     }
-
-    //if (fill) cairo_fill(Window::cr);
 }
 
-void Polygon::drawf() {
+void Polygon::draw_fill() {
     auto it = verts.begin();
     std::list<Vector2> clipVerts;
 
@@ -59,17 +59,21 @@ void Polygon::drawf() {
         edge.b = Window::world_to_norm(edge.b);
 
         edge = Window::clip_line(edge);
-
-        clipVerts.push_back(edge.b);
+        if (!edge.empty) {
+            clipVerts.push_back(edge.a);
+            clipVerts.push_back(edge.b);
+        }
         pos = *it;
     }
 
     it = clipVerts.begin();
     pos = *it;
+    std::cout << "----" << std::endl;
+    //cairo_move_to(cr, line.a.x(), line.a.y());
     for (; it != clipVerts.end(); ++it) {
-        //std::cout << std::string(Window::norm_to_vp(*it)) << std::endl;
+        std::cout << std::string(Window::norm_to_vp(*it)) << std::endl;
         AB edge (pos, *it);
-        Window::draw_pline(edge, false);
+        Window::draw_pline(edge);
         pos = *it;
     }    
     
@@ -77,13 +81,11 @@ void Polygon::drawf() {
         //std::cout << "front " << std::string(clipVerts.front()) << std::endl;
         //std::cout << "back " << std::string(clipVerts.back()) << std::endl;
         AB edge (clipVerts.back(), clipVerts.front());
-        Window::draw_pline(edge, true);
+        Window::draw_pline(edge);
+        
     }
-    //cairo_stroke_preserve(Window::cr);
-    //cairo_fill(Window::cr);
-    //cairo_close_path(Window::cr);
-
-    //cairo_stroke(Window::cr);
+    cairo_fill(Window::cr);
+    cairo_close_path(Window::cr);
 }
 
 void Polygon::transform(const Transformation& t) {

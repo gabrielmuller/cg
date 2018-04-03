@@ -32,7 +32,7 @@ namespace Window {
     Vector2 world_to_norm (Vector2 coords);
     Vector2 norm_to_vp (Vector2 coords);
 
-    void draw_line (AB line, bool fill);
+    void draw_line (AB line);
     void draw_pline (AB line);
     void draw_point (Vector2 point);
     void fill();

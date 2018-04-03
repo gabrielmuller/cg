@@ -56,7 +56,7 @@ Vector2 Window::norm_to_vp (Vector2 coords) {
 // Recebe uma linha em coordenadas de mundo,
 // transforma em coordenadas normalizadas,
 // faz clipping e desenha no viewport
-void Window::draw_line (AB line, bool fill) {
+void Window::draw_line (AB line) {
     line.a = world_to_norm(line.a);
     line.b = world_to_norm(line.b);
 
@@ -65,9 +65,9 @@ void Window::draw_line (AB line, bool fill) {
     line.a = norm_to_vp(line.a);
     line.b = norm_to_vp(line.b);
 
-    if (!fill) cairo_move_to(cr, line.a.x(), line.a.y());
+    cairo_move_to(cr, line.a.x(), line.a.y());
     cairo_line_to(cr, line.b.x(), line.b.y());
-    if (!fill) cairo_stroke(cr);
+    cairo_stroke(cr);
     
 }
 

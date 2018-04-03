@@ -21,32 +21,25 @@ void Polygon::draw () {
     if (verts.empty()) {
         return;
     }
-
     if (fill) {
         draw_fill();
         return;
     }
-
     auto it = verts.begin();
     Vector2 pos = *it;
 
     for (; it != verts.end(); ++it) {
         AB edge (pos, *it);
-        Window::draw_line(edge, fill);
+        Window::draw_line(edge);
         pos = *it;
-        //cairo_stroke_preserve( Window::cr);
-        //if (fill) std::cout << std::string(Window::norm_to_vp(Window::world_to_norm(*it))) << std::endl;
     }
     if (!open) {
         AB edge (verts.back(), verts.front());
-        Window::draw_line(edge, fill);
-        if (fill) {
-            std::cout << "fill " << name << std::endl;
-            cairo_fill(Window::cr);
-        }
+        Window::draw_line(edge);
     }
 }
 
+// deus me perdoe
 void Polygon::draw_fill() {
     auto it = verts.begin();
     std::list<Vector2> clipVerts;
@@ -57,7 +50,6 @@ void Polygon::draw_fill() {
         AB edge (pos, *it);
         edge.a = Window::world_to_norm(edge.a);
         edge.b = Window::world_to_norm(edge.b);
-
         edge = Window::clip_line(edge);
         if (!edge.empty) {
             clipVerts.push_back(edge.a);
@@ -66,24 +58,28 @@ void Polygon::draw_fill() {
         pos = *it;
     }
 
+    // close poly
+    AB edge (verts.back(), verts.front());
+    edge.a = Window::world_to_norm(edge.a);
+    edge.b = Window::world_to_norm(edge.b);
+    edge = Window::clip_line(edge);
+    if (!edge.empty) {
+        clipVerts.push_back(edge.a);
+        clipVerts.push_back(edge.b);
+    }
+    // close poly
+
     it = clipVerts.begin();
     pos = *it;
-    std::cout << "----" << std::endl;
-    //cairo_move_to(cr, line.a.x(), line.a.y());
     for (; it != clipVerts.end(); ++it) {
-        std::cout << std::string(Window::norm_to_vp(*it)) << std::endl;
+        //std::cout << std::string(Window::norm_to_vp(*it)) << std::endl;
         AB edge (pos, *it);
         Window::draw_pline(edge);
         pos = *it;
     }    
     
-    if (!open) {
-        //std::cout << "front " << std::string(clipVerts.front()) << std::endl;
-        //std::cout << "back " << std::string(clipVerts.back()) << std::endl;
-        AB edge (clipVerts.back(), clipVerts.front());
-        Window::draw_pline(edge);
-        
-    }
+    AB edge2 (clipVerts.back(), clipVerts.front());
+    Window::draw_pline(edge2);        
     cairo_fill(Window::cr);
     cairo_close_path(Window::cr);
 }

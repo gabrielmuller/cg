@@ -69,13 +69,16 @@ void Polygon::draw_fill() {
     }
     // close poly
 
-    // Evitar bad_alloc na linha 75
+    // Evitar bad_alloc
     if (clipVerts.empty()) return;
+    //std::cout << "size " << clipVerts.size() << std::endl;
 
     it = clipVerts.begin();
     pos = *it;
+    //std::cout << "---" << std::endl;
     for (; it != clipVerts.end(); ++it) {
-        //std::cout << std::string(Window::norm_to_vp(*it)) << std::endl;
+        //std::cout << "pos " << std::string(Window::norm_to_vp(pos)) << std::endl;
+        //std::cout << "it " << std::string(Window::norm_to_vp(*it)) << std::endl;
         AB edge (pos, *it);
         Window::draw_pline(edge);
         pos = *it;

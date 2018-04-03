@@ -14,6 +14,7 @@ void Display::create_all () {
     Shape* square = DescOBJ::read_obj("Square.obj");
     Polygon* trapezoid = dynamic_cast<Polygon*>(DescOBJ::read_obj("Trapezio.obj"));
     Polygon* fsquare = dynamic_cast<Polygon*>(DescOBJ::read_obj("Fsquare.obj"));
+    Polygon* concavo = dynamic_cast<Polygon*>(DescOBJ::read_obj("Concavo.obj"));
     
     Polygon* wave = new Polygon ("Sinewave");
 
@@ -27,13 +28,15 @@ void Display::create_all () {
 
     wave->open = true;
 
-    trapezoid->fill = true;
+    //trapezoid->fill = true;
     fsquare->fill = true;
+    concavo->fill = true;
     
     shapes.push_back(poly);
     shapes.push_back(square);
-    shapes.push_back(fsquare);
     shapes.push_back(trapezoid);
+    shapes.push_back(fsquare);
+    shapes.push_back(concavo);
     shapes.push_back(wave);
     shapes.push_back(point);
     shapes.push_back(line);

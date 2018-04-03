@@ -13,6 +13,9 @@ static gboolean frame (void* data) {
     return TRUE;
 }
 int main (int argc, char **argv) {
+    /*Window::update_boundaries();
+    Window::clip_line(AB(Vector2(-0.3, 0.5), Vector2(0.3, 1.1)));
+    return 0;*/
     GtkApplication *app;
     int status;
 

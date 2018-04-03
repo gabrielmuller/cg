@@ -5,6 +5,7 @@
 Vector2 Window::viewport(400, 400);
 float Window::smooth = 0.2;
 float Window::xl, Window::xr, Window::yd, Window::yu;
+int Window::clipping_algorithm = LIANG_BARSKY;
 cairo_t* Window::cr;
 // converte uma coordenada do espaço no mundo para tela
 Vector2 Window::world_to_screen(Vector2 coords) {
@@ -105,6 +106,14 @@ void Window::draw_point (Vector2 point) {
 }
 
 AB Window::clip_line (AB line) {
+    if (clipping_algorithm == COHEN_SUTHERLAND) {
+        return clip_cs(line);
+    } else if (clipping_algorithm == LIANG_BARSKY) {
+        return clip_lb(line);
+    }
+}
+
+AB Window::clip_cs (AB line) {
     int a_rc = get_rc(line.a);
     int b_rc = get_rc(line.b);
     
@@ -174,6 +183,45 @@ AB Window::clip_line (AB line) {
     return line;
 }
     
+    //TODO
+AB Window::clip_lb (AB line) {
+    float delta_x = line.b.x() - line.a.x();
+    float delta_y = line.b.y() - line.a.y();
+    float p[4] = {-delta_x, delta_x, -delta_y, delta_y};
+    float q[4] = {line.a.x() - xl, xr - line.a.x(), line.a.y() - yd, yu - line.a.y()};
+
+    for (int i = 0; i < 4; i ++) {
+        if (p[i] == 0 && q[i] < 0)  {
+            // linha completamente fora
+            return AB();
+        }
+    }
+    float u1 = 0;
+    float u2 = 1; // with or without you
+    for (int i = 0; i < 4; i++) {
+        if (p[i] < 0) {
+            u1 = std::max(u1, q[i]/p[i]);
+        }
+        if (p[i] > 0) {
+            u2 = std::min(u2, q[i]/p[i]);
+        }
+    }
+    if (u1 > u2) {
+        // linha completamente fora
+        return AB();
+    }
+    if (u1 > 0) {
+        // de fora pra dentro
+        line.a = Vector2(line.a.x() + u1 * delta_x, line.a.y() + u1 * delta_y);
+    }
+    if (u2 < 1) {
+        // de dentro pra fora
+        line.b = Vector2(line.a.x() + u2 * delta_x, line.a.y() + u2 * delta_y);
+    }
+
+    return line;
+}
+
 /* Exemplo de RC:
  * 0000 0110
  *      NSLO (pontos cardeais)

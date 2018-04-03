@@ -10,9 +10,11 @@ std::list<Shape*> Display::shapes;
 
 void Display::create_all () {
 
-    Shape* poly = DescOBJ::read_obj("tri.obj");
-    Shape* square = DescOBJ::read_obj("square.obj");
-
+    Shape* poly = DescOBJ::read_obj("Tri.obj");
+    Shape* square = DescOBJ::read_obj("Square.obj");
+    Polygon* trapezoid = dynamic_cast<Polygon*>(DescOBJ::read_obj("Trapezio.obj"));
+    Polygon* fsquare = dynamic_cast<Polygon*>(DescOBJ::read_obj("Fsquare.obj"));
+    
     Polygon* wave = new Polygon ("Sinewave");
 
     Point* point = new Point ("Point", -1.5, 0);
@@ -25,15 +27,16 @@ void Display::create_all () {
 
     wave->open = true;
 
+    trapezoid->fill = true;
+    fsquare->fill = true;
+    
     shapes.push_back(poly);
     shapes.push_back(square);
-    shapes.push_back(wave);
-    shapes.push_back(line);
-    shapes.push_back(point);
-
-    Polygon* fsquare = dynamic_cast<Polygon*>(DescOBJ::read_obj("fsquare.obj"));
-    fsquare->fill = true;
     shapes.push_back(fsquare);
+    shapes.push_back(trapezoid);
+    shapes.push_back(wave);
+    shapes.push_back(point);
+    shapes.push_back(line);
 }
 
 void Display::draw_all() {

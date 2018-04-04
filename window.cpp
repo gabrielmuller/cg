@@ -5,6 +5,16 @@
 Vector2 Window::viewport(400, 400);
 float Window::smooth = 0.2;
 float Window::xl, Window::xr, Window::yd, Window::yu;
+
+std::list<AB> Window::edges() {
+    return {
+            AB(Vector2(xl, yd), Vector2(xl,yu)),
+            AB(Vector2(xl, yu), Vector2(xr,yu)),
+            AB(Vector2(xr, yu), Vector2(xr,yd)),
+            AB(Vector2(xr, yd), Vector2(xl,yd))
+        };
+}
+
 cairo_t* Window::cr;
 // converte uma coordenada do espaço no mundo para tela
 Vector2 Window::world_to_screen(Vector2 coords) {
@@ -88,13 +98,15 @@ void Window::stroke () {
     cairo_stroke(cr);
 }
 
+bool Window::clip_point(Vector2 point) {
+    return !(point.x() < xl || point.x() > xr || point.y() < yd || point.y() > yu);
+}
+
 void Window::draw_point (Vector2 point) {
     point = world_to_norm(point);
 
     // C L I P P
-    if (point.x() < xl || point.x() > xr ||
-        point.y() < yd || point.y() > yu) {
-
+    if (!clip_point(point)) {
         return;
     }
 

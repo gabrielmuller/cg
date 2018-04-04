@@ -41,6 +41,10 @@ void Polygon::draw () {
 
 // deus me perdoe
 void Polygon::draw_fill() {
+    if (name == "Fsquare") {
+        draw_fill2();
+        return;
+    }
     auto it = verts.begin();
     std::list<Vector2> clipVerts;
 
@@ -71,7 +75,6 @@ void Polygon::draw_fill() {
 
     // Evitar bad_alloc
     if (clipVerts.empty()) return;
-    //std::cout << "size " << clipVerts.size() << std::endl;
 
     it = clipVerts.begin();
     pos = *it;
@@ -88,6 +91,74 @@ void Polygon::draw_fill() {
     Window::draw_pline(edge2);        
     cairo_fill(Window::cr);
     cairo_close_path(Window::cr);
+}
+
+void to_String (std::list<Vector2> l) {
+    for (auto i : l) {
+        std::cout << std::string(i) << std::endl;
+    }
+    if (l.empty())
+        std::cout << "empty" << std::endl;
+}
+
+
+void Polygon::draw_fill2() {
+    auto edges = Window::edges();
+    std::list<Vector2> output;
+    for (auto it = verts.begin(); it != verts.end(); ++it) {
+        output.push_back(Window::world_to_norm(*it));
+    }
+    for (auto edge : edges) {
+        if (output.empty()) {
+            break;
+        }
+        auto input = std::list<Vector2>();
+        input.swap(output);
+        Vector2 p1 = input.back();
+        for (auto p2 : input) {
+            //if (p2 == Vector2(0,0)) continue;
+            if (&p1 == &p2) continue;
+            AB line(p1, p2);
+            if(is_inside(p2, edge)) {
+                if (!is_inside(p1, edge)) {
+                    //std::cout << std::string(p1) << " p2" << std::string(p2) << std::endl;
+                    //std::cout << "clip a " << std::string(Window::clip_line(line).a) << std::endl;
+                    output.push_back(Window::clip_line(line).a);;
+                }
+                output.push_back(p2);
+            } else if (is_inside(p1, edge)) {
+                output.push_back(Window::clip_line(line).b);
+            }
+            p1 = p2;
+        }
+    }
+    if (output.empty()) {
+        return;
+    }
+
+    //to_String(output);
+    //std::cout << "---" << std::endl;
+
+    auto it = output.begin();
+    auto pos = *it;
+    for (; it != output.end(); ++it) {
+        //std::cout << "pos " << std::string(Window::norm_to_vp(pos)) << std::endl;
+        //std::cout << "it " << std::string(Window::norm_to_vp(*it)) << std::endl;
+        AB edge (pos, *it);
+        Window::draw_pline(edge);
+        pos = *it;
+    }    
+    
+    AB edge2 (output.back(), output.front());
+    Window::draw_pline(edge2);        
+    cairo_fill(Window::cr);
+    cairo_close_path(Window::cr);
+    
+}
+
+bool Polygon::is_inside(Vector2 coord, AB edge) {
+    return (edge.b.x() - edge.a.x()) * (coord.y() - edge.a.y()) < 
+           (edge.b.y() - edge.a.y()) * (coord.x() - edge.a.x());
 }
 
 void Polygon::transform(const Transformation& t) {

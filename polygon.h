@@ -17,9 +17,11 @@ struct Polygon : Shape {
     Polygon (std::string name, bool fill); 
     void draw () override;
     void draw_fill ();
+    void draw_fill2 ();
 
     void transform (const Transformation& t) override;
 
+    bool is_inside(Vector2 coord, AB edge);
     Vector2 center() const override;
 };
 

@@ -15,7 +15,6 @@ static gboolean frame (void* data) {
 int main (int argc, char **argv) {
     GtkApplication *app;
     int status;
-
     unsigned int fps = 60;
     float time = 1000 / (float) fps;
     g_timeout_add(time, frame, NULL);
@@ -23,7 +22,6 @@ int main (int argc, char **argv) {
     g_signal_connect(app, "activate", G_CALLBACK(activateGUI), NULL);
     status = g_application_run(G_APPLICATION(app), argc, argv);
     g_object_unref(app);
-
 
     return status;
 }

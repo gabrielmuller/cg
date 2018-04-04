@@ -3,6 +3,7 @@
 
 #include "AB.h"
 #include <gtk/gtk.h>
+#include <list>
 
 enum {
     XL = 0,
@@ -28,6 +29,8 @@ namespace Window {
     // extremidades da window
     extern float xr, xl, yu, yd;
 
+    std::list<AB> edges();
+
     Vector2 world_to_screen (Vector2 coords);
     Vector2 world_to_norm (Vector2 coords);
     Vector2 norm_to_vp (Vector2 coords);
@@ -39,7 +42,7 @@ namespace Window {
     void stroke();
 
     AB clip_line (AB line);
-    Vector2 clip_point (Vector2 point);
+    bool clip_point (Vector2 point);
     void update_boundaries (); 
     int get_rc (Vector2 point); 
     void animate ();

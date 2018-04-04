@@ -1,6 +1,6 @@
 #include "display.h"
 
-#include "polygon.h"
+#include "bezier.h"
 #include "point.h"
 #include "line.h"
 #include <math.h>
@@ -17,6 +17,8 @@ void Display::create_all () {
     Polygon* concavo = dynamic_cast<Polygon*>(DescOBJ::read_obj("Concavo.obj"));
     
     Polygon* wave = new Polygon ("Sinewave");
+    Bezier* curve = new Bezier ("Curva",
+        {Vector2(10, 4), Vector2(11, 1), Vector2(12, 3), Vector2(15, 5)});
 
     Point* point = new Point ("Point", -1.5, 0);
     Line* line = new Line ("Straight Line",
@@ -40,6 +42,7 @@ void Display::create_all () {
     shapes.push_back(wave);
     shapes.push_back(point);
     shapes.push_back(line);
+    shapes.push_back(curve);
 }
 
 void Display::draw_all() {

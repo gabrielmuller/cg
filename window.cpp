@@ -5,7 +5,7 @@
 Vector2 Window::viewport(400, 400);
 float Window::smooth = 0.2;
 float Window::xl, Window::xr, Window::yd, Window::yu;
-int Window::clipping_algorithm = LIANG_BARSKY;
+int Window::clipping_algorithm = COHEN_SUTHERLAND;
 cairo_t* Window::cr;
 // converte uma coordenada do espaço no mundo para tela
 Vector2 Window::world_to_screen(Vector2 coords) {

@@ -24,6 +24,14 @@ gboolean GUI::draw_cb(GtkWidget *widget, cairo_t* cr, gpointer* data) {
     return FALSE;
 }
 
+void GUI::set_cohen() {
+    Window::clipping_algorithm = COHEN_SUTHERLAND;
+}
+
+void GUI::set_liang() {
+    Window::clipping_algorithm = LIANG_BARSKY;
+}
+
 void GUI::move (Vector2 amount) {
     Transformation rot = Transformation::rotation(-Window::goal.angle, Vector2(0, 0));
     amount = (Transformation) amount * rot;
@@ -650,8 +658,10 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     GtkWidget *import_button, *export_button;
     GtkWidget *rot_left_button, *rot_right_button;
     GtkWidget *point_button, *line_button, *polygon_button; 
-    GtkWidget *move_frame, *create_frame, *add_frame, *combo_frame, *transform_frame;
+    GtkWidget *move_frame, *create_frame, *add_frame;
+    GtkWidget *combo_frame, *transform_frame, *clip_frame;
     GtkWidget *box, *big_box;
+    GtkWidget *radio1, *radio2;
 
     Display::create_all();
 
@@ -769,6 +779,18 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     transform_frame = gtk_frame_new("Transformações");
     gtk_container_add(GTK_CONTAINER(transform_frame), notebook);
 
+    radio1 = gtk_radio_button_new_with_label(NULL,"Cohen-Sutherland");
+    g_signal_connect_swapped(radio1, "pressed",
+        G_CALLBACK (set_cohen), window);
+    radio2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (radio1),"Liang_Barsky");
+    g_signal_connect_swapped(radio2, "pressed",
+        G_CALLBACK (set_liang), window);
+    box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 1);
+    gtk_box_pack_start(GTK_BOX(box), radio1, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(box), radio2, TRUE, TRUE, 0);
+    clip_frame = gtk_frame_new("Algoritmo de clipping de linhas");
+    gtk_container_add(GTK_CONTAINER(clip_frame), box);
+
     // cria drawing area
     drawing_area = gtk_drawing_area_new();
     gtk_widget_set_size_request(drawing_area, 
@@ -782,12 +804,14 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     gtk_frame_set_label_align(GTK_FRAME(add_frame), 0.5, 0.5);
     gtk_frame_set_label_align(GTK_FRAME(combo_frame), 0.5, 0.5);
     gtk_frame_set_label_align(GTK_FRAME(transform_frame), 0.5, 0.5);
+    gtk_frame_set_label_align(GTK_FRAME(clip_frame), 0.5, 0.5);
 
-    box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1);
     gtk_box_pack_start(GTK_BOX(box), move_frame, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), create_frame, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), add_frame, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), combo_frame, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(box), clip_frame, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), transform_frame, TRUE, TRUE, 0);
 
     big_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);

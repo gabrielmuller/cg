@@ -28,6 +28,9 @@ namespace GUI {
     
     gboolean draw_cb(GtkWidget *widget, cairo_t* cr, gpointer* data);
 
+    void set_cohen();
+    void set_liang();
+
     void move (Vector2 amount);
     void move_z (float amount);
     void move_right ();

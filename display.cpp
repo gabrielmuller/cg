@@ -16,21 +16,14 @@ void Display::create_all () {
     Polygon* fsquare = dynamic_cast<Polygon*>(DescOBJ::read_obj("Fsquare.obj"));
     Polygon* concavo = dynamic_cast<Polygon*>(DescOBJ::read_obj("Concavo.obj"));
     
-    Polygon* wave = new Polygon ("Sinewave");
     Bezier* curve = new Bezier ("Curva",
-        {Vector2(10, 4), Vector2(11, 1), Vector2(12, 3), Vector2(15, 5)});
+        {Vector2(-6, 0), Vector2(-6, -1), Vector2(-8, -1), Vector2(-8, 0),
+         Vector2(-18, -1)/*, Vector2(-19, -3), Vector2(-23, -5)*/});
 
     Point* point = new Point ("Point", -1.5, 0);
     Line* line = new Line ("Straight Line",
         {Vector2(1, -3), Vector2(3, -1)});
 
-    for (int i = 0; i < 20; i++) {
-        wave->verts.push_back(Vector2(i-5, sin(i)-5));
-    }
-
-    wave->open = true;
-
-    //trapezoid->fill = true;
     fsquare->fill = true;
     concavo->fill = true;
     
@@ -39,7 +32,6 @@ void Display::create_all () {
     shapes.push_back(trapezoid);
     shapes.push_back(fsquare);
     shapes.push_back(concavo);
-    shapes.push_back(wave);
     shapes.push_back(point);
     shapes.push_back(line);
     shapes.push_back(curve);

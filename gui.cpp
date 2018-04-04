@@ -811,8 +811,8 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     gtk_box_pack_start(GTK_BOX(box), create_frame, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), add_frame, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), combo_frame, TRUE, TRUE, 0);
-    gtk_box_pack_start(GTK_BOX(box), clip_frame, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), transform_frame, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(box), clip_frame, TRUE, TRUE, 5);
 
     big_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_pack_start(GTK_BOX(big_box), drawing_area, TRUE, TRUE, 2);

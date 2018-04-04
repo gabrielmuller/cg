@@ -123,11 +123,17 @@ void Polygon::draw_fill2() {
                 if (!is_inside(p1, edge)) {
                     //std::cout << std::string(p1) << " p2" << std::string(p2) << std::endl;
                     //std::cout << "clip a " << std::string(Window::clip_line(line).a) << std::endl;
-                    output.push_back(Window::clip_line(line).a);;
+                    line = Window::clip_line(line);
+                    if (!line.empty) {
+                        output.push_back(line.a);
+                    }
                 }
                 output.push_back(p2);
             } else if (is_inside(p1, edge)) {
-                output.push_back(Window::clip_line(line).b);
+                line = Window::clip_line(line);
+                if (!line.empty) {
+                    output.push_back(line.b);
+                }
             }
             p1 = p2;
         }
@@ -149,8 +155,8 @@ void Polygon::draw_fill2() {
         pos = *it;
     }    
     
-    AB edge2 (output.back(), output.front());
-    Window::draw_pline(edge2);        
+    //AB edge2 (output.back(), output.front());
+    //Window::draw_pline(edge2);        
     cairo_fill(Window::cr);
     cairo_close_path(Window::cr);
     

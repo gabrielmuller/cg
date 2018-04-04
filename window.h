@@ -5,6 +5,11 @@
 #include <gtk/gtk.h>
 
 enum {
+    COHEN_SUTHERLAND,
+    LIANG_BARSKY
+};
+
+enum {
     XL = 0,
     XR = 1,
     YD = 2,
@@ -23,6 +28,7 @@ namespace Window {
     extern Specs goal;
     extern Vector2 viewport;
     extern float smooth;
+    extern int clipping_algorithm;
     extern cairo_t* cr;
 
     // extremidades da window
@@ -39,6 +45,8 @@ namespace Window {
     void stroke();
 
     AB clip_line (AB line);
+    AB clip_cs (AB line);
+    AB clip_lb (AB line);
     Vector2 clip_point (Vector2 point);
     void update_boundaries (); 
     int get_rc (Vector2 point); 

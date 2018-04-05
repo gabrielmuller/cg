@@ -6,6 +6,9 @@ Vector2 Window::viewport(400, 400);
 float Window::smooth = 0.2;
 float Window::xl, Window::xr, Window::yd, Window::yu;
 
+/**
+ *  Bordas da Viewport. {esquerda, cima, direita, baixo}
+ */
 std::list<AB> Window::edges() {
     return {
             AB(Vector2(xl, yd), Vector2(xl,yu)),
@@ -81,6 +84,8 @@ void Window::draw_line (AB line) {
     
 }
 
+// Parecido com draw_line mas sem clipping
+// Usada para polígonos preenchidos
 void Window::draw_pline (AB line) {
     line.a = norm_to_vp(line.a);
     line.b = norm_to_vp(line.b);
@@ -89,14 +94,7 @@ void Window::draw_pline (AB line) {
     cairo_stroke_preserve(cr);
 }
 
-void Window::fill () {
-    cairo_set_source_rgb(cr, 1, 1, 1);
-    cairo_fill(cr);
-}
 
-void Window::stroke () {
-    cairo_stroke(cr);
-}
 
 bool Window::clip_point(Vector2 point) {
     return !(point.x() < xl || point.x() > xr || point.y() < yd || point.y() > yu);

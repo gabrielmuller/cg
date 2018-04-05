@@ -21,7 +21,7 @@ void Polygon::draw () {
     if (verts.empty()) {
         return;
     }
-    if (fill) {
+    if (fill && !open) {
         draw_fill();
         return;
     }
@@ -39,132 +39,88 @@ void Polygon::draw () {
     }
 }
 
-// deus me perdoe
-void Polygon::draw_fill() {
-    if (name == "Fsquare") {
-        draw_fill2();
-        return;
-    }
-    auto it = verts.begin();
-    std::list<Vector2> clipVerts;
+bool Polygon::is_inside(Vector2 coord, AB edge) {
+    return (edge.b.x() - edge.a.x()) * (coord.y() - edge.a.y()) < 
+           (edge.b.y() - edge.a.y()) * (coord.x() - edge.a.x());
+}
 
-    Vector2 pos = *it;
-
-    for (; it != verts.end(); ++it) {
-        AB edge (pos, *it);
-        edge.a = Window::world_to_norm(edge.a);
-        edge.b = Window::world_to_norm(edge.b);
-        edge = Window::clip_line(edge);
-        if (!edge.empty) {
-            clipVerts.push_back(edge.a);
-            clipVerts.push_back(edge.b);
+AB Polygon::clip_to_edge(AB edge, AB line) {
+    auto out = line;
+    float m = (line.a.y() - line.b.y()) / (line.a.x() - line.b.x());
+    if(!is_inside(line.a,edge)) {
+        if (edge.a.x() == edge.b.x()) //direita/esquerda
+        {   
+            float y = (edge.a.x()-out.a.x())*m + out.a.y();
+            out.a = Vector2(edge.a.x(), y);
+        } else //cima/baixo
+        {   
+            float x = 0;
+            if (m == 0) x = out.a.x();
+            else 
+                x = (edge.a.y()-out.a.y())/m + out.a.x();
+            //if (abs(x) < abs(edge.a.x()))
+            out.a = Vector2(x, edge.a.y());
         }
-        pos = *it;
+    } else if (!is_inside(line.b,edge)) {
+        if (edge.a.x() == edge.b.x()) //direita/esquerda
+        {   
+            float y = (edge.b.x()-out.b.x())*m + out.b.y();
+            out.b = Vector2(edge.b.x(), y);
+        } else //cima/baixo
+        {
+            float x = 0;
+            if (m == 0) x = out.b.x();
+            else
+                x = (edge.b.y()-out.b.y())/m + out.b.x();
+            //if (abs(x) < abs(edge.b.x()))
+            out.b = Vector2(x, edge.b.y());
+        }
     }
-
-    // close poly
-    AB edge (verts.back(), verts.front());
-    edge.a = Window::world_to_norm(edge.a);
-    edge.b = Window::world_to_norm(edge.b);
-    edge = Window::clip_line(edge);
-    if (!edge.empty) {
-        clipVerts.push_back(edge.a);
-        clipVerts.push_back(edge.b);
-    }
-    // close poly
-
-    // Evitar bad_alloc
-    if (clipVerts.empty()) return;
-
-    it = clipVerts.begin();
-    pos = *it;
-    //std::cout << "---" << std::endl;
-    for (; it != clipVerts.end(); ++it) {
-        //std::cout << "pos " << std::string(Window::norm_to_vp(pos)) << std::endl;
-        //std::cout << "it " << std::string(Window::norm_to_vp(*it)) << std::endl;
-        AB edge (pos, *it);
-        Window::draw_pline(edge);
-        pos = *it;
-    }    
-    
-    AB edge2 (clipVerts.back(), clipVerts.front());
-    Window::draw_pline(edge2);        
-    cairo_fill(Window::cr);
-    cairo_close_path(Window::cr);
+    return out;
 }
 
-void to_String (std::list<Vector2> l) {
-    for (auto i : l) {
-        std::cout << std::string(i) << std::endl;
-    }
-    if (l.empty())
-        std::cout << "empty" << std::endl;
-}
-
-
-void Polygon::draw_fill2() {
+/**
+ * @brief   Desenha polígonos preenchidos,
+ *          aplicando clipping Cohen-Sutherland.
+ *          Utiliza clip_to_edge()
+ */
+void Polygon::draw_fill() {
     auto edges = Window::edges();
     std::list<Vector2> output;
     for (auto it = verts.begin(); it != verts.end(); ++it) {
         output.push_back(Window::world_to_norm(*it));
     }
     for (auto edge : edges) {
-        if (output.empty()) {
-            break;
-        }
+        if (output.empty()) break;
         auto input = std::list<Vector2>();
         input.swap(output);
         Vector2 p1 = input.back();
         for (auto p2 : input) {
-            //if (p2 == Vector2(0,0)) continue;
             if (&p1 == &p2) continue;
             AB line(p1, p2);
             if(is_inside(p2, edge)) {
                 if (!is_inside(p1, edge)) {
-                    //std::cout << std::string(p1) << " p2" << std::string(p2) << std::endl;
-                    //std::cout << "clip a " << std::string(Window::clip_line(line).a) << std::endl;
-                    line = Window::clip_line(line);
-                    if (!line.empty) {
-                        output.push_back(line.a);
-                    }
+                    line = clip_to_edge(edge, line);
+                    output.push_back(line.a);
                 }
                 output.push_back(p2);
             } else if (is_inside(p1, edge)) {
-                line = Window::clip_line(line);
-                if (!line.empty) {
-                    output.push_back(line.b);
-                }
+                line = clip_to_edge(edge, line);
+                output.push_back(line.b);
             }
             p1 = p2;
         }
     }
-    if (output.empty()) {
-        return;
-    }
-
-    //to_String(output);
-    //std::cout << "---" << std::endl;
-
+    if (output.empty()) return;
     auto it = output.begin();
     auto pos = *it;
     for (; it != output.end(); ++it) {
-        //std::cout << "pos " << std::string(Window::norm_to_vp(pos)) << std::endl;
-        //std::cout << "it " << std::string(Window::norm_to_vp(*it)) << std::endl;
         AB edge (pos, *it);
         Window::draw_pline(edge);
         pos = *it;
-    }    
-    
-    //AB edge2 (output.back(), output.front());
-    //Window::draw_pline(edge2);        
+    }           
     cairo_fill(Window::cr);
-    cairo_close_path(Window::cr);
-    
-}
-
-bool Polygon::is_inside(Vector2 coord, AB edge) {
-    return (edge.b.x() - edge.a.x()) * (coord.y() - edge.a.y()) < 
-           (edge.b.y() - edge.a.y()) * (coord.x() - edge.a.x());
+    cairo_close_path(Window::cr); 
 }
 
 void Polygon::transform(const Transformation& t) {

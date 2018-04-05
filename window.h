@@ -38,8 +38,6 @@ namespace Window {
     void draw_line (AB line);
     void draw_pline (AB line);
     void draw_point (Vector2 point);
-    void fill();
-    void stroke();
 
     AB clip_line (AB line);
     bool clip_point (Vector2 point);

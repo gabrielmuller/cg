@@ -28,7 +28,7 @@ void Display::create_all () {
 
     wave->open = true;
 
-    //trapezoid->fill = true;
+    trapezoid->fill = true;
     fsquare->fill = true;
     concavo->fill = true;
     

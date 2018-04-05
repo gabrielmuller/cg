@@ -5,7 +5,7 @@ Bezier::Bezier(std::string name, std::vector<Vector2> verts)
     : Vertices::Vertices(name, verts) {}
 
 void Bezier::draw () {
-    if (verts.empty()) {
+    if (verts.empty() || verts.size() == 1) {
         return;
     }
 
@@ -60,9 +60,6 @@ void Bezier::draw () {
         for (float t = 0; t < 1; t += (float) 1 / samples) {
             Vector2 b = Vector2(t_times(coeffs_x, t), t_times(coeffs_y, t));
             Window::draw_line(AB(a, b));
-            //DEBUG
-            Window::draw_point(a);
-            Window::draw_point(b);
             a = b;
         }
         Vector2 b = Vector2(t_times(coeffs_x, 1), t_times(coeffs_y, 1));

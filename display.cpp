@@ -16,9 +16,17 @@ void Display::create_all () {
     Polygon* fsquare = dynamic_cast<Polygon*>(DescOBJ::read_obj("Fsquare.obj"));
     Polygon* concavo = dynamic_cast<Polygon*>(DescOBJ::read_obj("Concavo.obj"));
     
-    Bezier* curve = new Bezier ("Curva",
-        {Vector2(-6, 0), Vector2(-6, -1), Vector2(-8, -1), Vector2(-8, 0),
-         Vector2(-18, -1)/*, Vector2(-19, -3), Vector2(-23, -5)*/});
+    Bezier* curve = new Bezier ("Curva", {
+        Vector2(-5, -2),
+        Vector2(-3, -3),
+        Vector2( 1, -1.5),
+        Vector2( 2, -5),
+        Vector2( 3, -10),
+        Vector2( 5, -1.7),
+        Vector2(-3, -7),
+        Vector2( 2, -6),
+        Vector2( 2, -11)
+    });
 
     Point* point = new Point ("Point", -1.5, 0);
     Line* line = new Line ("Straight Line",

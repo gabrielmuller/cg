@@ -39,8 +39,11 @@ namespace Window {
     void draw_pline (AB line);
     void draw_point (Vector2 point);
 
+    bool is_inside(Vector2 coord, AB edge);
+    
+    AB clip_to_edge(AB edge, AB line);
     AB clip_line (AB line);
-    bool clip_point (Vector2 point);
+
     void update_boundaries (); 
     int get_rc (Vector2 point); 
     void animate ();

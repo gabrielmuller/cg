@@ -39,50 +39,10 @@ void Polygon::draw () {
     }
 }
 
-bool Polygon::is_inside(Vector2 coord, AB edge) {
-    return (edge.b.x() - edge.a.x()) * (coord.y() - edge.a.y()) < 
-           (edge.b.y() - edge.a.y()) * (coord.x() - edge.a.x());
-}
-
-AB Polygon::clip_to_edge(AB edge, AB line) {
-    auto out = line;
-    float m = (line.a.y() - line.b.y()) / (line.a.x() - line.b.x());
-    if(!is_inside(line.a,edge)) {
-        if (edge.a.x() == edge.b.x()) //direita/esquerda
-        {   
-            float y = (edge.a.x()-out.a.x())*m + out.a.y();
-            out.a = Vector2(edge.a.x(), y);
-        } else //cima/baixo
-        {   
-            float x = 0;
-            if (m == 0) x = out.a.x();
-            else 
-                x = (edge.a.y()-out.a.y())/m + out.a.x();
-            //if (abs(x) < abs(edge.a.x()))
-            out.a = Vector2(x, edge.a.y());
-        }
-    } else if (!is_inside(line.b,edge)) {
-        if (edge.a.x() == edge.b.x()) //direita/esquerda
-        {   
-            float y = (edge.b.x()-out.b.x())*m + out.b.y();
-            out.b = Vector2(edge.b.x(), y);
-        } else //cima/baixo
-        {
-            float x = 0;
-            if (m == 0) x = out.b.x();
-            else
-                x = (edge.b.y()-out.b.y())/m + out.b.x();
-            //if (abs(x) < abs(edge.b.x()))
-            out.b = Vector2(x, edge.b.y());
-        }
-    }
-    return out;
-}
-
 /**
  * @brief   Desenha polígonos preenchidos,
  *          aplicando clipping Cohen-Sutherland.
- *          Utiliza clip_to_edge()
+ *          Utiliza Window::clip_to_edge()
  */
 void Polygon::draw_fill() {
     auto edges = Window::edges();
@@ -98,14 +58,14 @@ void Polygon::draw_fill() {
         for (auto p2 : input) {
             if (&p1 == &p2) continue;
             AB line(p1, p2);
-            if(is_inside(p2, edge)) {
-                if (!is_inside(p1, edge)) {
-                    line = clip_to_edge(edge, line);
+            if(Window::is_inside(p2, edge)) {
+                if (!Window::is_inside(p1, edge)) {
+                    line = Window::clip_to_edge(edge, line);
                     output.push_back(line.a);
                 }
                 output.push_back(p2);
-            } else if (is_inside(p1, edge)) {
-                line = clip_to_edge(edge, line);
+            } else if (Window::is_inside(p1, edge)) {
+                line = Window::clip_to_edge(edge, line);
                 output.push_back(line.b);
             }
             p1 = p2;

@@ -94,17 +94,56 @@ void Window::draw_pline (AB line) {
     cairo_stroke_preserve(cr);
 }
 
+// Checa se um ponto está dentro de uma borda da window
+bool Window::is_inside(Vector2 coord, AB edge) {
+    return (edge.b.x() - edge.a.x()) * (coord.y() - edge.a.y()) < 
+           (edge.b.y() - edge.a.y()) * (coord.x() - edge.a.x());
+}
 
-
-bool Window::clip_point(Vector2 point) {
-    return !(point.x() < xl || point.x() > xr || point.y() < yd || point.y() > yu);
+// Clipa linha pra uma borda
+// Usado no clipping de polígonos
+// TODO menos repetição de código
+AB Window::clip_to_edge(AB edge, AB line) {
+    auto out = line;
+    float m = (line.a.y() - line.b.y()) / (line.a.x() - line.b.x());
+    if(!is_inside(line.a,edge)) {
+        if (edge.a.x() == edge.b.x()) //direita/esquerda
+        {   
+            float y = (edge.a.x()-out.a.x())*m + out.a.y();
+            out.a = Vector2(edge.a.x(), y);
+        } else //cima/baixo
+        {   
+            float x = 0;
+            if (m == 0) x = out.a.x();
+            else 
+                x = (edge.a.y()-out.a.y())/m + out.a.x();
+            //if (abs(x) < abs(edge.a.x()))
+            out.a = Vector2(x, edge.a.y());
+        }
+    } else if (!is_inside(line.b,edge)) {
+        if (edge.a.x() == edge.b.x()) //direita/esquerda
+        {   
+            float y = (edge.b.x()-out.b.x())*m + out.b.y();
+            out.b = Vector2(edge.b.x(), y);
+        } else //cima/baixo
+        {
+            float x = 0;
+            if (m == 0) x = out.b.x();
+            else
+                x = (edge.b.y()-out.b.y())/m + out.b.x();
+            //if (abs(x) < abs(edge.b.x()))
+            out.b = Vector2(x, edge.b.y());
+        }
+    }
+    return out;
 }
 
 void Window::draw_point (Vector2 point) {
     point = world_to_norm(point);
 
     // C L I P P
-    if (!clip_point(point)) {
+    if ((point.x() < xl || point.x() > xr || 
+        point.y() < yd || point.y() > yu)) {
         return;
     }
 

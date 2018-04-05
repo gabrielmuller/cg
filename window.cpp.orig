@@ -5,6 +5,7 @@
 Vector2 Window::viewport(400, 400);
 float Window::smooth = 0.2;
 float Window::xl, Window::xr, Window::yd, Window::yu;
+<<<<<<< HEAD
 
 /**
  *  Bordas da Viewport. {esquerda, cima, direita, baixo}
@@ -18,7 +19,9 @@ std::list<AB> Window::edges() {
         };
 }
 
+=======
 int Window::clipping_algorithm = LIANG_BARSKY;
+>>>>>>> bezier
 cairo_t* Window::cr;
 // converte uma coordenada do espaço no mundo para tela
 Vector2 Window::world_to_screen(Vector2 coords) {
@@ -231,8 +234,8 @@ AB Window::clip_cs (AB line) {
     }
     return line;
 }
-
-
+    
+    //TODO
 AB Window::clip_lb (AB line) {
     float delta_x = line.b.x() - line.a.x();
     float delta_y = line.b.y() - line.a.y();

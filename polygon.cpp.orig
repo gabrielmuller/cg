@@ -44,10 +44,28 @@ void Polygon::draw () {
  *          Utiliza Window::clip_to_edge()
  */
 void Polygon::draw_fill() {
+<<<<<<< HEAD
     auto edges = Window::edges();
     std::list<Vector2> output;
     for (auto it = verts.begin(); it != verts.end(); ++it) {
         output.push_back(Window::world_to_norm(*it));
+=======
+    auto it = verts.begin();
+    std::vector<Vector2> clipVerts;
+
+    Vector2 pos = *it;
+
+    for (; it != verts.end(); ++it) {
+        AB edge (pos, *it);
+        edge.a = Window::world_to_norm(edge.a);
+        edge.b = Window::world_to_norm(edge.b);
+        edge = Window::clip_line(edge);
+        if (!edge.empty) {
+            clipVerts.push_back(edge.a);
+            clipVerts.push_back(edge.b);
+        }
+        pos = *it;
+>>>>>>> bezier
     }
     for (auto edge : edges) {
         if (output.empty()) break;

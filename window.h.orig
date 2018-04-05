@@ -49,9 +49,13 @@ namespace Window {
     
     AB clip_to_edge(AB edge, AB line);
     AB clip_line (AB line);
+<<<<<<< HEAD
+
+=======
     AB clip_cs (AB line);
     AB clip_lb (AB line);
     Vector2 clip_point (Vector2 point);
+>>>>>>> bezier
     void update_boundaries (); 
     int get_rc (Vector2 point); 
     void animate ();

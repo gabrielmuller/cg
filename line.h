@@ -5,7 +5,7 @@
 #include "vector2.h"
 
 struct Line : Polygon {
-	Line (std::string name, std::list<Vector2> verts);
+	Line (std::string name, std::vector<Vector2> verts);
 };
 
 

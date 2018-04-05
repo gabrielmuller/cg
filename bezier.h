@@ -5,6 +5,7 @@
 
 struct Bezier : Vertices {
     Bezier(std::string name, std::vector<Vector2> verts);
+    Bezier(std::string name);
     void draw ();
 
     private:

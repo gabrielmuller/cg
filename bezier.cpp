@@ -4,6 +4,9 @@
 Bezier::Bezier(std::string name, std::vector<Vector2> verts) 
     : Vertices::Vertices(name, verts) {}
 
+Bezier::Bezier(std::string name) 
+    : Vertices::Vertices(name) {}
+
 void Bezier::draw () {
     if (verts.empty() || verts.size() == 1) {
         return;

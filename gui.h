@@ -1,5 +1,5 @@
 #ifndef GUI_H
-#define GUI_h
+#define GUI_H
 
 #include <iostream>
 #include <vector>
@@ -13,11 +13,18 @@
 #include "polygon.h"
 #include "point.h"
 #include "line.h"
+#include "bezier.h"
 #include "descobj.h"
 
 /**
  *  Funções de interface gráfica com GTK.
  */
+
+struct Params {
+    GtkWidget** entries;
+    int type;
+    Vertices* v;
+};
 
 namespace GUI {
     extern GtkWidget* drawing_area;
@@ -55,11 +62,11 @@ namespace GUI {
     void add_line_cb(GtkWidget **entry, GtkWidget *widget);
     void add_line_window ();
 
-    void add_poly_cb(GtkWidget *window, GtkWidget *widget);
-    void add_vert_cb(GtkWidget **entry, GtkWidget *widget);
-    void create_poly_cb(GtkWidget **entry, GtkWidget *widget);
-    void add_verts_window (Polygon* poly);
-    void add_poly_window ();
+    void add_poly_cb(Params* p, GtkWidget *widget);
+    void add_vert_cb(Params* p, GtkWidget *widget);
+    void create_poly_cb(Params* p, GtkWidget *widget);
+    void add_verts_window (Vertices* poly);
+    void add_poly_window (Params* t);
 
     void on_import_button(GtkWidget *widget, GtkWidget *window);
     void on_export_button(GtkWidget *widget, GtkWidget *window);

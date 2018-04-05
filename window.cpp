@@ -18,7 +18,8 @@ std::list<AB> Window::edges() {
         };
 }
 
-int Window::clipping_algorithm = LIANG_BARSKY;
+int Window::clipping_algorithm = COHEN_SUTHERLAND;
+
 cairo_t* Window::cr;
 // converte uma coordenada do espaço no mundo para tela
 Vector2 Window::world_to_screen(Vector2 coords) {

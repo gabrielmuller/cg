@@ -601,6 +601,38 @@ void GUI::add_poly_window (Params* t) {
     delete(t);
 }
 
+void GUI::create_shape() {
+    GtkWidget *window;
+
+    // Window
+    window = gtk_application_window_new (app);
+    gtk_window_set_title (GTK_WINDOW (window), "Adicionar Figura");
+
+    // ----------GtkNotebook
+    GtkWidget *notebook, *frame, *label;
+    notebook = gtk_notebook_new();
+    gtk_notebook_set_tab_pos (GTK_NOTEBOOK(notebook), GTK_POS_TOP);
+    
+    frame = gtk_frame_new("");
+    translation_page(frame);
+    label = gtk_label_new ("Ponto");
+    gtk_notebook_append_page (GTK_NOTEBOOK (notebook), frame, label);
+    frame = gtk_frame_new("");
+    scaling_page(frame);        // pagina
+    label = gtk_label_new ("Linha");
+    gtk_notebook_append_page (GTK_NOTEBOOK (notebook), frame, label);
+    frame = gtk_frame_new("");
+    rotation_page(frame);       // pagina
+    label = gtk_label_new ("Polígono");
+    gtk_notebook_append_page (GTK_NOTEBOOK (notebook), frame, label);
+    label = gtk_label_new ("Curva");
+    gtk_notebook_append_page (GTK_NOTEBOOK (notebook), frame, label);
+    // pagina
+    // ---------GtkNotebook
+
+    gtk_container_add(GTK_CONTAINER(window), notebook);
+    gtk_widget_show_all(window);
+}
 
 /*****************************************
  *
@@ -749,7 +781,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     p->type = CURVE;
     curve_button = gtk_button_new_with_label("Curva");
     g_signal_connect_swapped(curve_button, "clicked",
-        G_CALLBACK (add_poly_window), p);
+        G_CALLBACK (create_shape), p);
 
     box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 1);
     gtk_box_pack_start(GTK_BOX(box), point_button, TRUE, TRUE, 0);

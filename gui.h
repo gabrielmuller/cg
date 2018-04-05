@@ -68,6 +68,8 @@ namespace GUI {
     void add_verts_window (Vertices* poly);
     void add_poly_window (Params* t);
 
+    void create_shape();
+
     void on_import_button(GtkWidget *widget, GtkWidget *window);
     void on_export_button(GtkWidget *widget, GtkWidget *window);
     

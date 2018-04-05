@@ -59,13 +59,13 @@ void Polygon::draw_fill() {
             AB line(p1, p2);
             if(Window::is_inside(p2, edge)) {
                 if (!Window::is_inside(p1, edge)) {
-                    line = Window::clip_to_edge(edge, line);
-                    output.push_back(line.a);
+                    auto v = Window::clip_to_edge(edge, line);
+                    output.push_back(v);
                 }
                 output.push_back(p2);
             } else if (Window::is_inside(p1, edge)) {
-                line = Window::clip_to_edge(edge, line);
-                output.push_back(line.b);
+                auto v = Window::clip_to_edge(edge, line);
+                output.push_back(v);
             }
             p1 = p2;
         }

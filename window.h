@@ -47,7 +47,7 @@ namespace Window {
 
     bool is_inside(Vector2 coord, AB edge);
     
-    AB clip_to_edge(AB edge, AB line);
+    Vector2 clip_to_edge(AB edge, AB line);
     AB clip_line (AB line);
     AB clip_cs (AB line);
     AB clip_lb (AB line);

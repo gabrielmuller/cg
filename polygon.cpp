@@ -1,9 +1,14 @@
 #include "polygon.h"
 #include <iostream>
 
-Polygon::Polygon (std::string name, std::vector<Vector2> verts) : 
+Polygon::Polygon (std::string name, std::vector<Vector2> verts) :
     open(false),
     fill(false),
+    Vertices::Vertices(name, verts) {}
+
+Polygon::Polygon (std::string name, std::vector<Vector2> verts, bool fill) : 
+    open(false),
+    fill(fill),
     Vertices::Vertices(name, verts) {}
 
 Polygon::Polygon (std::string name) :

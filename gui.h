@@ -57,18 +57,16 @@ namespace GUI {
     void rotation_page(GtkWidget* frame);
 
     void add_point_cb(GtkWidget **entry, GtkWidget *widget);
-    void add_point_window ();
+    void create_point_frame (GtkWidget* frame, GtkWidget* window);
 
     void add_line_cb(GtkWidget **entry, GtkWidget *widget);
-    void add_line_window ();
+    void create_line_frame (GtkWidget* frame, GtkWidget* window);
 
-    void add_poly_cb(Params* p, GtkWidget *widget);
-    void add_vert_cb(Params* p, GtkWidget *widget);
-    void create_poly_cb(Params* p, GtkWidget *widget);
-    void add_verts_window (Vertices* poly);
-    void add_poly_window (Params* t);
+    void on_create_poly_button(Params* p, GtkWidget *widget);
+    void on_add_vert_button(GtkWidget **entry, GtkWidget *widget);
+    void create_poly_frame (GtkWidget *frame, GtkWidget *window, int type);
 
-    void create_shape();
+    void on_create_shape_button();
 
     void on_import_button(GtkWidget *widget, GtkWidget *window);
     void on_export_button(GtkWidget *widget, GtkWidget *window);

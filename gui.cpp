@@ -423,7 +423,13 @@ void GUI::on_create_poly_button(Params* p, GtkWidget *widget) {
     bool fill = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(p->entries[2]));
     Shape *sh;
     if (p->type == POLYGON) {
-        sh = new Polygon(name, vert_buffer_list, fill);
+        if (vert_buffer_list.size() == 1)
+            sh = new Point(name, vert_buffer_list.front().x(),
+                vert_buffer_list.front().y());
+        else if (vert_buffer_list.size() == 2)
+            sh = new Line(name, vert_buffer_list);
+        else if (vert_buffer_list.size() >= 3)
+            sh = new Polygon(name, vert_buffer_list, fill);
     } else {
         sh = new Bezier(name, vert_buffer_list);
     }
@@ -435,18 +441,19 @@ void GUI::on_create_poly_button(Params* p, GtkWidget *widget) {
 
 // Adiciona vértice ao polígono
 void GUI::on_add_vert_button(GtkWidget **entry, GtkWidget *widget) {
-    auto x = gtk_entry_get_text (GTK_ENTRY(entry[0]));
-    auto y = gtk_entry_get_text (GTK_ENTRY(entry[1]));
-    vert_buffer_list.push_back(Vector2(std::stof(x), std::stof(y)));
+    auto coord_x = gtk_entry_get_text (GTK_ENTRY(entry[0]));
+    auto coord_y = gtk_entry_get_text (GTK_ENTRY(entry[1]));
+    std::cout << "x: " << coord_x << " y: " << coord_y << std::endl;
+    vert_buffer_list.push_back(Vector2(std::stof(coord_x), std::stof(coord_y)));
     // Simplificar isso depois
     std::ostringstream s;
-    s << "(" << x << ", " << y << ")";
+    s << "(" << coord_x << ", " << coord_y << ")";
     std::string ss = s.str(); //
     gtk_text_buffer_get_end_iter(buffer, &iter);
     gtk_text_buffer_insert(buffer, &iter, ss.c_str(), -1);
 }
 
-// Janela para adicionar múltiplos vértices ao polígono criado
+// Frame para adicionar múltiplos vértices ao polígono criado
 void GUI::create_poly_frame(GtkWidget *frame, GtkWidget *window, int type) {
     GtkWidget* grid;
     GtkWidget *add_vert_b, *add_poly_b;
@@ -455,8 +462,9 @@ void GUI::create_poly_frame(GtkWidget *frame, GtkWidget *window, int type) {
     GtkWidget *name_entry, *name_label, *fill_check;
 
     //std::list<Vector2> vert_buffer_list;
-
-    // labels
+    x_entry = gtk_entry_new();
+    y_entry = gtk_entry_new();
+    // labels   
     name_label = gtk_label_new("Nome");
     t1_label = gtk_label_new("Adicionar vértice");
     t2_label = gtk_label_new("Vértices");
@@ -465,9 +473,8 @@ void GUI::create_poly_frame(GtkWidget *frame, GtkWidget *window, int type) {
     
     // Entries
     name_entry = gtk_entry_new();
-    fill_check = gtk_check_button_new_with_label("Preencher?");
-    x_entry = gtk_entry_new();
-    y_entry = gtk_entry_new();
+    fill_check = gtk_check_button_new_with_label("Preencher?\n (Polígono)");
+    
 
     static GtkWidget *entriesA[2];
     entriesA[0] = x_entry;
@@ -502,8 +509,7 @@ void GUI::create_poly_frame(GtkWidget *frame, GtkWidget *window, int type) {
     // coloca widgets nos containers
     gtk_grid_attach(GTK_GRID(grid), name_label, 0, 0, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), name_entry, 1, 0, 1, 1); 
-    if (type == POLYGON)
-        gtk_grid_attach(GTK_GRID(grid), fill_check, 2, 0, 1, 1); 
+    gtk_grid_attach(GTK_GRID(grid), fill_check, 2, 0, 1, 1); 
     gtk_grid_attach(GTK_GRID(grid), t1_label, 0, 1, 2, 1);
     gtk_grid_attach(GTK_GRID(grid), t2_label, 2, 1, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), x_label, 0, 2, 1, 1);
@@ -518,6 +524,7 @@ void GUI::create_poly_frame(GtkWidget *frame, GtkWidget *window, int type) {
     gtk_container_add(GTK_CONTAINER(frame), grid);
 }
 
+// Callback do botão de criar figura
 void GUI::on_create_shape_button() {
     GtkWidget *window;
 
@@ -635,12 +642,12 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
 
     Display::create_all();
 
-    // cria janela
+    // Janela
     window = gtk_application_window_new (app);
     gtk_window_set_title (GTK_WINDOW (window), "Demo CG");
     gtk_window_set_default_size (GTK_WINDOW(window), 480, 480);
 
-    // cria botões de movimentação
+    // Botões de movimentação
     up_button = gtk_button_new_with_label("^");
     g_signal_connect_swapped(up_button, "clicked",
         G_CALLBACK (move_up), window);        
@@ -654,7 +661,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     g_signal_connect_swapped(right_button, "clicked",
         G_CALLBACK (move_right), window);
 
-    // cria botões de zoom
+    // Botões de zoom
     in_button = gtk_button_new_with_label("+");
     g_signal_connect_swapped(in_button, "clicked",
         G_CALLBACK (zoom_in), window);
@@ -662,7 +669,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     g_signal_connect_swapped(out_button, "clicked",
         G_CALLBACK (zoom_out), window);
 
-    // botoes de rotação
+    // Botoes de rotação
     rot_right_button = gtk_button_new_with_label("↷");
     g_signal_connect_swapped(rot_right_button, "clicked",
         G_CALLBACK (rotate_right), window);
@@ -670,7 +677,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     g_signal_connect_swapped(rot_left_button, "clicked",
         G_CALLBACK (rotate_left), window);
 
-    // cria grid de botões de movimentação
+    // Grid de botões de movimento
     grid = gtk_grid_new();
     gtk_grid_attach(GTK_GRID(grid), up_button, 1, 0, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), down_button, 1, 2, 1, 1);
@@ -685,17 +692,17 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     move_frame = gtk_frame_new("Movimentação");
     gtk_container_add(GTK_CONTAINER(move_frame), box);
 
-    // Criar botoes para criacao de objetos
+    // Botoes para criacao de figuras
     Params* p = new Params();
     create_shape_button = gtk_button_new_with_label("Criar figura");
     g_signal_connect_swapped(create_shape_button, "clicked",
         G_CALLBACK (on_create_shape_button), p);
-
     box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 1);
     gtk_box_pack_start(GTK_BOX(box), create_shape_button, TRUE, TRUE, 0);
     create_frame = gtk_frame_new("");
     gtk_container_add(GTK_CONTAINER(create_frame), box);
 
+    // Botoes de leitura e escrita de .obj
     import_button = gtk_button_new_with_label("Importar");
     g_signal_connect_swapped(import_button, "clicked",
         G_CALLBACK (on_import_button), window);
@@ -709,7 +716,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     add_frame = gtk_frame_new("Arquivo .obj");
     gtk_container_add(GTK_CONTAINER(add_frame), box);
 
-    // Criar ComboBox
+    // ComboBox (Lista de figuras)
     combo = gtk_combo_box_text_new();
     for (auto it = Display::shapes.begin();
         it != Display::shapes.end(); ++it) {
@@ -720,7 +727,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     combo_frame = gtk_frame_new("Selecionar figura");
     gtk_container_add(GTK_CONTAINER(combo_frame), combo);
     
-    // ----------GtkNotebook
+    // ----------GtkNotebook de transformações
     GtkWidget *notebook, *frame, *label;
     notebook = gtk_notebook_new();
     gtk_notebook_set_tab_pos (GTK_NOTEBOOK(notebook), GTK_POS_TOP);
@@ -742,6 +749,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     transform_frame = gtk_frame_new("Transformações");
     gtk_container_add(GTK_CONTAINER(transform_frame), notebook);
 
+    // Botões para alterar clipping de linhas
     radio1 = gtk_radio_button_new_with_label(NULL,"Cohen-Sutherland");
     g_signal_connect_swapped(radio1, "pressed",
         G_CALLBACK (set_cohen), window);
@@ -754,7 +762,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     clip_frame = gtk_frame_new("Algoritmo de clipping de linhas");
     gtk_container_add(GTK_CONTAINER(clip_frame), box);
 
-    // cria drawing area
+    // Drawing area
     drawing_area = gtk_drawing_area_new();
     gtk_widget_set_size_request(drawing_area, 
         Window::viewport.x(), Window::viewport.y());

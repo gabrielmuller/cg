@@ -288,11 +288,14 @@ void GUI::add_point_cb(GtkWidget **entry, GtkWidget *widget) {
     gtk_widget_destroy(GTK_WIDGET(entry[0]));
 }
 
-void GUI::create_point_frame (GtkWidget* frame, GtkWidget* window) {
-    GtkWidget *grid;
+void GUI::create_point_frame () {
+    GtkWidget *window, *grid;
     GtkWidget *ok_button;
     GtkWidget *x_label, *y_label, *n_label;
     GtkWidget *x_entry, *y_entry, *nome_entry;
+
+    window = gtk_application_window_new (app);
+    gtk_window_set_title (GTK_WINDOW (window), "Adicionar Ponto");
 
     // labels
     n_label = gtk_label_new("Nome");
@@ -318,6 +321,7 @@ void GUI::create_point_frame (GtkWidget* frame, GtkWidget* window) {
     grid = gtk_grid_new();
     gtk_grid_set_row_spacing (GTK_GRID(grid), (guint)10);
     gtk_grid_set_column_spacing (GTK_GRID(grid), (guint)10);
+    gtk_container_add(GTK_CONTAINER(window), grid);
 
     // (grid, widget, coluna, linha, tamanhox, tamanhoy)
     gtk_grid_attach(GTK_GRID(grid), n_label, 0, 0, 1, 1);
@@ -328,7 +332,7 @@ void GUI::create_point_frame (GtkWidget* frame, GtkWidget* window) {
     gtk_grid_attach(GTK_GRID(grid), y_entry, 1, 2, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), ok_button, 0, 4, 3, 1);
 
-    gtk_container_add(GTK_CONTAINER(frame), grid);
+    gtk_widget_show_all(window);
 }
 
 /*****************************************
@@ -353,13 +357,18 @@ void GUI::add_line_cb(GtkWidget **entry, GtkWidget *widget) {
     gtk_widget_destroy(GTK_WIDGET(entry[0]));
 }
 
-void GUI::create_line_frame (GtkWidget* frame, GtkWidget* window) {
-    GtkWidget *grid;
+void GUI::create_line_frame () {
+    GtkWidget *window, *grid;
     GtkWidget *ok_button;
     GtkWidget *x_label, *y_label, *n_label;
     GtkWidget *p1_label, *p2_label;
     GtkWidget *x1_entry, *x2_entry, *y1_entry, *y2_entry;
     GtkWidget *nome_entry;
+
+    // Window
+    window = gtk_application_window_new (app);
+    gtk_window_set_title (GTK_WINDOW (window), "Adicionar Reta");
+    gtk_window_set_default_size (GTK_WINDOW(window), 100, 100);
    
     // labels
     n_label = gtk_label_new("Nome");
@@ -390,6 +399,7 @@ void GUI::create_line_frame (GtkWidget* frame, GtkWidget* window) {
 
     grid = gtk_grid_new();
     gtk_grid_set_row_spacing (GTK_GRID(grid), (guint)10);
+    gtk_container_add(GTK_CONTAINER(window), grid);
 
     // (grid, widget, coluna, linha, tamanhox, tamanhoy)
     gtk_grid_attach(GTK_GRID(grid), n_label, 0, 0, 1, 1);
@@ -407,7 +417,7 @@ void GUI::create_line_frame (GtkWidget* frame, GtkWidget* window) {
     gtk_grid_attach(GTK_GRID(grid), y2_entry, 2, 3, 1, 1);
 
     gtk_grid_attach(GTK_GRID(grid), ok_button, 0, 4, 3, 1);
-    gtk_container_add(GTK_CONTAINER(frame), grid);
+    gtk_widget_show_all(window);
 }
 
 /*****************************************
@@ -417,12 +427,12 @@ void GUI::create_line_frame (GtkWidget* frame, GtkWidget* window) {
  *
  *****************************************/
 
-// Termina criação de polígono e desenha na tela
+// Termina criação de polígono/curva e desenha na tela
 void GUI::on_create_poly_button(Params* p, GtkWidget *widget) {
     std::string name = gtk_entry_get_text (GTK_ENTRY(p->entries[1]));
-    bool fill = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(p->entries[2]));
     Shape *sh;
     if (p->type == POLYGON) {
+        bool fill = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(p->entries[2]));
         if (vert_buffer_list.size() == 1)
             sh = new Point(name, vert_buffer_list.front().x(),
                 vert_buffer_list.front().y());
@@ -439,11 +449,10 @@ void GUI::on_create_poly_button(Params* p, GtkWidget *widget) {
     gtk_widget_destroy(GTK_WIDGET(p->entries[0]));
 }
 
-// Adiciona vértice ao polígono
+// Adiciona vértice ao polígono/curva
 void GUI::on_add_vert_button(GtkWidget **entry, GtkWidget *widget) {
     auto coord_x = gtk_entry_get_text (GTK_ENTRY(entry[0]));
     auto coord_y = gtk_entry_get_text (GTK_ENTRY(entry[1]));
-    std::cout << "x: " << coord_x << " y: " << coord_y << std::endl;
     vert_buffer_list.push_back(Vector2(std::stof(coord_x), std::stof(coord_y)));
     // Simplificar isso depois
     std::ostringstream s;
@@ -453,17 +462,19 @@ void GUI::on_add_vert_button(GtkWidget **entry, GtkWidget *widget) {
     gtk_text_buffer_insert(buffer, &iter, ss.c_str(), -1);
 }
 
-// Frame para adicionar múltiplos vértices ao polígono criado
-void GUI::create_poly_frame(GtkWidget *frame, GtkWidget *window, int type) {
-    GtkWidget* grid;
+// Janela para criar polígono e adicionar vértices
+void GUI::create_poly_frame() {
+    GtkWidget *window, *grid;
     GtkWidget *add_vert_b, *add_poly_b;
     GtkWidget *x_label, *y_label, *t1_label, *t2_label;
     GtkWidget *x_entry, *y_entry;
     GtkWidget *name_entry, *name_label, *fill_check;
 
+    // Window
+    window = gtk_application_window_new (app);
+    gtk_window_set_title (GTK_WINDOW (window), "Adicionar Polígono");
+
     //std::list<Vector2> vert_buffer_list;
-    x_entry = gtk_entry_new();
-    y_entry = gtk_entry_new();
     // labels   
     name_label = gtk_label_new("Nome");
     t1_label = gtk_label_new("Adicionar vértice");
@@ -474,7 +485,8 @@ void GUI::create_poly_frame(GtkWidget *frame, GtkWidget *window, int type) {
     // Entries
     name_entry = gtk_entry_new();
     fill_check = gtk_check_button_new_with_label("Preencher?\n (Polígono)");
-    
+    x_entry = gtk_entry_new();
+    y_entry = gtk_entry_new();
 
     static GtkWidget *entriesA[2];
     entriesA[0] = x_entry;
@@ -486,7 +498,7 @@ void GUI::create_poly_frame(GtkWidget *frame, GtkWidget *window, int type) {
     entriesB[2] = fill_check;
     Params* p = new Params();
     p->entries = entriesB;
-    p->type = type;
+    p->type = POLYGON;
 
     // TextView com vértices adicionados
     GtkWidget* text_view = gtk_text_view_new();
@@ -505,6 +517,7 @@ void GUI::create_poly_frame(GtkWidget *frame, GtkWidget *window, int type) {
     grid = gtk_grid_new();
     gtk_grid_set_row_spacing (GTK_GRID(grid), (guint)10);
     gtk_grid_set_column_homogeneous (GTK_GRID(grid), TRUE);
+    gtk_container_add(GTK_CONTAINER(window), grid);
 
     // coloca widgets nos containers
     gtk_grid_attach(GTK_GRID(grid), name_label, 0, 0, 1, 1);
@@ -521,42 +534,78 @@ void GUI::create_poly_frame(GtkWidget *frame, GtkWidget *window, int type) {
     gtk_grid_attach(GTK_GRID(grid), add_vert_b, 0, 4, 2, 1);
     gtk_grid_attach(GTK_GRID(grid), add_poly_b, 2, 4, 1, 1);
 
-    gtk_container_add(GTK_CONTAINER(frame), grid);
+    gtk_widget_show_all(window);
 }
 
-// Callback do botão de criar figura
-void GUI::on_create_shape_button() {
-    GtkWidget *window;
+// Janela para criar curva e adicionar vértices
+void GUI::create_curve_frame() {
+    GtkWidget *window, *grid;
+    GtkWidget *add_vert_b, *add_poly_b;
+    GtkWidget *x_label, *y_label, *t1_label, *t2_label;
+    GtkWidget *x_entry, *y_entry;
+    GtkWidget *name_entry, *name_label;
 
     // Window
     window = gtk_application_window_new (app);
-    gtk_window_set_title (GTK_WINDOW (window), "Adicionar Figura");
-    gtk_window_set_default_size (GTK_WINDOW(window), 200, 200);
+    gtk_window_set_title (GTK_WINDOW (window), "Adicionar Curva");
 
-    // ----------GtkNotebook
-    GtkWidget *notebook, *frame, *label;
-    notebook = gtk_notebook_new();
-    gtk_notebook_set_tab_pos (GTK_NOTEBOOK(notebook), GTK_POS_TOP);
+    //std::list<Vector2> vert_buffer_list;
+    // labels   
+    name_label = gtk_label_new("Nome");
+    t1_label = gtk_label_new("Adicionar vértice");
+    t2_label = gtk_label_new("Vértices");
+    x_label = gtk_label_new("Posição x");
+    y_label = gtk_label_new("Posição y");
     
-    frame = gtk_frame_new("");
-    create_point_frame(frame, window);
-    label = gtk_label_new ("Ponto");
-    gtk_notebook_append_page (GTK_NOTEBOOK (notebook), frame, label);
-    frame = gtk_frame_new("");
-    create_line_frame(frame, window);
-    label = gtk_label_new ("Linha");
-    gtk_notebook_append_page (GTK_NOTEBOOK (notebook), frame, label);
-    frame = gtk_frame_new("");
-    create_poly_frame(frame, window, POLYGON);
-    label = gtk_label_new ("Polígono");
-    gtk_notebook_append_page (GTK_NOTEBOOK (notebook), frame, label);
-    frame = gtk_frame_new("");
-    create_poly_frame(frame, window, CURVE);
-    label = gtk_label_new ("Curva");
-    gtk_notebook_append_page (GTK_NOTEBOOK (notebook), frame, label);
-    // ---------GtkNotebook
+    // Entries
+    name_entry = gtk_entry_new();
+    x_entry = gtk_entry_new();
+    y_entry = gtk_entry_new();
 
-    gtk_container_add(GTK_CONTAINER(window), notebook);
+    static GtkWidget *entriesA[2];
+    entriesA[0] = x_entry;
+    entriesA[1] = y_entry;
+
+    static GtkWidget *entriesB[5];
+    entriesB[0] = window;
+    entriesB[1] = name_entry;
+    Params* p = new Params();
+    p->entries = entriesB;
+    p->type = CURVE;
+
+    // TextView com vértices adicionados
+    GtkWidget* text_view = gtk_text_view_new();
+    gtk_text_view_set_editable (GTK_TEXT_VIEW (text_view), FALSE);
+    gtk_text_view_set_cursor_visible (GTK_TEXT_VIEW (text_view), FALSE);
+    buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text_view));
+
+    // Botoes
+    add_vert_b = gtk_button_new_with_label("Adicionar vértice");
+    g_signal_connect_swapped(add_vert_b, "clicked",
+        G_CALLBACK (on_add_vert_button), entriesA);
+    add_poly_b = gtk_button_new_with_label("Criar");
+    g_signal_connect_swapped(add_poly_b, "clicked",
+        G_CALLBACK (on_create_poly_button), p);
+
+    grid = gtk_grid_new();
+    gtk_grid_set_row_spacing (GTK_GRID(grid), (guint)10);
+    gtk_grid_set_column_homogeneous (GTK_GRID(grid), TRUE);
+    gtk_container_add(GTK_CONTAINER(window), grid);
+
+    // coloca widgets nos containers
+    gtk_grid_attach(GTK_GRID(grid), name_label, 0, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), name_entry, 1, 0, 1, 1); 
+    gtk_grid_attach(GTK_GRID(grid), t1_label, 0, 1, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), t2_label, 2, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), x_label, 0, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), x_entry, 1, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), y_label, 0, 3, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), y_entry, 1, 3, 1, 1);
+
+    gtk_grid_attach(GTK_GRID(grid), text_view, 2, 2, 1, 2);       
+    gtk_grid_attach(GTK_GRID(grid), add_vert_b, 0, 4, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), add_poly_b, 2, 4, 1, 1);
+
     gtk_widget_show_all(window);
 }
 
@@ -634,7 +683,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     GtkWidget *in_button, *out_button;
     GtkWidget *import_button, *export_button;
     GtkWidget *rot_left_button, *rot_right_button;
-    GtkWidget *create_shape_button;
+    GtkWidget *point_button, *line_button, *polygon_button, *curve_button; 
     GtkWidget *move_frame, *create_frame, *add_frame;
     GtkWidget *combo_frame, *transform_frame, *clip_frame;
     GtkWidget *box, *big_box;
@@ -694,11 +743,23 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
 
     // Botoes para criacao de figuras
     Params* p = new Params();
-    create_shape_button = gtk_button_new_with_label("Criar figura");
-    g_signal_connect_swapped(create_shape_button, "clicked",
-        G_CALLBACK (on_create_shape_button), p);
+    point_button = gtk_button_new_with_label("Ponto");
+    g_signal_connect_swapped(point_button, "clicked",
+        G_CALLBACK (create_point_frame), window);
+    line_button = gtk_button_new_with_label("Reta");
+    g_signal_connect_swapped(line_button, "clicked",
+        G_CALLBACK (create_line_frame), window);
+    polygon_button = gtk_button_new_with_label("Poligono");
+    g_signal_connect_swapped(polygon_button, "clicked",
+        G_CALLBACK (create_poly_frame), window);
+    curve_button = gtk_button_new_with_label("Curva");
+    g_signal_connect_swapped(curve_button, "clicked",
+        G_CALLBACK (create_curve_frame), window);
     box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 1);
-    gtk_box_pack_start(GTK_BOX(box), create_shape_button, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(box), point_button, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(box), line_button, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(box), polygon_button, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(box), curve_button, TRUE, TRUE, 0);
     create_frame = gtk_frame_new("");
     gtk_container_add(GTK_CONTAINER(create_frame), box);
 

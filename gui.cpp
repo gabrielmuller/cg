@@ -504,6 +504,7 @@ void GUI::create_poly_frame() {
     GtkWidget* text_view = gtk_text_view_new();
     gtk_text_view_set_editable (GTK_TEXT_VIEW (text_view), FALSE);
     gtk_text_view_set_cursor_visible (GTK_TEXT_VIEW (text_view), FALSE);
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_view), GTK_WRAP_CHAR);
     buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text_view));
 
     // Botoes
@@ -577,6 +578,7 @@ void GUI::create_curve_frame() {
     GtkWidget* text_view = gtk_text_view_new();
     gtk_text_view_set_editable (GTK_TEXT_VIEW (text_view), FALSE);
     gtk_text_view_set_cursor_visible (GTK_TEXT_VIEW (text_view), FALSE);
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_view), GTK_WRAP_CHAR);
     buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text_view));
 
     // Botoes

@@ -760,7 +760,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     gtk_box_pack_start(GTK_BOX(box), line_button, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), polygon_button, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), curve_button, TRUE, TRUE, 0);
-    create_frame = gtk_frame_new("");
+    create_frame = gtk_frame_new("Adicionar figura");
     gtk_container_add(GTK_CONTAINER(create_frame), box);
 
     // Botoes de leitura e escrita de .obj

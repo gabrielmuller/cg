@@ -10,6 +10,7 @@ struct Transformation {
     int m; //linhas
     int n; //colunas
     static const Transformation mb;
+    static const Transformation mbs;
 
     Transformation (int m, int n);
     Transformation (std::vector<std::vector<float>> matrix);

@@ -9,6 +9,13 @@ const Transformation Transformation::mb ({
     { 1,  0,  0,  0}
 });
 
+const Transformation Transformation::mbs ({
+    {(float)-1/6,  (float)1/2, (float)-1/2,  (float)1/6},
+    { (float)1/2,          -1,  (float)1/2,           0},
+    {(float)-1/2,           0,  (float)1/2,           0},
+    { (float)1/6,  (float)2/3,  (float)1/6,           0}
+});
+
 Transformation::Transformation (int m, int n) : m(m), n(n) {
     matrix = std::vector<std::vector<float>> (m);
     for (int i = 0; i < m; i++) {

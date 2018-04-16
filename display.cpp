@@ -11,11 +11,7 @@ std::list<Shape*> Display::shapes;
 
 void Display::create_all () {
 
-    Shape* poly = DescOBJ::read_obj("Tri.obj");
-    Shape* square = DescOBJ::read_obj("Square.obj");
-    Polygon* trapezoid = dynamic_cast<Polygon*>(DescOBJ::read_obj("Trapezio.obj"));
-    Polygon* fsquare = dynamic_cast<Polygon*>(DescOBJ::read_obj("Fsquare.obj"));
-    Polygon* concavo = dynamic_cast<Polygon*>(DescOBJ::read_obj("Concavo.obj"));
+    std::vector<Shape*> import = DescOBJ::read_obj("Figuras.obj");
     
     Bezier* curve = new Bezier ("Curva", {
         Vector2(-5, -2),
@@ -30,16 +26,16 @@ void Display::create_all () {
     });
 
     Bezier* bezier = new Bezier ("Bezier", {
-        Vector2(1,1+2),
-        Vector2(2,3+2),
-        Vector2(3,0+2),
-        Vector2(4,1+2),
-        Vector2(5,2+2),
-        Vector2(4,4+2),
-        Vector2(6,4+2),
-        Vector2(7,4+2),
-        Vector2(6,2+2),
-        Vector2(7,1+2)
+        Vector2(1,1),
+        Vector2(2,3),
+        Vector2(3,0),
+        Vector2(4,1),
+        Vector2(5,2),
+        Vector2(4,4),
+        Vector2(6,4),
+        Vector2(7,4),
+        Vector2(6,2),
+        Vector2(7,1)
     });
 
     Spline* spline = new Spline ("B-Spline", {
@@ -55,21 +51,11 @@ void Display::create_all () {
         Vector2(7,1)
     });
 
-    Point* point = new Point ("Point", -1.5, 0);
-    Line* line = new Line ("Straight Line",
-        {Vector2(1, -3), Vector2(3, -1)});
-
-    trapezoid->fill = true;
-    fsquare->fill = true;
-    concavo->fill = true;
+    bezier->translate(Vector2(2,2));
+    spline->translate(Vector2(2,0));
     
-    shapes.push_back(poly);
-    shapes.push_back(square);
-    shapes.push_back(trapezoid);
-    shapes.push_back(fsquare);
-    shapes.push_back(concavo);
-    shapes.push_back(point);
-    shapes.push_back(line);
+    for (auto i : import) 
+        shapes.push_back(i);
     shapes.push_back(curve);
     shapes.push_back(bezier);
     shapes.push_back(spline);

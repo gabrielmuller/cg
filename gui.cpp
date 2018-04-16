@@ -634,8 +634,10 @@ void GUI::on_import_button(GtkWidget *widget, GtkWidget *window) {
     if (res == GTK_RESPONSE_ACCEPT) {
         gchar* filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(chooser));
         auto sh = DescOBJ::read_obj(filename);
-        Display::add(sh);
-        gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), sh->name.c_str());
+        for(auto i = 0; i < sh.size(); ++i) {
+            Display::add(sh[i]);
+            gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), sh[i]->name.c_str());
+        }
         //gtk_widget_queue_draw(drawing_area);
     }
 

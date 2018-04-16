@@ -13,7 +13,6 @@ void Spline::draw () {
         return;
     }
 
-    // quanto maior, mais precisão
     float sigma = 0.02;
     int samples = (float)1/sigma;
 

@@ -14,6 +14,7 @@
 #include "point.h"
 #include "line.h"
 #include "bezier.h"
+#include "spline.h"
 #include "descobj.h"
 
 /**

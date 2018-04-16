@@ -441,7 +441,9 @@ void GUI::on_create_poly_button(Params* p, GtkWidget *widget) {
         else if (vert_buffer_list.size() >= 3)
             sh = new Polygon(name, vert_buffer_list, fill);
     } else {
-        sh = new Bezier(name, vert_buffer_list);
+        bool type = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(p->entries[2]));
+        if (!type) sh = new Bezier(name, vert_buffer_list);
+        else sh = new Spline(name, vert_buffer_list);
     }
     Display::add(sh);
     //gtk_widget_queue_draw(drawing_area);
@@ -484,7 +486,7 @@ void GUI::create_poly_frame() {
     
     // Entries
     name_entry = gtk_entry_new();
-    fill_check = gtk_check_button_new_with_label("Preencher?\n (Polígono)");
+    fill_check = gtk_check_button_new_with_label("Preencher?");
     x_entry = gtk_entry_new();
     y_entry = gtk_entry_new();
 
@@ -543,7 +545,7 @@ void GUI::create_curve_frame() {
     GtkWidget *window, *grid;
     GtkWidget *add_vert_b, *add_poly_b;
     GtkWidget *x_label, *y_label, *t1_label, *t2_label;
-    GtkWidget *x_entry, *y_entry;
+    GtkWidget *x_entry, *y_entry, *type_check;
     GtkWidget *name_entry, *name_label;
 
     // Window
@@ -562,6 +564,7 @@ void GUI::create_curve_frame() {
     name_entry = gtk_entry_new();
     x_entry = gtk_entry_new();
     y_entry = gtk_entry_new();
+    type_check = gtk_check_button_new_with_label("B-Spline?\n (Padrão: Bezier)");
 
     static GtkWidget *entriesA[2];
     entriesA[0] = x_entry;
@@ -570,6 +573,7 @@ void GUI::create_curve_frame() {
     static GtkWidget *entriesB[5];
     entriesB[0] = window;
     entriesB[1] = name_entry;
+    entriesB[2] = type_check;
     Params* p = new Params();
     p->entries = entriesB;
     p->type = CURVE;
@@ -597,6 +601,7 @@ void GUI::create_curve_frame() {
     // coloca widgets nos containers
     gtk_grid_attach(GTK_GRID(grid), name_label, 0, 0, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), name_entry, 1, 0, 1, 1); 
+    gtk_grid_attach(GTK_GRID(grid), type_check, 2, 0, 1, 1); 
     gtk_grid_attach(GTK_GRID(grid), t1_label, 0, 1, 2, 1);
     gtk_grid_attach(GTK_GRID(grid), t2_label, 2, 1, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), x_label, 0, 2, 1, 1);

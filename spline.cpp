@@ -3,7 +3,10 @@
 #include <iostream>
 
 Spline::Spline(std::string name, std::vector<Vector2> verts) 
-    : Vertices::Vertices(name, verts) {}
+    : Vertices::Vertices(name, verts) {
+        if (verts.size() < 4)
+            throw std::domain_error("Quantidade inválida de pontos de controle para B-Spline");
+    }
 
 Spline::Spline(std::string name) 
     : Vertices::Vertices(name) {}

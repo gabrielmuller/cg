@@ -19,26 +19,6 @@ void Spline::draw () {
     // aumenta precisão com zoom
     samples /= Window::real.size.x();
 
-    // garantir que tamanho mod 3 é 1
-    int remainder = verts.size() % 3;
-
-    if (remainder != 1) {
-        // 0 1 2 3
-        // 3 4 5 _
-        // faz uma quadrática equivalente
-        // duplica penúltimo vértice
-        auto vert = verts.end() - 2;
-        verts.insert(vert, *vert);
-    }
-    if (remainder == 2) {
-        // 0 1 2 3
-        // 3 4 _ _
-        // faz uma reta equivalente
-        // duplica últimos dois vértices
-        // (penúltimo já foi duplicado no primeiro if)
-        verts.push_back(verts.back());
-    }
-
     // Matriz E(sigma)
     Transformation e ({
         {              0,                 0,      0,  1},
@@ -51,7 +31,7 @@ void Spline::draw () {
     // para cada 4 pontos
     // ex: 0 1 2 3
     //     1 2 3 4 ...
-    for (int i = 0; i < size - 4; i++) {
+    for (int i = 0; i < size - 3; i++) {
         Transformation x (4, 1);
         Transformation y (4, 1);
 
@@ -90,10 +70,7 @@ void Spline::draw () {
 void Spline::fwdDiff (float n, float x, float dx, float d2x, float d3x, 
     float y, float dy, float d2y, float d3y) {
 
-    float xo, yo;
-    xo = x;
-    yo = y;
-    Vector2 a = Vector2(xo, yo);
+    Vector2 a = Vector2(x, y);
     for (float i = 0; i < n; i++) {
         x   += dx;
         dx  += d2x;

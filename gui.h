@@ -10,7 +10,9 @@
 #include "vector2.h"
 #include "display.h"
 #include "window.h"
+#include "vertices.h"
 #include "polygon.h"
+#include "spline.h"
 #include "point.h"
 #include "line.h"
 #include "bezier.h"
@@ -66,6 +68,8 @@ namespace GUI {
     void on_add_vert_button(GtkWidget **entry, GtkWidget *widget);
     void create_poly_frame ();
     void create_curve_frame ();
+
+    void create_vertices_frame (bool isPoly);
 
     void on_create_shape_button();
 

@@ -38,10 +38,17 @@ void Display::create_all () {
         Vector2(7,1)
     });
 
+    Spline* b = new Spline ("Bbbb", {
+        Vector2(0, 0),
+        Vector2(0, 1),
+        Vector2(1, 1),
+        Vector2(1, 0)
+    });
+
     Spline* spline = new Spline ("B-Spline", {
         Vector2(1,1),
-        Vector2(2,3),
-        Vector2(3,0),
+        Vector2(2,2),
+        Vector2(3,2),
         Vector2(4,1),
         Vector2(5,2),
         Vector2(4,4),
@@ -51,14 +58,15 @@ void Display::create_all () {
         Vector2(7,1)
     });
 
-    bezier->translate(Vector2(2,2));
-    spline->translate(Vector2(2,0));
+    //bezier->translate(Vector2(2,2));
+    //spline->translate(Vector2(2,0));
     
     for (auto i : import) 
         shapes.push_back(i);
     shapes.push_back(curve);
     shapes.push_back(bezier);
     shapes.push_back(spline);
+    shapes.push_back(b);
 }
 
 void Display::draw_all() {

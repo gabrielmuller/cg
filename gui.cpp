@@ -481,7 +481,8 @@ void GUI::create_curve_frame () {
 // Janela para criar polígono e adicionar vértices
 void GUI::create_vertices_frame(bool isPoly) {
     std::string name = isPoly ? "Polígono" : "Curva";
-    std::string option = isPoly ? "Preencher?" : "B-Spline?";
+    name = "Adicionar " + name;
+    std::string option = isPoly ? "Preencher? (Polígono)" : "B-Spline? (senão Bézier)";
 
     GtkWidget *window, *grid;
     GtkWidget *add_vert_b, *add_poly_b;

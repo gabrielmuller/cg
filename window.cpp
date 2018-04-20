@@ -86,6 +86,12 @@ void Window::draw_line (Edge line) {
     
 }
 
+void Window::draw_line (Edge3D line) {
+    Edge line2 (line.x(), line.y());
+    draw_line(line2);
+}
+
+
 // Parecido com draw_line mas sem clipping
 // Usada para polígonos preenchidos
 void Window::draw_pline (Edge line) {

@@ -98,7 +98,7 @@ void GUI::translation_cb(GtkWidget **entry, GtkWidget *widget) {
     if (coord_y == "") coord_y = "0";
 
     auto selected_id = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
-    auto it = Display::shapes.begin();
+    auto it = Display::dbs.begin();
     std::advance(it, selected_id);
     (*it)->translate(Vector2(std::stof(coord_x), std::stof(coord_y)));
 
@@ -152,7 +152,7 @@ void GUI::scaling_cb(GtkWidget **entry, GtkWidget *widget) {
     if (coord_y == "") coord_y = "1";
 
     auto selected_id = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
-    auto it = Display::shapes.begin();
+    auto it = Display::dbs.begin();
     std::advance(it, selected_id);
     (*it)->scale(Vector2(std::stof(coord_x), std::stof(coord_y)));
 
@@ -213,7 +213,7 @@ void GUI::rotation_cb(GtkWidget **entry, GtkWidget *widget) {
         center = true;
     }
     auto selected_id = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
-    auto it = Display::shapes.begin();
+    auto it = Display::dbs.begin();
     std::advance(it, selected_id);
 
     float rad = std::stof(graus) * (M_PI/180);
@@ -593,7 +593,7 @@ void GUI::on_import_button(GtkWidget *widget, GtkWidget *window) {
 
 void GUI::on_export_button(GtkWidget *widget, GtkWidget *window) {
     auto selected_id = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
-    auto it = Display::shapes.begin();
+    auto it = Display::dbs.begin();
     std::advance(it, selected_id);
     std::string path = (*it)->name + ".obj";   
 
@@ -730,8 +730,8 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
 
     // ComboBox (Lista de figuras)
     combo = gtk_combo_box_text_new();
-    for (auto it = Display::shapes.begin();
-        it != Display::shapes.end(); ++it) {
+    for (auto it = Display::dbs.begin();
+        it != Display::dbs.end(); ++it) {
         const char *textobjeto = (*it)->name.c_str();
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT (combo), textobjeto);
     }

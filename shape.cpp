@@ -1,6 +1,6 @@
 #include "shape.h"
 
-Shape::Shape (std::string name) : name(name) {}
+Shape::Shape (std::string name) : Drawable::Drawable(name) {}
 
 /**
  * @brief       Translaciona uma forma a partir de um vetor distância.

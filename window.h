@@ -2,6 +2,7 @@
 #define WINDOW_H
 
 #include "edge.h"
+#include "edge3d.h"
 #include <gtk/gtk.h>
 #include <list>
 
@@ -42,6 +43,7 @@ namespace Window {
     Vector2 norm_to_vp (Vector2 coords);
 
     void draw_line (Edge line);
+    void draw_line (Edge3D line);
     void draw_pline (Edge line);
     void draw_point (Vector2 point);
 

@@ -2,19 +2,13 @@
 #define SHAPE_H
 
 #include <list>
-#include <string>
 #include "vector2.h"
 #include "window.h"
+#include "drawable.h"
 
-struct Shape {
-    std::string name;
+struct Shape : Drawable {
 
     Shape (std::string name); 
-
-    /**
-     * @brief       Desenha o polígono no viewport. 
-     */
-    virtual void draw () = 0;
 
     /**
      * @brief       Realiza uma transformação qualquer na forma. 

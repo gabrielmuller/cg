@@ -1,6 +1,6 @@
 #include "descobj.h"
 
-std::vector<Shape*> DescOBJ::read_obj(const std::string &path) {
+std::vector<Drawable*> DescOBJ::read_obj(const std::string &path) {
     std::ifstream file(path);
     std::string l;
     std::vector<std::string> line;
@@ -9,7 +9,7 @@ std::vector<Shape*> DescOBJ::read_obj(const std::string &path) {
     
     // Info sobre as figuras
     std::vector<Vector2> verts, shape_verts;
-    std::vector<Shape*> shapes;
+    std::vector<Drawable*> dbs;
     std::vector<int> index;
     std::string name;
 
@@ -48,7 +48,7 @@ std::vector<Shape*> DescOBJ::read_obj(const std::string &path) {
                 {   
                     auto i = std::stoi(line2[1]) -1;
                     Point* p = new Point(name, verts[i].x(), verts[i].y());
-                    shapes.push_back(p);
+                    dbs.push_back(p);
                     index.clear();
                 }
                 else if (line2[0] == "l" || line2[0] == "f") // Linha, polígono
@@ -67,12 +67,12 @@ std::vector<Shape*> DescOBJ::read_obj(const std::string &path) {
                                 return verts[i]; });
                     if (shape_verts.size() == 2) {
                         Line* p = new Line(name, shape_verts);
-                        shapes.push_back(p);
+                        dbs.push_back(p);
                     } else {   
                         auto fill = false;
                         if (line2[0] == "f") fill = true;
                         Polygon* p = new Polygon(name, shape_verts, fill);
-                        shapes.push_back(p);
+                        dbs.push_back(p);
                     }
                     index.clear();
                     shape_verts.clear();
@@ -84,8 +84,8 @@ std::vector<Shape*> DescOBJ::read_obj(const std::string &path) {
     }
 
     // TODO modificar pra funcionar com qualquer forma
-    if (shapes.empty()) {
-        Shape* sh;
+    if (dbs.empty()) {
+        Drawable* sh;
         name = split(filename, '.').front();
         if (verts.size() == 1)
             sh = new Point(name, verts.front().x(), verts.front().y());
@@ -93,13 +93,13 @@ std::vector<Shape*> DescOBJ::read_obj(const std::string &path) {
             sh = new Line(name, verts);
         else
             sh = new Polygon(name, verts);
-        shapes.push_back(sh);
+        dbs.push_back(sh);
     }
 
-    return shapes;
+    return dbs;
 }
 
-void DescOBJ::save_obj(const std::string &path, Shape *sh) {
+void DescOBJ::save_obj(const std::string &path, Drawable *sh) {
     std::ofstream file(path);
     // TODO modificar pra funcionar com qualquer forma
     if (dynamic_cast<Vertices*>(sh) == nullptr) {

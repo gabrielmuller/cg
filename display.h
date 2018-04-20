@@ -6,9 +6,9 @@
 
 // display file
 namespace Display {
-    extern std::list<Shape*> shapes;
+    extern std::list<Drawable*> dbs;
     void create_all ();
-    void add(Shape* sh);
+    void add(Drawable* sh);
     void draw_all ();
 }
 

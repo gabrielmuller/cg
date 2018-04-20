@@ -62,11 +62,11 @@ void Bezier::draw () {
         Vector2 a = Vector2(t_times(coeffs_x, 0), t_times(coeffs_y, 0));
         for (float t = 0; t < 1; t += (float) 1 / samples) {
             Vector2 b = Vector2(t_times(coeffs_x, t), t_times(coeffs_y, t));
-            Window::draw_line(AB(a, b));
+            Window::draw_line(Edge(a, b));
             a = b;
         }
         Vector2 b = Vector2(t_times(coeffs_x, 1), t_times(coeffs_y, 1));
-        Window::draw_line(AB(a, b));
+        Window::draw_line(Edge(a, b));
     }
 }
 

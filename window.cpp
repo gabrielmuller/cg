@@ -9,12 +9,12 @@ float Window::xl, Window::xr, Window::yd, Window::yu;
 /**
  *  Bordas da Viewport. {esquerda, cima, direita, baixo}
  */
-std::list<AB> Window::edges() {
+std::list<Edge> Window::edges() {
     return {
-            AB(Vector2(xl, yd), Vector2(xl,yu)),
-            AB(Vector2(xl, yu), Vector2(xr,yu)),
-            AB(Vector2(xr, yu), Vector2(xr,yd)),
-            AB(Vector2(xr, yd), Vector2(xl,yd))
+            Edge(Vector2(xl, yd), Vector2(xl,yu)),
+            Edge(Vector2(xl, yu), Vector2(xr,yu)),
+            Edge(Vector2(xr, yu), Vector2(xr,yd)),
+            Edge(Vector2(xr, yd), Vector2(xl,yd))
         };
 }
 
@@ -71,7 +71,7 @@ Vector2 Window::norm_to_vp (Vector2 coords) {
 // Recebe uma linha em coordenadas de mundo,
 // transforma em coordenadas normalizadas,
 // faz clipping e desenha no viewport
-void Window::draw_line (AB line) {
+void Window::draw_line (Edge line) {
     line.a = world_to_norm(line.a);
     line.b = world_to_norm(line.b);
 
@@ -88,7 +88,7 @@ void Window::draw_line (AB line) {
 
 // Parecido com draw_line mas sem clipping
 // Usada para polígonos preenchidos
-void Window::draw_pline (AB line) {
+void Window::draw_pline (Edge line) {
     line.a = norm_to_vp(line.a);
     line.b = norm_to_vp(line.b);
     cairo_line_to(cr, line.b.x(), line.b.y());
@@ -96,13 +96,13 @@ void Window::draw_pline (AB line) {
 }
 
 // Checa se um ponto está dentro de uma borda da window
-bool Window::is_inside(Vector2 coord, AB edge) {
+bool Window::is_inside(Vector2 coord, Edge edge) {
     return (edge.b.x() - edge.a.x()) * (coord.y() - edge.a.y()) < 
            (edge.b.y() - edge.a.y()) * (coord.x() - edge.a.x());
 }
 
 // Clipa linha pra uma borda, usado no clipping de polígonos
-Vector2 Window::clip_to_edge(AB edge, AB line) {
+Vector2 Window::clip_to_edge(Edge edge, Edge line) {
     Vector2 v = (!is_inside(line.a,edge)) ? line.a : line.b;
     float m = (line.a.y() - line.b.y()) / (line.a.x() - line.b.x());
     if (edge.a.x() == edge.b.x()) //direita/esquerda
@@ -134,7 +134,7 @@ void Window::draw_point (Vector2 point) {
     cairo_stroke(cr);
 }
 
-AB Window::clip_line (AB line) {
+Edge Window::clip_line (Edge line) {
     if (clipping_algorithm == COHEN_SUTHERLAND) {
         return clip_cs(line);
     } else if (clipping_algorithm == LIANG_BARSKY) {
@@ -142,7 +142,7 @@ AB Window::clip_line (AB line) {
     }
 }
 
-AB Window::clip_cs (AB line) {
+Edge Window::clip_cs (Edge line) {
     int a_rc = get_rc(line.a);
     int b_rc = get_rc(line.b);
     
@@ -154,7 +154,7 @@ AB Window::clip_cs (AB line) {
     // se o AND dos dois RC é diferente de 0000, está fora da janela
     // retorna empty = true
     if (a_rc & b_rc) {
-        return AB();
+        return Edge();
     }
 
     // clipping de fato
@@ -207,13 +207,13 @@ AB Window::clip_cs (AB line) {
 
     // se não houve, a reta está completamente fora
     if (!changed) {
-        line = AB();
+        line = Edge();
     }
     return line;
 }
 
 
-AB Window::clip_lb (AB line) {
+Edge Window::clip_lb (Edge line) {
     float delta_x = line.b.x() - line.a.x();
     float delta_y = line.b.y() - line.a.y();
     float p[4] = {-delta_x, delta_x, -delta_y, delta_y};
@@ -222,7 +222,7 @@ AB Window::clip_lb (AB line) {
     for (int i = 0; i < 4; i ++) {
         if (p[i] == 0 && q[i] < 0)  {
             // linha completamente fora
-            return AB();
+            return Edge();
         }
     }
     float u1 = 0;
@@ -237,7 +237,7 @@ AB Window::clip_lb (AB line) {
     }
     if (u1 > u2) {
         // linha completamente fora
-        return AB();
+        return Edge();
     }
     if (u1 > 0) {
         // de fora pra dentro

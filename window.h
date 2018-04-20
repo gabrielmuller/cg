@@ -1,7 +1,7 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include "AB.h"
+#include "edge.h"
 #include <gtk/gtk.h>
 #include <list>
 
@@ -35,22 +35,22 @@ namespace Window {
     // extremidades da window
     extern float xr, xl, yu, yd;
 
-    std::list<AB> edges();
+    std::list<Edge> edges();
 
     Vector2 world_to_screen (Vector2 coords);
     Vector2 world_to_norm (Vector2 coords);
     Vector2 norm_to_vp (Vector2 coords);
 
-    void draw_line (AB line);
-    void draw_pline (AB line);
+    void draw_line (Edge line);
+    void draw_pline (Edge line);
     void draw_point (Vector2 point);
 
-    bool is_inside(Vector2 coord, AB edge);
+    bool is_inside(Vector2 coord, Edge edge);
     
-    Vector2 clip_to_edge(AB edge, AB line);
-    AB clip_line (AB line);
-    AB clip_cs (AB line);
-    AB clip_lb (AB line);
+    Vector2 clip_to_edge(Edge edge, Edge line);
+    Edge clip_line (Edge line);
+    Edge clip_cs (Edge line);
+    Edge clip_lb (Edge line);
     Vector2 clip_point (Vector2 point);
     void update_boundaries (); 
     int get_rc (Vector2 point); 

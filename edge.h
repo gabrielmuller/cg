@@ -1,5 +1,5 @@
-#ifndef AB_H
-#define AB_H
+#ifndef Edge_H
+#define Edge_H
 
 #include "vector2.h"
 
@@ -8,15 +8,15 @@
  * 'a' e 'b' (inicial e final).
  */
 
-struct AB {
+struct Edge {
     // true quando não precisar desenhar
     bool empty;
 
     Vector2 a;
     Vector2 b;
 
-    AB ();
-    AB (Vector2 a, Vector2 b);
+    Edge ();
+    Edge (Vector2 a, Vector2 b);
 };
 
 #endif

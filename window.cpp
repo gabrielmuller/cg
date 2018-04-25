@@ -21,10 +21,6 @@ std::list<Edge> Window::edges() {
 int Window::clipping_algorithm = COHEN_SUTHERLAND;
 
 cairo_t* Window::cr;
-// converte uma coordenada do espaço no mundo para tela
-Vector2 Window::world_to_screen(Vector2 coords) {
-    return norm_to_vp(world_to_norm(coords));
-}
 
 Specs::Specs () : position(Vector2(0, 0)), size(Vector2(10, 10)), angle(0) {}
 
@@ -87,7 +83,9 @@ void Window::draw_line (Edge line) {
 }
 
 void Window::draw_line (Edge3D line) {
-    Edge line2 (line.x(), line.y());
+    line.a.matrix[0][2] = 1;
+    line.b.matrix[0][2] = 1;
+    Edge line2 (line.a, line.b);
     draw_line(line2);
 }
 

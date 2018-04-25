@@ -8,24 +8,25 @@
 #include <math.h>
 #include "descobj.h"
 
-std::list<Drawable*> Display::dbs;
+std::list<Shape*> Display::shapes;
+std::list<Shape3D*> Display::shapes3D;
 
 void Display::create_all () {
 
-    std::vector<Drawable*> import = DescOBJ::read_obj("Figuras.obj");
+    std::vector<Shape*> import = DescOBJ::read_obj("Figuras.obj");
 
     Vector3 v0 (0, 0, 0);
     Vector3 v1 (-1, 1, 0);
     Vector3 v2 (1, 1, 0);
     Vector3 v3 (0, 0.5, 1);
 
-    Polyhedron* cube = new Polyhedron("Cubo", {
+    Polyhedron* tetrahedron = new Polyhedron("Illuminati", {
         Edge3D(v0, v1),
         Edge3D(v1, v2),
         Edge3D(v2, v0),
-        Edge3D(v0, v1),
-        Edge3D(v0, v2),
-        Edge3D(v0, v3)
+        Edge3D(v3, v0),
+        Edge3D(v3, v1),
+        Edge3D(v3, v2)
     });
     
     Bezier* curve = new Bezier ("Curva", {
@@ -73,28 +74,27 @@ void Display::create_all () {
         Vector2(7,1)
     });
 
-    //bezier->translate(Vector2(2,2));
-    //spline->translate(Vector2(2,0));
-    
     for (auto i : import)  {
-        dbs.push_back(i);
+        shapes.push_back(i);
     }
 
-    dbs.push_back(curve);
-    dbs.push_back(bezier);
-    dbs.push_back(spline);
-    dbs.push_back(b);
-    dbs.push_back(cube);
+    shapes.push_back(curve);
+    shapes.push_back(bezier);
+    shapes.push_back(spline);
+    shapes.push_back(b);
+    shapes3D.push_back(tetrahedron);
 }
 
 void Display::draw_all() {
-    for (auto it = dbs.begin();
-        it != dbs.end();
-        ++it) {
-        (*it)->draw();
+    /*
+    for (auto it : shapes) {
+        it->draw();
+    }*/
+    for (auto it : shapes3D) {
+        it->draw();
     }
 }
 
-void Display::add(Drawable* sh) {
-    dbs.push_back(sh);
+void Display::add(Shape* sh) {
+    shapes.push_back(sh);
 }

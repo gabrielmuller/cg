@@ -3,11 +3,13 @@
 
 #include <vector>
 #include "edge3d.h"
-#include "drawable.h"
 
-struct Shape3D : Drawable {
+struct Shape3D {
+    std::string name;
 
     Shape3D (std::string name); 
+
+    virtual void draw () = 0;
 
     /**
      * @brief       Realiza uma transformação qualquer na forma. 

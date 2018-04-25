@@ -3,12 +3,14 @@
 
 #include <list>
 #include "shape.h"
+#include "shape3d.h"
 
 // display file
 namespace Display {
-    extern std::list<Drawable*> dbs;
-    void create_all ();
-    void add(Drawable* sh);
+        extern std::list<Shape*> shapes;
+        extern std::list<Shape3D*> shapes3D;
+        void create_all ();
+        void add(Shape* sh);
     void draw_all ();
 }
 

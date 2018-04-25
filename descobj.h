@@ -25,8 +25,8 @@
  *  Representa uma linha de (1,1) a (-1, -1)
  */
 namespace DescOBJ {
-    std::vector<Drawable*> read_obj(const std::string &path);
-    void save_obj(const std::string &path, Drawable *sh);
+    std::vector<Shape*> read_obj(const std::string &path);
+    void save_obj(const std::string &path, Shape *sh);
     const std::vector<std::string> split(const std::string &s, char dl);
 }
 

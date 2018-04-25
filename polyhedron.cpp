@@ -1,4 +1,4 @@
-#include "polyhedron3d.h"
+#include "polyhedron.h"
 #include "window.h"
 
 Polyhedron::Polyhedron (std::string name, std::vector<Edge3D> edges) :
@@ -7,7 +7,7 @@ Polyhedron::Polyhedron (std::string name, std::vector<Edge3D> edges) :
 
 void Polyhedron::draw () {
     for (auto i : edges) {
-        Window::draw(*i);
+        Window::draw_line(i);
     }
 }
 

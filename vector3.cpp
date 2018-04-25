@@ -32,7 +32,7 @@ Vector3::operator std::string () const {
 bool Vector3::operator== (Vector3 other) const {
     return x() == other.x()  
         && y() == other.y()
-        && y() == other.z();
+        && z() == other.z();
 }
 
     

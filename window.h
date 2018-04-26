@@ -32,6 +32,7 @@ namespace Window {
     extern float smooth;
     extern int clipping_algorithm;
     extern cairo_t* cr;
+    extern float clip_margin;
 
     // extremidades da window
     extern float xr, xl, yu, yd;
@@ -44,6 +45,7 @@ namespace Window {
 
     void draw_line (Edge line);
     void draw_line (Edge3D line);
+    void draw_borders ();
     void draw_pline (Edge line);
     void draw_point (Vector2 point);
 

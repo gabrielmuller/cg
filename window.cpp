@@ -5,6 +5,7 @@
 Vector2 Window::viewport(400, 400);
 float Window::smooth = 0.2;
 float Window::xl, Window::xr, Window::yd, Window::yu;
+float Window::clip_margin = 1.8;
 
 /**
  *  Bordas da Viewport. {esquerda, cima, direita, baixo}
@@ -87,6 +88,22 @@ void Window::draw_line (Edge3D line) {
     line.b.matrix[0][2] = 1;
     Edge line2 (line.a, line.b);
     draw_line(line2);
+}
+
+void Window::draw_borders () {
+    
+
+    cairo_set_source_rgb(cr, 1, 0, 0);
+    Vector2 a = norm_to_vp(Vector2(xl, yu));
+    Vector2 b = norm_to_vp(Vector2(xr, yu));
+    Vector2 c = norm_to_vp(Vector2(xr, yd));
+    Vector2 d = norm_to_vp(Vector2(xl, yd));
+    cairo_move_to(cr, a.x(), a.y());
+    cairo_line_to(cr, b.x(), b.y());
+    cairo_line_to(cr, c.x(), c.y());
+    cairo_line_to(cr, d.x(), d.y());
+    cairo_line_to(cr, a.x(), a.y());
+    cairo_stroke(cr);
 }
 
 
@@ -276,7 +293,7 @@ int Window::get_rc (Vector2 point) {
 void Window::update_boundaries () {
     // margem para ver se clipping realmente funciona
     // em coordenadas normalizadas
-    Vector2 mock_size = Vector2(1.8, 1.8);
+    Vector2 mock_size = Vector2(clip_margin, clip_margin);
 
     xl = -mock_size.x()/2;
     xr =  mock_size.x()/2;

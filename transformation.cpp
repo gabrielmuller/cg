@@ -1,4 +1,5 @@
 #include "vector2.h"
+#include "vector3.h"
 #include <stdexcept>
 #include "math.h"
 
@@ -53,6 +54,12 @@ Transformation Transformation::translation (const Vector2& distance) {
     return t;
 }
 
+Transformation Transformation::translation3D (const Vector3& distance) {
+    Transformation t = Transformation (4, 4);
+    t.matrix = {{1,0,0,0},{0,1,0,0},{0,0,1,0},{distance.x(), distance.y(), distance.z(), 1}};
+    return t;
+}
+
 Transformation Transformation::scaling (const Vector2& amount, const Vector2& center) {
     Transformation t (3, 3);
     // deslocamento pro centro + escalonamento pré-calculado
@@ -60,6 +67,18 @@ Transformation Transformation::scaling (const Vector2& amount, const Vector2& ce
         {amount.x(), 0, 0},
         {0, amount.y(), 0},
         {center.x() * (-amount.x() + 1), center.y() * (-amount.y() + 1), 1} 
+    };
+    return t;
+}
+
+Transformation Transformation::scaling3D (const Vector3& amount, const Vector3& center) {
+    Transformation t (4, 4);
+    // deslocamento pro centro + escalonamento pré-calculado
+    t.matrix = {
+        {amount.x(), 0, 0, 0},
+        {0, amount.y(), 0, 0},
+        {0, 0, amount.z(), 0},
+        {center.x() * (-amount.x() + 1), center.y() * (-amount.y() + 1), center.z() * (-amount.z() + 1), 1} 
     };
     return t;
 }

@@ -25,4 +25,7 @@ compile:
 	$(CC) $(OPT) $(CVER) $(CFLAGS) $(SRC) -o $(BIN) $(LIBS)
 run:
 	./$(BIN)
+
+clean:
+	git clean -dfX
 	

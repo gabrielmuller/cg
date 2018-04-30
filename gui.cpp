@@ -20,11 +20,12 @@ gboolean GUI::draw_cb(GtkWidget *widget, cairo_t* cr, gpointer* data) {
 
     cairo_set_line_width(cr, 1);
 
+    Window::cr = cr;
+    Window::draw_borders();
     // linha branca
     cairo_set_source_rgb(cr, 1, 1, 1);
 
     // ?
-    Window::cr = cr;
 
     Display::draw_all();
     return FALSE;

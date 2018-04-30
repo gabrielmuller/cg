@@ -86,10 +86,10 @@ void Display::create_all () {
 }
 
 void Display::draw_all() {
-    /*
+    
     for (auto it : shapes) {
         it->draw();
-    }*/
+    }
     for (auto it : shapes3D) {
         it->draw();
     }

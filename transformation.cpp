@@ -47,13 +47,13 @@ Transformation Transformation::operator* (const Transformation& t) const {
     return result;
 }
 
-Transformation Transformation::translation (const Vector2& distance) {
+Transformation Transformation::translation (const Vector2 distance) {
     Transformation t = Transformation (3, 3);
     t.matrix = {{1,0,0},{0,1,0},{distance.x(), distance.y(), 1}};
     return t;
 }
 
-Transformation Transformation::scaling (const Vector2& amount, const Vector2& center) {
+Transformation Transformation::scaling (const Vector2 amount, const Vector2 center) {
     Transformation t (3, 3);
     // deslocamento pro centro + escalonamento pré-calculado
     t.matrix = {
@@ -64,7 +64,7 @@ Transformation Transformation::scaling (const Vector2& amount, const Vector2& ce
     return t;
 }
 
-Transformation Transformation::rotation (const float rad, const Vector2& center) {
+Transformation Transformation::rotation (const float rad, const Vector2 center) {
     Transformation t (3, 3);
     //pré calcular trigonometria
     float c = cos(rad);

@@ -44,7 +44,7 @@ Vector2 Vector2::operator/ (float scalar) const {
     return *this * (1/scalar);
 }
 
-Vector2 Vector2::lerp (const Vector2& a, const Vector2& b, float p) {
+Vector2 Vector2::lerp (Vector2 a, Vector2 b, float p) {
     p = p > 1 ? 1 : p;
     p = p < 0 ? 0 : p;
     return (a * (1-p) + b * p);

@@ -1,5 +1,6 @@
-break draw_line
+break window.cpp:164
+break window.cpp:217
 run
-continue 7
-break norm_to_vp
+clear
+break window.cpp:175
 continue

@@ -4,6 +4,7 @@
 #include <string>
 
 #include "transformation.h"
+#include "vector2.h"
 
 struct Vector3 : Transformation {
     float x() const;
@@ -14,6 +15,7 @@ struct Vector3 : Transformation {
     Vector3 (float x, float y, float z); 
     Vector3 (const Transformation& other); 
 
+    operator Vector2 () const;
     operator std::string () const;
     bool operator== (Vector3 other) const;
 

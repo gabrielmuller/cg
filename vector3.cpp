@@ -29,6 +29,10 @@ Vector3::operator std::string () const {
         + std::to_string(z()) + ")";
 }
 
+Vector3::operator Vector2 () const {
+    return Vector2(x(), y());
+}
+
 bool Vector3::operator== (Vector3 other) const {
     return x() == other.x()  
         && y() == other.y()

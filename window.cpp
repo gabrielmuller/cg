@@ -71,7 +71,13 @@ void Window::draw_line (Edge line) {
     line.a = world_to_norm(line.a);
     line.b = world_to_norm(line.b);
 
-    line = clip_line(line);
+    try {
+        line = clip_line(line);
+    }
+    catch (std::exception e) {
+        // se não precisa renderizar retorna
+        return;
+    }
 
     line.a = norm_to_vp(line.a);
     line.b = norm_to_vp(line.b);
@@ -83,10 +89,7 @@ void Window::draw_line (Edge line) {
 }
 
 void Window::draw_line (Edge3D line) {
-    line.a.matrix[0][2] = 1;
-    line.b.matrix[0][2] = 1;
-    Edge line2 (line.a, line.b);
-    draw_line(line2);
+    draw_line(Edge(line.a, line.b));
 }
 
 
@@ -156,9 +159,9 @@ Edge Window::clip_cs (Edge line) {
     }
 
     // se o AND dos dois RC é diferente de 0000, está fora da janela
-    // retorna empty = true
+    // retorna exceção
     if (a_rc & b_rc) {
-        return Edge();
+        throw std::exception();
     }
 
     // clipping de fato
@@ -181,28 +184,28 @@ Edge Window::clip_cs (Edge line) {
         // TODO código repetido, dá pra parametrizar
         if (rc[i] & (1 << XL)) {
             float y = m*(xl - p[i]->x()) + p[i]->y();
-            if (y < yu && y > yd) {
+            if (y <= yu && y >= yd) {
                 *p[i] = Vector2(xl, y);
                 changed = true;
             }
         }
         if (rc[i] & (1 << XR)) {
             float y = m*(xr - p[i]->x()) + p[i]->y();
-            if (y < yu && y > yd) {
+            if (y <= yu && y >= yd) {
                 *p[i] = Vector2(xr, y);
                 changed = true;
             }
         }
         if (rc[i] & (1 << YD)) {
             float x = (yd - p[i]->y())/m + p[i]->x();
-            if (x < xr && x > xl) {
+            if (x <= xr && x >= xl) {
                 *p[i] = Vector2(x, yd);
                 changed = true;
             }
         }
         if (rc[i] & (1 << YU)) {
             float x = (yu - p[i]->y())/m + p[i]->x();
-            if (x < xr && x > xl) {
+            if (x <= xr && x >= xl) {
                 *p[i] = Vector2(x, yu);
                 changed = true;
             }
@@ -211,7 +214,7 @@ Edge Window::clip_cs (Edge line) {
 
     // se não houve, a reta está completamente fora
     if (!changed) {
-        line = Edge();
+        throw std::exception();
     }
     return line;
 }
@@ -226,7 +229,7 @@ Edge Window::clip_lb (Edge line) {
     for (int i = 0; i < 4; i ++) {
         if (p[i] == 0 && q[i] < 0)  {
             // linha completamente fora
-            return Edge();
+            throw std::exception();
         }
     }
     float u1 = 0;
@@ -241,7 +244,7 @@ Edge Window::clip_lb (Edge line) {
     }
     if (u1 > u2) {
         // linha completamente fora
-        return Edge();
+        throw std::exception();
     }
     if (u1 > 0) {
         // de fora pra dentro

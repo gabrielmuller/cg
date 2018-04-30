@@ -9,13 +9,9 @@
  */
 
 struct Edge {
-    // true quando não precisar desenhar
-    bool empty;
-
     Vector2 a;
     Vector2 b;
 
-    Edge ();
     Edge (Vector2 a, Vector2 b);
 };
 

@@ -1,4 +1,5 @@
 #include "vector3.h"
+#include <math.h>
 
 Vector3::Vector3 () : Vector3::Vector3(0, 0, 0) {}
   
@@ -23,6 +24,10 @@ float Vector3::z() const {
     return matrix[0][2];
 }
 
+float Vector3::length() const {
+    return sqrt(x()*x() + y()*y() + z()*z());
+}
+
 Vector3::operator std::string () const {
     return "(" + std::to_string(x()) + ", " 
         + std::to_string(y())
@@ -39,4 +44,11 @@ bool Vector3::operator== (Vector3 other) const {
         && z() == other.z();
 }
 
-    
+Vector3 Vector3::normalized() const {
+    Vector3 n = *this;
+    float length = n.length();
+    for (int i = 0; i < 3; i++) {
+        n.matrix[0][i] /= length;
+    }
+    return n;
+}

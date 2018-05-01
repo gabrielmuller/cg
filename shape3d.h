@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "edge3d.h"
+#include "rotation.h"
 
 struct Shape3D {
     std::string name;
@@ -16,12 +17,11 @@ struct Shape3D {
      *
      * @param[in]   t           transformação
      */
-    virtual void transform (Transformation t) = 0;
+    virtual void transform (const Transformation& t) = 0;
 
     void translate (Vector3 distance);
     void scale (Vector3 amount);
-    void rotate (Vector3 angles, Vector3 center);
-    void rotate (Vector3 angles);
+    void rotate (Rotation rot);
     virtual Vector3 center () const = 0;
 };
 

@@ -8,6 +8,8 @@
 #include <math.h>
 #include "descobj.h"
 
+#include "window.h" // apagar
+
 std::list<Shape*> Display::shapes;
 std::list<Shape3D*> Display::shapes3D;
 
@@ -28,6 +30,10 @@ void Display::create_all () {
         Edge3D(v3, v1),
         Edge3D(v3, v2)
     });
+
+    tetrahedron->rotate(Rotation(Vector3(0,0,0), Vector3(0,1,1), 50));
+    tetrahedron->scale(Vector3(3.5,3.5,5));
+    Window::test = tetrahedron;
     
     Bezier* curve = new Bezier ("Curva", {
         Vector2(-5, -2),

@@ -11,13 +11,9 @@ struct Polyhedron : Shape3D {
 
     Polyhedron (std::string name, std::vector<Edge3D> edges);
 
-    void draw ();
-    void transform (Transformation t);
-    void translate (Vector3 distance);
-    void scale (Vector3 amount);
-    void rotate (Vector3 angles, Vector3 center);
-    void rotate (Vector3 angles);
-    Vector3 center () const;
+    void draw () override;
+    void transform (const Transformation& t) override;
+    Vector3 center () const override;
 };
 
 #endif

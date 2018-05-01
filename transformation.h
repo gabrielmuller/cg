@@ -5,6 +5,7 @@
 
 struct Vector2;
 struct Vector3;
+struct Rotation;
 
 struct Transformation {
     std::vector<std::vector<float>> matrix;
@@ -22,8 +23,9 @@ struct Transformation {
     static Transformation rotation (const float rad, const Vector2 center);
     static Transformation translation3D (const Vector3 distance);
     static Transformation scaling3D (const Vector3 amount, const Vector3 center);
-
+    static Transformation rotation3D (const Rotation& rot);
     void transform (Transformation& t) const;
+
     operator std::string () const;
 };
 

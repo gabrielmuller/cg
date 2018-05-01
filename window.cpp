@@ -2,10 +2,13 @@
 #include "math.h"
 #include <iostream>
 
+
 Vector2 Window::viewport(400, 400);
+Polyhedron* Window::test;
 float Window::smooth = 0.2;
 float Window::xl, Window::xr, Window::yd, Window::yu;
 float Window::clip_margin = 1.8;
+
 
 /**
  *  Bordas da Viewport. {esquerda, cima, direita, baixo}
@@ -305,6 +308,8 @@ void Window::update_boundaries () {
 }
 
 void Window::animate () {
+    //beautiful :)
+    Window::test->rotate(Rotation(Vector3(0,0,0), Vector3(0,1,1), 0.02));
     update_boundaries();
     real.position = Vector2::lerp(real.position, goal.position, smooth);
     real.size = Vector2::lerp(real.size, goal.size, smooth);

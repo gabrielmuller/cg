@@ -2,6 +2,7 @@
 #include "vector3.h"
 #include <stdexcept>
 #include "math.h"
+#include "rotation.h"
 
 const Transformation Transformation::mb ({
     {-1,  3, -3,  1},
@@ -83,6 +84,24 @@ Transformation Transformation::rotation (const float rad, const Vector2 center) 
 Transformation Transformation::translation3D (const Vector3 distance) {
     Transformation t = Transformation (4, 4);
     t.matrix = {{1,0,0,0},{0,1,0,0},{0,0,1,0},{distance.x(), distance.y(), distance.z(), 1}};
+    return t;
+}
+
+Transformation Transformation::rotation3D (const Rotation& rot) {
+    float x = rot.axis.x();
+    float y = rot.axis.y();
+    float z = rot.axis.z();
+    float s = sin(rot.angle);
+    float c = cos(rot.angle);
+    float d = 1 - c;
+
+    Transformation t (4, 4);
+    t.matrix = {
+        {c+x*x*d, x*y*d-z*s, x*z*d+y*s, 0},
+        {y*x*d+z*s, c+y*y*d, y*z*d-x*s, 0},
+        {z*x*d-y*s, z*y*d+x*s, c+z*z*d, 0},
+        {0, 0, 0, 1}
+    };
     return t;
 }
 

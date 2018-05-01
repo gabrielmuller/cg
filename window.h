@@ -6,6 +6,8 @@
 #include <gtk/gtk.h>
 #include <list>
 
+#include "polyhedron.h" //apagar
+
 enum {
     COHEN_SUTHERLAND,
     LIANG_BARSKY
@@ -26,6 +28,7 @@ struct Specs {
 };
 
 namespace Window {
+    extern Polyhedron* test; // apagar depois
     extern Specs real;
     extern Specs goal;
     extern Vector2 viewport;

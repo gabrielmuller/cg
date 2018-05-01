@@ -2,7 +2,6 @@
 #define VECTOR2_H
 
 #include <string>
-
 #include "transformation.h"
 
 struct Vector2 : Transformation {

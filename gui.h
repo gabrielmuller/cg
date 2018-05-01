@@ -2,23 +2,23 @@
 #define GUI_H
 
 #include <iostream>
-#include <vector>
 #include <string>
 #include <sstream> 
 #include <unistd.h>
+#include <vector>
 
-#include "vector2.h"
-#include "display.h"
-#include "window.h"
-#include "vertices.h"
-#include "polygon.h"
-#include "spline.h"
-#include "point.h"
-#include "line.h"
 #include "bezier.h"
 #include "descobj.h"
-#include "vector3.h"
+#include "display.h"
 #include "edge3d.h"
+#include "line.h"
+#include "point.h"
+#include "polygon.h"
+#include "spline.h"
+#include "vertices.h"
+#include "vector2.h"
+#include "vector3.h"
+#include "window.h"
 
 /**
  *  Funções de interface gráfica com GTK.
@@ -53,6 +53,7 @@ namespace GUI {
     void rotate_right ();
     void rotate_left ();
 
+    /*  Transformações  */
     void translation_cb(GtkWidget **entry, GtkWidget *widget);
     void translation_page(GtkWidget* frame);
     void scaling_cb(GtkWidget **entry, GtkWidget *widget);
@@ -60,25 +61,19 @@ namespace GUI {
     void rotation_cb(GtkWidget **entry, GtkWidget *widget);
     void rotation_page(GtkWidget* frame);
 
-    void add_point_cb(GtkWidget **entry, GtkWidget *widget);
-    void create_point_frame ();
-
-    void add_line_cb(GtkWidget **entry, GtkWidget *widget);
-    void create_line_frame ();
-
-    void on_create_poly_button(Params* p, GtkWidget *widget);
+    /*   Criar figura 2D    */
+    void on_finish_2D_button(Params* p, GtkWidget *widget);
     void on_add_vert_button(GtkWidget **entry, GtkWidget *widget);
-    void create_poly_frame ();
-    void create_curve_frame ();
-
+    void on_create_2D_button ();
+    void on_create_curve_button ();
     void create_vertices_frame (bool isPoly);
 
-    void on_create_shape_button();
-
-    void add_3d_cb(GtkWidget **entry, GtkWidget *widget);
+    /*   Criar figura 3D    */
+    void on_finish_3D_button(GtkWidget **entry, GtkWidget *widget);
     void on_add_edge_button(GtkWidget **entry, GtkWidget *widget);
-    void create_3d_frame();
+    void on_create_3D_button();
 
+    /*  Importar/exportar figura  */
     void on_import_button(GtkWidget *widget, GtkWidget *window);
     void on_export_button(GtkWidget *widget, GtkWidget *window);
     

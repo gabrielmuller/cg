@@ -88,20 +88,31 @@ Transformation Transformation::translation3D (const Vector3 distance) {
 }
 
 Transformation Transformation::rotation3D (const Rotation& rot) {
-    float x = rot.axis.x();
-    float y = rot.axis.y();
-    float z = rot.axis.z();
-    float s = sin(rot.angle);
-    float c = cos(rot.angle);
-    float d = 1 - c;
+    const float x = rot.axis.x();
+    const float y = rot.axis.y();
+    const float z = rot.axis.z();
+    const float i = rot.center.x();
+    const float j = rot.center.y();
+    const float k = rot.center.z();
+    const float s = sin(rot.angle);
+    const float c = cos(rot.angle);
+    const float d = 1 - c;
 
     Transformation t (4, 4);
-    t.matrix = {
+
+    // alias
+    auto& v = t.matrix;
+    v = {
         {c+x*x*d, x*y*d-z*s, x*z*d+y*s, 0},
         {y*x*d+z*s, c+y*y*d, y*z*d-x*s, 0},
         {z*x*d-y*s, z*y*d+x*s, c+z*z*d, 0},
-        {0, 0, 0, 1}
+        {}
     };
+    v[3] = {
+        -i*v[0][0]-j*v[1][0]-k*v[2][0]+i,
+        -i*v[0][1]-j*v[1][1]-k*v[2][1]+j,
+        -i*v[0][2]-j*v[1][2]-k*v[2][2]+k,
+        1};
     return t;
 }
 

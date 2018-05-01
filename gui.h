@@ -14,6 +14,7 @@
 #include "line.h"
 #include "point.h"
 #include "polygon.h"
+#include "rotation.h"
 #include "spline.h"
 #include "vertices.h"
 #include "vector2.h"
@@ -37,10 +38,10 @@ namespace GUI {
     extern GtkTextBuffer* buffer;
     extern GtkTextIter iter;
     
-    gboolean draw_cb(GtkWidget *widget, cairo_t* cr, gpointer* data);
+    gboolean draw_cb (GtkWidget *widget, cairo_t* cr, gpointer* data);
 
-    void set_cohen();
-    void set_liang();
+    void set_cohen ();
+    void set_liang ();
 
     void move (Vector2 amount);
     void move_z (float amount);
@@ -54,30 +55,31 @@ namespace GUI {
     void rotate_left ();
 
     /*  Transformações  */
-    void translation_cb(GtkWidget **entry, GtkWidget *widget);
-    void translation_page(GtkWidget* frame);
-    void scaling_cb(GtkWidget **entry, GtkWidget *widget);
-    void scaling_page(GtkWidget* frame);
-    void rotation_cb(GtkWidget **entry, GtkWidget *widget);
-    void rotation_page(GtkWidget* frame);
+    void on_translate_button (GtkWidget **entry, GtkWidget *widget);
+    void on_scale_button (GtkWidget **entry, GtkWidget *widget);
+    void transformation_page (GtkWidget* frame, bool isTranslate);
+    void translation_page (GtkWidget* frame);
+    void scaling_page (GtkWidget* frame);
+    void on_rotate_button (GtkWidget **entry, GtkWidget *widget);
+    void rotation_page (GtkWidget* frame);
 
     /*   Criar figura 2D    */
-    void on_finish_2D_button(Params* p, GtkWidget *widget);
-    void on_add_vert_button(GtkWidget **entry, GtkWidget *widget);
+    void on_finish_2D_button (Params* p, GtkWidget *widget);
+    void on_add_vert_button (GtkWidget **entry, GtkWidget *widget);
     void on_create_2D_button ();
     void on_create_curve_button ();
     void create_vertices_frame (bool isPoly);
 
     /*   Criar figura 3D    */
-    void on_finish_3D_button(GtkWidget **entry, GtkWidget *widget);
-    void on_add_edge_button(GtkWidget **entry, GtkWidget *widget);
-    void on_create_3D_button();
+    void on_finish_3D_button (GtkWidget **entry, GtkWidget *widget);
+    void on_add_edge_button (GtkWidget **entry, GtkWidget *widget);
+    void on_create_3D_button ();
 
     /*  Importar/exportar figura  */
-    void on_import_button(GtkWidget *widget, GtkWidget *window);
-    void on_export_button(GtkWidget *widget, GtkWidget *window);
+    void on_import_button (GtkWidget *widget, GtkWidget *window);
+    void on_export_button (GtkWidget *widget, GtkWidget *window);
     
-    void activate(GtkApplication* app, gpointer user_data);
+    void activate (GtkApplication* app, gpointer user_data);
 }
 
 #endif

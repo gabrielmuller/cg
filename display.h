@@ -21,6 +21,8 @@ namespace Display {
     void add(Shape* sh);
     void add(Shape3D* sh);
     void draw_all ();
+    Shape* find_shape(gchar* name);
+    Shape3D* find_shape3D(gchar* name);
 }
 
 #endif

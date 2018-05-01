@@ -2,7 +2,7 @@
 #define VECTOR3_H
 
 #include <string>
-#include "vector2.h"
+#include "transformation.h"
 
 struct Vector3 : Transformation {
     float x() const;
@@ -16,7 +16,6 @@ struct Vector3 : Transformation {
     Vector3 (const Transformation& other); 
     Vector3 normalized() const;
 
-    operator Vector2 () const;
     operator std::string () const;
     bool operator== (Vector3 other) const;
 

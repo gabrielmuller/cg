@@ -27,10 +27,19 @@ struct Specs {
     Specs();
 };
 
+struct Specs3D {
+    Vector3 position;
+    Vector2 orthoSize;
+    float fov;
+    Vector3 forward;
+    Specs3D();
+};
+
 namespace Window {
     extern Polyhedron* test; // apagar depois
     extern Specs real;
     extern Specs goal;
+    extern Specs3D real3;
     extern Vector2 viewport;
     extern float smooth;
     extern int clipping_algorithm;
@@ -44,6 +53,7 @@ namespace Window {
 
     Vector2 world_to_screen (Vector2 coords);
     Vector2 world_to_norm (Vector2 coords);
+    Vector2 world_to_norm (Vector3 coords);
     Vector2 norm_to_vp (Vector2 coords);
 
     void draw_line (Edge line);

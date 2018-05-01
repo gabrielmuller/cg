@@ -28,8 +28,12 @@ cairo_t* Window::cr;
 
 Specs::Specs () : position(Vector2(0, 0)), size(Vector2(10, 10)), angle(0) {}
 
+Specs3D::Specs3D () : position(Vector3(0, 0, 0)), orthoSize(Vector2(10, 10)), fov(75),
+    forward(Vector3(0, 0, 1)) {}
+
 Specs Window::real;
 Specs Window::goal;
+Specs3D Window::real3;
 
 // converte uma coordenada do espaço no mundo para
 // coordenada normalizada
@@ -50,6 +54,13 @@ Vector2 Window::world_to_norm (Vector2 coords) {
 
     coords = (Transformation) coords * t;
     return coords;
+}
+
+Vector2 Window::world_to_norm (Vector3 coords) {
+    Vector3 minus (-real3.position.x(), -real3.position.y(), -real3.position.z());
+    Transformation translation = Transformation::translation3D(minus);
+    coords = coords * translation;
+    return world_to_norm((Vector2)coords);
 }
 
 Vector2 Window::norm_to_vp (Vector2 coords) {
@@ -93,7 +104,23 @@ void Window::draw_line (Edge line) {
 }
 
 void Window::draw_line (Edge3D line) {
-    draw_line(Edge(line.a, line.b));
+    Edge norm (world_to_norm(line.a), world_to_norm(line.b));
+    // fazer clipping 3D depois
+
+    try {
+        norm = clip_line(norm);
+    }
+    catch (std::exception e) {
+        // se não precisa renderizar retorna
+        return;
+    }
+
+    norm.a = norm_to_vp(norm.a);
+    norm.b = norm_to_vp(norm.b);
+
+    cairo_move_to(cr, norm.a.x(), norm.a.y());
+    cairo_line_to(cr, norm.b.x(), norm.b.y());
+    cairo_stroke(cr);
 }
 
 void Window::draw_borders () {
@@ -309,7 +336,8 @@ void Window::update_boundaries () {
 
 void Window::animate () {
     //beautiful :)
-    Window::test->rotate(Rotation(Vector3(1,1,1), 0.02));
+    test->rotate(Rotation(Vector3(1,1,1), 0.02));
+
     update_boundaries();
     real.position = Vector2::lerp(real.position, goal.position, smooth);
     real.size = Vector2::lerp(real.size, goal.size, smooth);

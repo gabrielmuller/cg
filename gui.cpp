@@ -6,6 +6,7 @@ GtkWidget* GUI::combo;
 GtkTextBuffer* GUI::buffer;
 GtkTextIter GUI::iter;
 std::vector<Vector2> vert_buffer_list;
+std::vector<Edge3D> edge_buffer_list;
 
 enum {
     POLYGON,
@@ -500,8 +501,8 @@ void GUI::create_vertices_frame(bool isPoly) {
     name_label = gtk_label_new("Nome");
     t1_label = gtk_label_new("Adicionar vértice");
     t2_label = gtk_label_new("Vértices");
-    x_label = gtk_label_new("Posição x");
-    y_label = gtk_label_new("Posição y");
+    x_label = gtk_label_new("x");
+    y_label = gtk_label_new("y");
     
     // Entries
     name_entry = gtk_entry_new();
@@ -558,6 +559,138 @@ void GUI::create_vertices_frame(bool isPoly) {
 
     gtk_widget_show_all(window);
 }
+
+/*****************************************
+ *
+ *  Janela e callbacks pra criar poliedro 
+ *
+ *****************************************/
+
+// Adiciona poliedro
+void GUI::add_3d_cb(GtkWidget **entry, GtkWidget *widget) {
+    std::string nome = gtk_entry_get_text (GTK_ENTRY(entry[1]));
+    Polyhedron* poly = new Polyhedron (nome, edge_buffer_list);
+    Display::add(poly);
+    //gtk_widget_queue_draw(drawing_area);
+    gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), nome.c_str());
+    gtk_widget_destroy(GTK_WIDGET(entry[0]));
+}
+
+// Adiciona aresta
+void GUI::on_add_edge_button(GtkWidget **entry, GtkWidget *widget) {
+    auto x1 = gtk_entry_get_text (GTK_ENTRY(entry[0]));
+    auto y1 = gtk_entry_get_text (GTK_ENTRY(entry[1]));
+    auto z1 = gtk_entry_get_text (GTK_ENTRY(entry[2]));
+    auto x2 = gtk_entry_get_text (GTK_ENTRY(entry[3]));
+    auto y2 = gtk_entry_get_text (GTK_ENTRY(entry[4]));
+    auto z2 = gtk_entry_get_text (GTK_ENTRY(entry[5]));
+    Vector3 a (std::stof(x1), std::stof(y1),std::stof(z1));
+    Vector3 b (std::stof(x2), std::stof(y2),std::stof(z2));
+    edge_buffer_list.push_back(Edge3D(a, b));
+    // Simplificar isso depois
+    std::ostringstream s;
+    s << "[(" << x1 << ", " << y1 << ", " << z1 << "), " << "(" << x2 << ", " << y2 << ", " << z2 << ")]" ;
+    std::string ss = s.str(); //
+    gtk_text_buffer_get_end_iter(buffer, &iter);
+    gtk_text_buffer_insert(buffer, &iter, ss.c_str(), -1);
+}
+
+void GUI::create_3d_frame () {
+    GtkWidget *window, *grid;       //janela e grid
+    GtkWidget *add_edge_button, *ok_button;     //botoes
+    GtkWidget *x_label, *y_label, *z_label;  //labels
+    GtkWidget *p1_label, *p2_label, *name_label, *texte_view_label;
+    GtkWidget *x1_entry, *x2_entry, *y1_entry, *y2_entry,
+              *z1_entry, *z2_entry; // entries
+    GtkWidget *name_entry;
+
+    // Window
+    window = gtk_application_window_new (app);
+    gtk_window_set_title (GTK_WINDOW (window), "Adicionar Poliedro");
+    gtk_window_set_default_size (GTK_WINDOW(window), 60, 60);
+   
+    // labels
+    name_label = gtk_label_new("Nome");
+    x_label = gtk_label_new("x");
+    y_label = gtk_label_new("y");
+    z_label = gtk_label_new("z");
+    p1_label = gtk_label_new("Ponto a");
+    p2_label = gtk_label_new("Ponto b");
+    texte_view_label = gtk_label_new("Arestas");
+
+    // Entries
+    name_entry = gtk_entry_new();
+    x1_entry = gtk_entry_new();
+    y1_entry = gtk_entry_new();
+    z1_entry = gtk_entry_new();
+    x2_entry = gtk_entry_new();
+    y2_entry = gtk_entry_new();
+    z2_entry = gtk_entry_new();
+
+    static GtkWidget *entriesA[6];
+    entriesA[0] = x1_entry;
+    entriesA[1] = y1_entry;
+    entriesA[2] = z1_entry;
+    entriesA[3] = x2_entry;
+    entriesA[4] = y2_entry;
+    entriesA[5] = z2_entry;
+
+    gtk_entry_set_width_chars(GTK_ENTRY(name_entry), 5);
+    for (auto entry : entriesA)
+        gtk_entry_set_width_chars(GTK_ENTRY(entry), 5);
+
+    static GtkWidget *entriesB[2];
+    entriesB[0] = window;
+    entriesB[1] = name_entry;
+
+    // TextView com arestas adicionadas
+    GtkWidget* text_view = gtk_text_view_new();
+    gtk_text_view_set_editable (GTK_TEXT_VIEW (text_view), FALSE);
+    gtk_text_view_set_cursor_visible (GTK_TEXT_VIEW (text_view), FALSE);
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_view), GTK_WRAP_CHAR);
+    buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text_view));
+    gtk_widget_set_size_request(text_view, 120,20);
+
+    // Botoes
+    add_edge_button = gtk_button_new_with_label("Adicionar aresta");
+    g_signal_connect_swapped(add_edge_button, "clicked",
+        G_CALLBACK (on_add_edge_button), entriesA);
+    ok_button = gtk_button_new_with_label("Criar");
+    g_signal_connect_swapped(ok_button, "clicked",
+        G_CALLBACK (add_3d_cb), entriesB);
+
+    grid = gtk_grid_new();
+    gtk_grid_set_row_spacing (GTK_GRID(grid), (guint)10);
+    //gtk_grid_set_column_homogeneous (GTK_GRID(grid), TRUE);
+    gtk_container_add(GTK_CONTAINER(window), grid);
+
+    // (grid, widget, coluna, linha, tamanhox, tamanhoy)
+    gtk_grid_attach(GTK_GRID(grid), name_label, 0, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), name_entry, 1, 0, 1, 1);
+
+    gtk_grid_attach(GTK_GRID(grid), p1_label, 0, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), p2_label, 0, 3, 1, 1);
+
+    gtk_grid_attach(GTK_GRID(grid), x_label, 1, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), x1_entry, 1, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), x2_entry, 1, 3, 1, 1);
+
+    gtk_grid_attach(GTK_GRID(grid), y_label, 2, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), y1_entry, 2, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), y2_entry, 2, 3, 1, 1);
+
+    gtk_grid_attach(GTK_GRID(grid), z_label, 3, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), z1_entry, 3, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), z2_entry, 3, 3, 1, 1);
+
+    gtk_grid_attach(GTK_GRID(grid), texte_view_label, 4, 0, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), text_view, 4, 1, 2, 4);
+
+    gtk_grid_attach(GTK_GRID(grid), add_edge_button, 0, 4, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), ok_button, 2, 4, 2, 1);
+    gtk_widget_show_all(window);
+}
+
 
 /*****************************************
  *
@@ -635,7 +768,8 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     GtkWidget *in_button, *out_button;
     GtkWidget *import_button, *export_button;
     GtkWidget *rot_left_button, *rot_right_button;
-    GtkWidget *point_button, *line_button, *polygon_button, *curve_button; 
+    GtkWidget *point_button, *line_button, *polygon_button, *curve_button,
+              *shape3d_button; 
     GtkWidget *move_frame, *create_frame, *add_frame;
     GtkWidget *combo_frame, *transform_frame, *clip_frame;
     GtkWidget *box, *big_box;
@@ -707,11 +841,15 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     curve_button = gtk_button_new_with_label("Curva");
     g_signal_connect_swapped(curve_button, "clicked",
         G_CALLBACK (create_curve_frame), window);
+    shape3d_button = gtk_button_new_with_label("3D");
+    g_signal_connect_swapped(shape3d_button, "clicked",
+        G_CALLBACK (create_3d_frame), window);
     box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 1);
     gtk_box_pack_start(GTK_BOX(box), point_button, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), line_button, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), polygon_button, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), curve_button, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(box), shape3d_button, TRUE, TRUE, 0);
     create_frame = gtk_frame_new("Adicionar figura");
     gtk_container_add(GTK_CONTAINER(create_frame), box);
 

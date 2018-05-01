@@ -17,6 +17,8 @@
 #include "line.h"
 #include "bezier.h"
 #include "descobj.h"
+#include "vector3.h"
+#include "edge3d.h"
 
 /**
  *  Funções de interface gráfica com GTK.
@@ -72,6 +74,10 @@ namespace GUI {
     void create_vertices_frame (bool isPoly);
 
     void on_create_shape_button();
+
+    void add_3d_cb(GtkWidget **entry, GtkWidget *widget);
+    void on_add_edge_button(GtkWidget **entry, GtkWidget *widget);
+    void create_3d_frame();
 
     void on_import_button(GtkWidget *widget, GtkWidget *window);
     void on_export_button(GtkWidget *widget, GtkWidget *window);

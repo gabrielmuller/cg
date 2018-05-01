@@ -1,13 +1,5 @@
 #include "display.h"
 
-#include "spline.h"
-#include "bezier.h"
-#include "point.h"
-#include "line.h"
-#include "polyhedron.h"
-#include <math.h>
-#include "descobj.h"
-
 #include "window.h" // apagar
 
 std::list<Shape*> Display::shapes;
@@ -104,4 +96,8 @@ void Display::draw_all() {
 
 void Display::add(Shape* sh) {
     shapes.push_back(sh);
+}
+
+void Display::add(Shape3D* sh) {
+    shapes3D.push_back(sh);
 }

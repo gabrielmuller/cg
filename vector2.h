@@ -10,6 +10,7 @@ struct Vector2 : Transformation {
 
     Vector2();
     Vector2 (float x, float y); 
+    Vector2 (const Vector3& other); 
     Vector2 (const Transformation& other); 
 
     operator std::string () const;

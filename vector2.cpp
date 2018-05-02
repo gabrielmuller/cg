@@ -1,4 +1,5 @@
 #include "vector2.h"
+#include "vector3.h"
 
 Vector2::Vector2 () : Vector2::Vector2(0, 0) {}
   
@@ -9,6 +10,8 @@ Vector2::Vector2 (float x, float y) : Transformation(1, 3) {
 Vector2::Vector2 (const Transformation& other) : Transformation(1, 3) {
     matrix[0] = other.matrix[0];
 }
+
+Vector2::Vector2 (const Vector3& other) : Vector2(other.x(), other.y()) {}
 
 float Vector2::x() const {
     return matrix[0][0];

@@ -1,10 +1,10 @@
 #include "vector3.h"
+#include <iostream>
 #include <math.h>
 
 Vector3::Vector3 () : Vector3::Vector3(0, 0, 0) {}
   
 Vector3::Vector3 (float x, float y, float z) : Transformation(1, 4) {
-    // teste
     matrix = {{x, y, z, 1}};
 }
 
@@ -32,10 +32,6 @@ Vector3::operator std::string () const {
     return "(" + std::to_string(x()) + ", " 
         + std::to_string(y()) + ", "
         + std::to_string(z()) + ")";
-}
-
-Vector3::operator Vector2 () const {
-    return Vector2(x(), y());
 }
 
 bool Vector3::operator== (Vector3 other) const {

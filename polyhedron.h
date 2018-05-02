@@ -10,6 +10,7 @@ struct Polyhedron : Shape3D {
     std::vector<Edge3D> edges;
 
     Polyhedron (std::string name, std::vector<Edge3D> edges);
+    Polyhedron (std::string name);
 
     void draw () override;
     void transform (const Transformation& t) override;

@@ -1,6 +1,9 @@
 #include "descobj.h"
 
-std::vector<Shape*> DescOBJ::read_obj(const std::string &path) {
+/**
+ *  Importa figuras 3D
+ */
+std::vector<Shape3D*> DescOBJ::read_obj(const std::string &path) {
     std::ifstream file(path);
     std::string l;
     std::vector<std::string> line;
@@ -8,8 +11,10 @@ std::vector<Shape*> DescOBJ::read_obj(const std::string &path) {
     //const std::string name = split(filename, '.').front();
     
     // Info sobre as figuras
-    std::vector<Vector2> verts, shape_verts;
-    std::vector<Shape*> shapes;
+    std::vector<Vector3> verts;
+    std::vector<Vector3> shape_verts;
+    std::vector<Edge3D> shape_edges;
+    std::vector<Shape3D*> shapes;
     std::vector<int> index;
     std::string name;
 
@@ -20,38 +25,40 @@ std::vector<Shape*> DescOBJ::read_obj(const std::string &path) {
             {
                 continue; 
             } 
-            else if (line[0] == "v") // Vertice
+            else if (line[0] == "v") // Vertice 3D
             {   
                 std::vector<float> point;
                 /*
                   inicio line[1] (primeira coordenada), 
-                  fim line.end()-1 (não pega 3a coordenada (2D)),
+                  fim line.end()
                   vector onde será inserido,
                   função de transformação
                   calculo lambda wooow
                 */
-                // TODO mudar pra 3D
                 std::transform(
                     line.begin()+1, 
-                    line.end()-1,
+                    line.end(),
                     std::back_inserter(point),
                     [](const std::string &str) -> float { 
                         return std::stof(str); });
-                verts.push_back(Vector2(point[0], point[1]));
+                verts.push_back(Vector3(point[0], point[1], point[2]));
             } 
             else if (line[0] == "o") // Objeto
             {   
                 name = line[1];
                 std::getline(file, l);
                 auto line2 = split(l, ' ');
-                if (line2[0] == "p") // Ponto
+                // Criar figura 3D
+                Polyhedron* p = new Polyhedron(name);
+                shapes.push_back(p);
+                if (line2[0] == "p") // TODO Ponto (3D!!) 
                 {   
-                    auto i = std::stoi(line2[1]) -1;
-                    Point* p = new Point(name, verts[i].x(), verts[i].y());
-                    shapes.push_back(p);
+                    /*auto i = std::stoi(line2[1]) -1;
+                    Point* p = new Point(name, vector3_to_2(verts[i]).x(), vector3_to_2(verts[i]).y());
+                    shapes.push_back(p);*/
                     index.clear();
                 }
-                else if (line2[0] == "l" || line2[0] == "f") // Linha, polígono
+                else if (line2[0] == "l") // Linha, polígono (3D!!)
                 {   
                     std::transform(
                         line2.begin()+1, 
@@ -63,45 +70,65 @@ std::vector<Shape*> DescOBJ::read_obj(const std::string &path) {
                             index.begin(), 
                             index.end(),
                             std::back_inserter(shape_verts),
-                            [verts](int i) -> Vector2 { 
-                                return verts[i]; });
-                    if (shape_verts.size() == 2) {
-                        Line* p = new Line(name, shape_verts);
-                        shapes.push_back(p);
-                    } else {   
-                        auto fill = false;
-                        if (line2[0] == "f") fill = true;
-                        Polygon* p = new Polygon(name, shape_verts, fill);
-                        shapes.push_back(p);
+                            [verts](int i) -> Vector3 { 
+                                return (verts[i]); });
+                    for(auto i = 0; i < shape_verts.size()-1; ++i) {
+                        shape_edges.push_back(Edge3D(shape_verts[i], shape_verts[i+1]));
                     }
+                    // Adicionar arestas a linha ou polígono 3D
+                    p->edges = shape_edges;
+                    // Limpar vetores
                     index.clear();
                     shape_verts.clear();
+                    shape_edges.clear();
                 }
+            }
+            else if (line[0] == "f") // Face de poliedro (3D)
+            {
+                std::transform(
+                    line.begin()+1, 
+                    line.end(),
+                    std::back_inserter(index),
+                    [](const std::string &str) -> int { 
+                        return std::stoi(str) -1; });
+                std::transform(
+                        index.begin(), 
+                        index.end(),
+                        std::back_inserter(shape_verts),
+                        [verts](int i) -> Vector3 { 
+                            return (verts[i]); });
+                // Adicionar arestas a figura 3D
+                Polyhedron* lastShape = dynamic_cast<Polyhedron*>(shapes.back());
+                for(auto i = 0; i < shape_verts.size(); ++i) {
+                    if(i == shape_verts.size()-1) {
+                        lastShape->edges.push_back(Edge3D(shape_verts[i], shape_verts[0]));
+                        shape_edges.push_back(Edge3D(shape_verts[i], shape_verts[0]));
+                    } else {
+                        lastShape->edges.push_back(Edge3D(shape_verts[i], shape_verts[i+1]));
+                        shape_edges.push_back(Edge3D(shape_verts[i], shape_verts[0]));
+                    }
+                }
+                // Limpar vetores
+                index.clear();
+                shape_verts.clear();
             }
         }
     } catch (const std::invalid_argument &ia) {
-        // tratar exceção
+        // TODO tratar exceção
     }
 
-    // TODO modificar pra funcionar com qualquer forma
+    // TODO Ponto 3D
     if (shapes.empty()) {
-        Shape* sh;
         name = split(filename, '.').front();
-        if (verts.size() == 1)
-            sh = new Point(name, verts.front().x(), verts.front().y());
-        else if (verts.size() == 2)
-            sh = new Line(name, verts);
-        else
-            sh = new Polygon(name, verts);
-        shapes.push_back(sh);
+        Polyhedron* p = new Polyhedron(name, shape_edges);   
+        shapes.push_back(p);
     }
-
     return shapes;
 }
 
+// TODO modificar pra salvar qualquer forma
 void DescOBJ::save_obj(const std::string &path, Shape *sh) {
     std::ofstream file(path);
-    // TODO modificar pra funcionar com qualquer forma
     if (dynamic_cast<Vertices*>(sh) == nullptr) {
         Point *a = dynamic_cast<Point*>(sh);
         file << "v " << a->position.x() << " " << a->position.y() << " 0" << std::endl;

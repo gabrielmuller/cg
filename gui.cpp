@@ -101,7 +101,7 @@ void GUI::on_translate_button(GtkWidget **entry, GtkWidget *widget) {
     if (coord_y == "") coord_y = "0";
     if (coord_z == "") coord_z = "0";
 
-    // TO-DO: achar a figura por um modo mais rápido
+    // TODO: achar a figura por um modo mais rápido
     auto shape_name = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo));
     if (Display::find_shape(shape_name) != nullptr) {
         auto shape = Display::find_shape(shape_name);
@@ -114,7 +114,7 @@ void GUI::on_translate_button(GtkWidget **entry, GtkWidget *widget) {
     //gtk_widget_queue_draw(drawing_area);
 }
 
-// TO-DO: conseguir juntar translation_page e scaling_page
+// TODO: conseguir juntar translation_page e scaling_page
 void GUI::translation_page (GtkWidget* frame) {
     GtkWidget *grid;
     GtkWidget *translate_button;

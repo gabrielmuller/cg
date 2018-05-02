@@ -125,8 +125,7 @@ std::vector<Shape3D*> DescOBJ::read_obj(const std::string &path) {
         // TODO tratar exceção
     }
 
-    // TODO Ponto 3D
-    if (shapes.empty()) {
+    if (shapes.empty() || !shape_edges.empty()) {
         name = split(filename, '.').front();
         Polyhedron* p = new Polyhedron(name, shape_edges);   
         shapes.push_back(p);

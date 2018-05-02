@@ -8,7 +8,6 @@ float Window::smooth = 0.2;
 float Window::xl, Window::xr, Window::yd, Window::yu;
 float Window::clip_margin = 1.8;
 
-
 /**
  *  Bordas da Viewport. {esquerda, cima, direita, baixo}
  */
@@ -33,6 +32,12 @@ Specs3D::Specs3D () : position(Vector3(0, 0, 0)), orthoSize(Vector2(10, 10)), fo
 Specs Window::real;
 Specs Window::goal;
 Specs3D Window::real3;
+
+/*****************************************
+ *
+ *  Funções de transformação de coordenada
+ *
+ *****************************************/
 
 // converte uma coordenada do espaço no mundo para
 // coordenada normalizada
@@ -76,6 +81,31 @@ Vector2 Window::norm_to_vp (Vector2 coords) {
 
     coords = (Transformation) coords * t;
     return coords;
+}
+
+/*****************************************
+ *
+ *  Funções de Draw
+ *
+ *****************************************/
+
+void Window::draw_point (Vector2 point) {
+    point = world_to_norm(point);
+
+    // C L I P P
+    if ((point.x() < xl || point.x() > xr || 
+        point.y() < yd || point.y() > yu)) {
+        return;
+    }
+
+    point = norm_to_vp(point);
+    cairo_move_to(cr, point.x() - 1, point.y());
+    cairo_line_to(cr, point.x() + 1, point.y());
+    cairo_stroke(cr);
+}
+
+void Window::draw_point (Vector3 point) {
+    draw_point(Vector2(point.x(), point.y()));
 }
 
 // Recebe uma linha em coordenadas de mundo,
@@ -122,20 +152,6 @@ void Window::draw_line (Edge3D line) {
     cairo_stroke(cr);
 }
 
-void Window::draw_borders () {
-    cairo_set_source_rgb(cr, 1, 0, 0);
-    Vector2 a = norm_to_vp(Vector2(xl, yu));
-    Vector2 b = norm_to_vp(Vector2(xr, yu));
-    Vector2 c = norm_to_vp(Vector2(xr, yd));
-    Vector2 d = norm_to_vp(Vector2(xl, yd));
-    cairo_move_to(cr, a.x(), a.y());
-    cairo_line_to(cr, b.x(), b.y());
-    cairo_line_to(cr, c.x(), c.y());
-    cairo_line_to(cr, d.x(), d.y());
-    cairo_line_to(cr, a.x(), a.y());
-    cairo_stroke(cr);
-}
-
 // Parecido com draw_line mas sem clipping
 // Usada para polígonos preenchidos
 void Window::draw_pline (Edge line) {
@@ -145,49 +161,11 @@ void Window::draw_pline (Edge line) {
     //cairo_stroke_preserve(cr);
 }
 
-// Checa se um ponto está dentro de uma borda da window
-bool Window::is_inside(Vector2 coord, Edge edge) {
-    return (edge.b.x() - edge.a.x()) * (coord.y() - edge.a.y()) < 
-           (edge.b.y() - edge.a.y()) * (coord.x() - edge.a.x());
-}
-
-// Clipa linha pra uma borda, usado no clipping de polígonos
-Vector2 Window::clip_to_edge(Edge edge, Edge line) {
-    Vector2 v = (!is_inside(line.a,edge)) ? line.a : line.b;
-    float m = (line.a.y() - line.b.y()) / (line.a.x() - line.b.x());
-    if (edge.a.x() == edge.b.x()) //direita/esquerda
-    {   
-        float y = (edge.a.x()-v.x())*m + v.y();
-        v = Vector2(edge.a.x(), y);
-    } else //cima/baixo
-    {   
-        float x = 0;
-        if (m == 0) x = v.x();
-        else x = (edge.a.y()-v.y())/m + v.x();
-        v = Vector2(x, edge.a.y());
-    } 
-    return v;
-}
-
-void Window::draw_point (Vector2 point) {
-    point = world_to_norm(point);
-
-    // C L I P P
-    if ((point.x() < xl || point.x() > xr || 
-        point.y() < yd || point.y() > yu)) {
-        return;
-    }
-
-    point = norm_to_vp(point);
-    cairo_move_to(cr, point.x() - 1, point.y());
-    cairo_line_to(cr, point.x() + 1, point.y());
-    cairo_stroke(cr);
-}
-
-
-void Window::draw_point (Vector3 point) {
-    draw_point(Vector2(point.x(), point.y()));
-}
+/*****************************************
+ *
+ *  Funções de Clipping
+ *
+ *****************************************/
 
 Edge Window::clip_line (Edge line) {
     if (clipping_algorithm == COHEN_SUTHERLAND) {
@@ -197,6 +175,7 @@ Edge Window::clip_line (Edge line) {
     }
 }
 
+// Cohen-Sutherland
 Edge Window::clip_cs (Edge line) {
     int a_rc = get_rc(line.a);
     int b_rc = get_rc(line.b);
@@ -267,7 +246,7 @@ Edge Window::clip_cs (Edge line) {
     return line;
 }
 
-
+// Liang-Barsky
 Edge Window::clip_lb (Edge line) {
     float delta_x = line.b.x() - line.a.x();
     float delta_y = line.b.y() - line.a.y();
@@ -306,6 +285,30 @@ Edge Window::clip_lb (Edge line) {
     return line;
 }
 
+// Clipa linha pra uma borda, usado no clipping de polígonos
+Vector2 Window::clip_to_edge(Edge edge, Edge line) {
+    Vector2 v = (!is_inside(line.a,edge)) ? line.a : line.b;
+    float m = (line.a.y() - line.b.y()) / (line.a.x() - line.b.x());
+    if (edge.a.x() == edge.b.x()) //direita/esquerda
+    {   
+        float y = (edge.a.x()-v.x())*m + v.y();
+        v = Vector2(edge.a.x(), y);
+    } else //cima/baixo
+    {   
+        float x = 0;
+        if (m == 0) x = v.x();
+        else x = (edge.a.y()-v.y())/m + v.x();
+        v = Vector2(x, edge.a.y());
+    } 
+    return v;
+}
+
+// Checa se um ponto está dentro de uma borda da window
+bool Window::is_inside(Vector2 coord, Edge edge) {
+    return (edge.b.x() - edge.a.x()) * (coord.y() - edge.a.y()) < 
+           (edge.b.y() - edge.a.y()) * (coord.x() - edge.a.x());
+}
+
 /* Exemplo de RC:
  * 0000 0110
  *      NSLO (pontos cardeais)
@@ -324,6 +327,26 @@ int Window::get_rc (Vector2 point) {
     return rc;
 }
 
+/*****************************************
+ *
+ *  Margem para clipping
+ *
+ *****************************************/
+
+void Window::draw_borders () {
+    cairo_set_source_rgb(cr, 1, 0, 0);
+    Vector2 a = norm_to_vp(Vector2(xl, yu));
+    Vector2 b = norm_to_vp(Vector2(xr, yu));
+    Vector2 c = norm_to_vp(Vector2(xr, yd));
+    Vector2 d = norm_to_vp(Vector2(xl, yd));
+    cairo_move_to(cr, a.x(), a.y());
+    cairo_line_to(cr, b.x(), b.y());
+    cairo_line_to(cr, c.x(), c.y());
+    cairo_line_to(cr, d.x(), d.y());
+    cairo_line_to(cr, a.x(), a.y());
+    cairo_stroke(cr);
+}
+
 void Window::update_boundaries () {
     // margem para ver se clipping realmente funciona
     // em coordenadas normalizadas
@@ -334,6 +357,12 @@ void Window::update_boundaries () {
     yd = -mock_size.y()/2;
     yu =  mock_size.y()/2;
 }
+
+/*****************************************
+ *
+ *  Função de animação
+ *
+ *****************************************/
 
 void Window::animate () {
     update_boundaries();

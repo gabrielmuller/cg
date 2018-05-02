@@ -53,22 +53,22 @@ namespace Window {
     Vector2 world_to_norm (Vector3 coords);
     Vector2 norm_to_vp (Vector2 coords);
 
-    void draw_line (Edge line);
-    void draw_line (Edge3D line);
-    void draw_borders ();
-    void draw_pline (Edge line);
     void draw_point (Vector2 point);
     void draw_point (Vector3 point);
-
-    bool is_inside(Vector2 coord, Edge edge);
+    void draw_line (Edge line);
+    void draw_line (Edge3D line);
+    void draw_pline (Edge line);
     
-    Vector2 clip_to_edge(Edge edge, Edge line);
     Edge clip_line (Edge line);
     Edge clip_cs (Edge line);
     Edge clip_lb (Edge line);
-    Vector2 clip_point (Vector2 point);
-    void update_boundaries (); 
+    Vector2 clip_to_edge(Edge edge, Edge line);
+    bool is_inside(Vector2 coord, Edge edge);
     int get_rc (Vector2 point); 
+
+    void draw_borders ();
+    void update_boundaries (); 
+
     void animate ();
 };
 

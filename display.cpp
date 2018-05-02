@@ -1,7 +1,5 @@
 #include "display.h"
 
-#include "window.h" // apagar
-
 std::list<Shape*> Display::shapes;
 std::list<Shape3D*> Display::shapes3D;
 
@@ -21,8 +19,6 @@ void Display::create_all () {
         Edge3D(v3, v2)
     });
 
-    Window::test = tetrahedron;
-    
     Bezier* curve = new Bezier ("Curva", {
         Vector2(-5, -2),
         Vector2(-3, -3),
@@ -68,6 +64,8 @@ void Display::create_all () {
         Vector2(7,1)
     });
 
+    Point3D* ponto3d = new Point3D("Ponto3D", 0,0,0);
+
     /*
     std::vector<Shape3D*> import = DescOBJ::read_obj("Figuras.obj");
     for (auto i : import)  {
@@ -75,16 +73,12 @@ void Display::create_all () {
     }
     */
 
-    std::vector<Shape3D*> import = DescOBJ::read_obj("cristo.obj");
-    Polyhedron* tpose = dynamic_cast<Polyhedron*>(import.front());
-    Window::test = tpose;
-
     shapes.push_back(curve);
     shapes.push_back(bezier);
     shapes.push_back(spline);
     shapes.push_back(b);
-    shapes3D.push_back(tpose);
-    //shapes3D.push_back(tetrahedron);
+    shapes3D.push_back(ponto3d);
+    shapes3D.push_back(tetrahedron);
 }
 
 void Display::draw_all() {

@@ -4,14 +4,15 @@
 #include <list>
 #include <math.h>
 
-#include "shape.h"
-#include "point.h"
-#include "line.h"
-#include "spline.h"
 #include "bezier.h"
-#include "shape3d.h"
-#include "polyhedron.h"
 #include "descobj.h"
+#include "line.h"
+#include "point.h"
+#include "point3d.h"
+#include "polyhedron.h"
+#include "shape.h"
+#include "shape3d.h"
+#include "spline.h"
 
 // display file
 namespace Display {

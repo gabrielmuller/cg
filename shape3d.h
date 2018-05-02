@@ -4,6 +4,7 @@
 #include <vector>
 #include "edge3d.h"
 #include "rotation.h"
+#include "window.h"
 
 struct Shape3D {
     std::string name;

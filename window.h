@@ -6,8 +6,6 @@
 #include <gtk/gtk.h>
 #include <list>
 
-#include "polyhedron.h" //apagar
-
 enum {
     COHEN_SUTHERLAND,
     LIANG_BARSKY
@@ -28,7 +26,6 @@ struct Specs {
 };
 
 namespace Window {
-    extern Polyhedron* test; // apagar depois
     extern Specs real;
     extern Specs goal;
     extern Vector2 viewport;
@@ -51,6 +48,7 @@ namespace Window {
     void draw_borders ();
     void draw_pline (Edge line);
     void draw_point (Vector2 point);
+    void draw_point (Vector3 point);
 
     bool is_inside(Vector2 coord, Edge edge);
     

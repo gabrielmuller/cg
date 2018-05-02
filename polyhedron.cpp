@@ -1,5 +1,4 @@
 #include "polyhedron.h"
-#include "window.h"
 
 Polyhedron::Polyhedron (std::string name, std::vector<Edge3D> edges) :
     edges(edges), Shape3D::Shape3D(name) {}

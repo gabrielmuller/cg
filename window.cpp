@@ -4,7 +4,6 @@
 
 
 Vector2 Window::viewport(400, 400);
-Polyhedron* Window::test;
 float Window::smooth = 0.2;
 float Window::xl, Window::xr, Window::yd, Window::yu;
 float Window::clip_margin = 1.8;
@@ -97,8 +96,6 @@ void Window::draw_line (Edge3D line) {
 }
 
 void Window::draw_borders () {
-    
-
     cairo_set_source_rgb(cr, 1, 0, 0);
     Vector2 a = norm_to_vp(Vector2(xl, yu));
     Vector2 b = norm_to_vp(Vector2(xr, yu));
@@ -111,7 +108,6 @@ void Window::draw_borders () {
     cairo_line_to(cr, a.x(), a.y());
     cairo_stroke(cr);
 }
-
 
 // Parecido com draw_line mas sem clipping
 // Usada para polígonos preenchidos
@@ -159,6 +155,11 @@ void Window::draw_point (Vector2 point) {
     cairo_move_to(cr, point.x() - 1, point.y());
     cairo_line_to(cr, point.x() + 1, point.y());
     cairo_stroke(cr);
+}
+
+
+void Window::draw_point (Vector3 point) {
+    draw_point(Vector2(point.x(), point.y()));
 }
 
 Edge Window::clip_line (Edge line) {
@@ -308,8 +309,6 @@ void Window::update_boundaries () {
 }
 
 void Window::animate () {
-    //beautiful :)
-    //Window::test->rotate(Rotation(Vector3(1,1,1), 0.02));
     update_boundaries();
     real.position = Vector2::lerp(real.position, goal.position, smooth);
     real.size = Vector2::lerp(real.size, goal.size, smooth);

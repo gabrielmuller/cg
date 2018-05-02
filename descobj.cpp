@@ -105,11 +105,15 @@ std::vector<Shape3D*> DescOBJ::read_obj(const std::string &path) {
                 Polyhedron* lastShape = dynamic_cast<Polyhedron*>(shapes.back());
                 for(auto i = 0; i < shape_verts.size(); ++i) {
                     if(i == shape_verts.size()-1) {
-                        lastShape->edges.push_back(Edge3D(shape_verts[i], shape_verts[0]));
-                        shape_edges.push_back(Edge3D(shape_verts[i], shape_verts[0]));
+                        if(lastShape != nullptr)
+                            lastShape->edges.push_back(Edge3D(shape_verts[i], shape_verts[0]));
+                        else
+                            shape_edges.push_back(Edge3D(shape_verts[i], shape_verts[0]));
                     } else {
-                        lastShape->edges.push_back(Edge3D(shape_verts[i], shape_verts[i+1]));
-                        shape_edges.push_back(Edge3D(shape_verts[i], shape_verts[0]));
+                        if(lastShape != nullptr)
+                            lastShape->edges.push_back(Edge3D(shape_verts[i], shape_verts[i+1]));
+                        else
+                            shape_edges.push_back(Edge3D(shape_verts[i], shape_verts[0]));
                     }
                 }
                 // Limpar vetores

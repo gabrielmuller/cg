@@ -1,9 +1,11 @@
 #include "descobj.h"
+#include <locale.h>
 
 /**
  *  Importa figuras 3D
  */
 std::vector<Shape3D*> DescOBJ::read_obj(const std::string &path) {
+    setlocale(LC_ALL, "C"); 
     std::ifstream file(path);
     std::string l;
     std::vector<std::string> line;
@@ -16,7 +18,7 @@ std::vector<Shape3D*> DescOBJ::read_obj(const std::string &path) {
     std::vector<Edge3D> shape_edges;
     std::vector<Shape3D*> shapes;
     std::vector<int> index;
-    std::string name;
+    std::string name; 
 
     try {
         while (std::getline(file, l)) {
@@ -46,42 +48,44 @@ std::vector<Shape3D*> DescOBJ::read_obj(const std::string &path) {
             else if (line[0] == "o") // Objeto
             {   
                 name = line[1];
-                std::getline(file, l);
-                auto line2 = split(l, ' ');
+                //std::getline(file, l);
+                //auto line2 = split(l, ' ');
                 // Criar figura 3D
                 Polyhedron* p = new Polyhedron(name);
                 shapes.push_back(p);
-                if (line2[0] == "p") // TODO Ponto (3D!!) 
-                {   
-                    /*auto i = std::stoi(line2[1]) -1;
-                    Point* p = new Point(name, vector3_to_2(verts[i]).x(), vector3_to_2(verts[i]).y());
-                    shapes.push_back(p);*/
-                    index.clear();
+                
+            }
+            else if (line[0] == "p") // TODO Ponto (3D!!) 
+            {   
+                /*auto i = std::stoi(line2[1]) -1;
+                Point* p = new Point(name, vector3_to_2(verts[i]).x(), vector3_to_2(verts[i]).y());
+                shapes.push_back(p);*/
+                index.clear();
+            }
+            else if (line[0] == "l") // Linha, polígono (3D!!)
+            {   
+                std::transform(
+                    line.begin()+1, 
+                    line.end(),
+                    std::back_inserter(index),
+                    [](const std::string &str) -> int { 
+                        return std::stoi(str) -1; });
+                std::transform(
+                        index.begin(), 
+                        index.end(),
+                        std::back_inserter(shape_verts),
+                        [verts](int i) -> Vector3 { 
+                            return (verts[i]); });
+                for(auto i = 0; i < shape_verts.size()-1; ++i) {
+                    shape_edges.push_back(Edge3D(shape_verts[i], shape_verts[i+1]));
                 }
-                else if (line2[0] == "l") // Linha, polígono (3D!!)
-                {   
-                    std::transform(
-                        line2.begin()+1, 
-                        line2.end(),
-                        std::back_inserter(index),
-                        [](const std::string &str) -> int { 
-                            return std::stoi(str) -1; });
-                    std::transform(
-                            index.begin(), 
-                            index.end(),
-                            std::back_inserter(shape_verts),
-                            [verts](int i) -> Vector3 { 
-                                return (verts[i]); });
-                    for(auto i = 0; i < shape_verts.size()-1; ++i) {
-                        shape_edges.push_back(Edge3D(shape_verts[i], shape_verts[i+1]));
-                    }
-                    // Adicionar arestas a linha ou polígono 3D
-                    p->edges = shape_edges;
-                    // Limpar vetores
-                    index.clear();
-                    shape_verts.clear();
-                    shape_edges.clear();
-                }
+                // Adicionar arestas a linha ou polígono 3D
+                Polyhedron* lastShape = dynamic_cast<Polyhedron*>(shapes.back());
+                lastShape->edges = shape_edges;
+                // Limpar vetores
+                index.clear();
+                shape_verts.clear();
+                shape_edges.clear();
             }
             else if (line[0] == "f") // Face de poliedro (3D)
             {

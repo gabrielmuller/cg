@@ -30,7 +30,7 @@ float Vector3::length() const {
 
 Vector3::operator std::string () const {
     return "(" + std::to_string(x()) + ", " 
-        + std::to_string(y())
+        + std::to_string(y()) + ", "
         + std::to_string(z()) + ")";
 }
 

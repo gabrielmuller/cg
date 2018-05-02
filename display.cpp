@@ -75,11 +75,16 @@ void Display::create_all () {
     }
     */
 
+    std::vector<Shape3D*> import = DescOBJ::read_obj("cristo.obj");
+    Polyhedron* tpose = dynamic_cast<Polyhedron*>(import.front());
+    Window::test = tpose;
+
     shapes.push_back(curve);
     shapes.push_back(bezier);
     shapes.push_back(spline);
     shapes.push_back(b);
-    shapes3D.push_back(tetrahedron);
+    shapes3D.push_back(tpose);
+    //shapes3D.push_back(tetrahedron);
 }
 
 void Display::draw_all() {

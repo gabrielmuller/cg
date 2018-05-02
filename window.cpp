@@ -309,7 +309,7 @@ void Window::update_boundaries () {
 
 void Window::animate () {
     //beautiful :)
-    Window::test->rotate(Rotation(Vector3(1,1,1), 0.02));
+    //Window::test->rotate(Rotation(Vector3(1,1,1), 0.02));
     update_boundaries();
     real.position = Vector2::lerp(real.position, goal.position, smooth);
     real.size = Vector2::lerp(real.size, goal.size, smooth);

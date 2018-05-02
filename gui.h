@@ -42,6 +42,9 @@ namespace GUI {
 
     void set_cohen ();
     void set_liang ();
+    void set_rotation_axis_x ();
+    void set_rotation_axis_y ();
+    void set_rotation_axis_z ();
 
     void move (Vector2 amount);
     void move_z (float amount);
@@ -57,10 +60,9 @@ namespace GUI {
     /*  Transformações  */
     void on_translate_button (GtkWidget **entry, GtkWidget *widget);
     void on_scale_button (GtkWidget **entry, GtkWidget *widget);
-    void transformation_page (GtkWidget* frame, bool isTranslate);
+    void on_rotate_button (GtkWidget **entry, GtkWidget *widget);
     void translation_page (GtkWidget* frame);
     void scaling_page (GtkWidget* frame);
-    void on_rotate_button (GtkWidget **entry, GtkWidget *widget);
     void rotation_page (GtkWidget* frame);
 
     /*   Criar figura 2D    */

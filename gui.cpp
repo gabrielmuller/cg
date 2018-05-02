@@ -5,6 +5,8 @@ GtkApplication* GUI::app;
 GtkWidget* GUI::combo;
 GtkTextBuffer* GUI::buffer;
 GtkTextIter GUI::iter;
+
+//--- Local
 std::vector<Vector2> vert_buffer_list;
 std::vector<Edge3D> edge_buffer_list;
 
@@ -12,6 +14,10 @@ enum {
     POLYGON,
     CURVE
 };
+
+enum Axis { X, Y, Z };
+Axis axis = X;
+//--- Local
 
 // desenha no drawing area
 gboolean GUI::draw_cb(GtkWidget *widget, cairo_t* cr, gpointer* data) {
@@ -39,6 +45,10 @@ void GUI::set_cohen() {
 void GUI::set_liang() {
     Window::clipping_algorithm = LIANG_BARSKY;
 }
+
+void GUI::set_rotation_axis_x() { axis = X; }
+void GUI::set_rotation_axis_y() { axis = Y; }
+void GUI::set_rotation_axis_z() { axis = Z; }
 
 void GUI::move (Vector2 amount) {
     Transformation rot = Transformation::rotation(-Window::goal.angle, Vector2(0, 0));
@@ -653,9 +663,9 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     GtkWidget *rot_left_button, *rot_right_button;
     GtkWidget *create_2D_button, *create_curve_button, *create_3D_button; 
     GtkWidget *move_frame, *create_frame, *add_frame;
-    GtkWidget *combo_frame, *transform_frame, *clip_frame;
+    GtkWidget *combo_frame, *transform_frame, *clip_frame, *rotate_frame;
     GtkWidget *box, *big_box;
-    GtkWidget *radio1, *radio2;
+    GtkWidget *radio1, *radio2, *radio_x, *radio_y, *radio_z;
 
     Display::create_all();
 
@@ -694,6 +704,17 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     g_signal_connect_swapped(rot_left_button, "clicked",
         G_CALLBACK (rotate_left), window);
 
+    // Escolher eixo de rotação (x,y,z)
+    radio_x = gtk_radio_button_new_with_label(NULL,"x");
+    g_signal_connect_swapped(radio_x, "pressed",
+        G_CALLBACK (set_rotation_axis_x), window);
+    radio_y = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (radio_x),"y");
+    g_signal_connect_swapped(radio_y, "pressed",
+        G_CALLBACK (set_rotation_axis_y), window);
+    radio_z = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (radio_x),"z");
+    g_signal_connect_swapped(radio_z, "pressed",
+        G_CALLBACK (set_rotation_axis_z), window);
+
     // Grid de botões de movimento
     grid = gtk_grid_new();
     gtk_grid_attach(GTK_GRID(grid), up_button, 1, 0, 1, 1);
@@ -704,6 +725,9 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     gtk_grid_attach(GTK_GRID(grid), out_button, 0, 0, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), rot_right_button, 2, 2, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), rot_left_button, 0, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), radio_x, 0, 3, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), radio_y, 1, 3, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), radio_z, 2, 3, 1, 1);
     box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_box_pack_start(GTK_BOX(box), grid, TRUE, TRUE, 0);
     move_frame = gtk_frame_new("Movimentação");

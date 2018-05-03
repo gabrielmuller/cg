@@ -1,10 +1,13 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include "edge.h"
-#include "edge3d.h"
 #include <gtk/gtk.h>
 #include <list>
+#include "math.h"
+
+#include "edge.h"
+#include "edge3d.h"
+#include "transformation.h"
 
 enum {
     COHEN_SUTHERLAND,

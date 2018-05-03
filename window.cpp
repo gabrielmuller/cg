@@ -1,7 +1,5 @@
 #include "window.h"
-#include "math.h"
 #include <iostream>
-
 
 Vector2 Window::viewport(400, 400);
 float Window::smooth = 0.2;

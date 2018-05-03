@@ -88,7 +88,6 @@ void Display::draw_all() {
         it->draw();
     }
     */
-
     for (auto it : shapes3D) {
         it->draw();
     }

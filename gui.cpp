@@ -15,7 +15,7 @@ enum {
     CURVE
 };
 
-enum Axis { X, Y, Z };
+enum Axis { X=0, Y=1, Z=2 };
 Axis axis = X;
 //--- Local
 
@@ -87,11 +87,15 @@ void GUI::zoom_out () {
 
 void GUI::rotate_right() {
     Window::goal.angle += 0.1;
+    //TODO
+    //Window::rotate();
     //gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::rotate_left() {
     Window::goal.angle -= 0.1;
+    //TODO
+    //Window::rotate();
     //gtk_widget_queue_draw(drawing_area);
 }
 

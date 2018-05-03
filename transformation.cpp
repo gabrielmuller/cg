@@ -133,48 +133,6 @@ Transformation Transformation::rotation3D (const Rotation& rot) {
 }
 
 /**
- *  Transformações de rotação eixo 3D
- */
-Transformation Transformation::rotatex(const float rad) {
-    float c = std::cos(rad);
-    float s = std::sin(rad);
-    Transformation t (4, 4);
-    t.matrix = {
-        {1.0, 0.0, 0.0, 0.0},
-        {0.0,   c,   s, 0.0},
-        {0.0,  -s,   c, 0.0},
-        {0.0, 0.0, 0.0, 1.0}
-    };
-    return t;
-}
-
-Transformation Transformation::rotatey(const float rad) {
-    float c = std::cos(rad);
-    float s = std::sin(rad);
-    Transformation t (4, 4);
-    t.matrix = {
-        {  c, 0.0,  -s, 0.0},
-        {0.0, 1.0, 0.0, 0.0},
-        {  s, 0.0,   c, 0.0},
-        {0.0, 0.0, 0.0, 1.0}
-    };
-    return t;
-}
-
-Transformation Transformation::rotatez(const float rad) {
-    const float c = std::cos(rad);
-    const float s = std::sin(rad);
-    Transformation t (4, 4);
-    t.matrix = {
-        {  c,   s, 0.0, 0.0},
-        { -s,   c, 0.0, 0.0},
-        {0.0, 0.0, 1.0, 0.0},
-        {0.0, 0.0, 0.0, 1.0}
-    };
-    return t;
-}
-
-/**
  *  Operador std::string
  */
 Transformation::operator std::string () const {

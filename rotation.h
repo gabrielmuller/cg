@@ -1,7 +1,6 @@
 #ifndef ROTATION_H
 #define ROTATION_H
 
-
 #include "vector3.h"
 
 struct Rotation {

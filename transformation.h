@@ -1,5 +1,6 @@
 #ifndef TRANSFORMATION_H
 #define TRANSFORMATION_H
+
 #include <vector>
 #include <string>
 
@@ -25,10 +26,6 @@ struct Transformation {
     static Transformation translation3D (const Vector3 distance);
     static Transformation scaling3D (const Vector3 amount, const Vector3 center);
     static Transformation rotation3D (const Rotation& rot);
-
-    static Transformation rotatex(const float rad);
-    static Transformation rotatey(const float rad);
-    static Transformation rotatez(const float rad);
 
     Transformation operator* (const Transformation& t) const;
     operator std::string () const;

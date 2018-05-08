@@ -40,34 +40,26 @@ Specs3D Window::real3;
 
 const Transformation Window::projection_matrix() {
 
-    // Translação
-    const Vector3 vrp (-real3.position.x(), -real3.position.y(), -real3.position.z());
-    Transformation trans = Transformation::translation3D(vrp);
+    float theta_x = std::atan(real3.forward.y() / real3.position.z());
+    float theta_y = std::atan(real3.forward.x() / real3.position.z());
 
-    const Vector3 normal = real3.forward;
+    float sx = std::sin(theta_x);
+    float sy = std::sin(theta_y);
+    float cx = std::cos(theta_x);
+    float cy = std::cos(theta_y);
+    float x = real3.position.x();
+    float y = real3.position.y();
+    float z = real3.position.z();
 
-    // Rotação x e y
-    float tetax = std::atan(normal.y() / normal.z());
-    float tetay = std::atan(normal.x() / normal.z());
-
-    Transformation rotx(4,4);
-    Transformation roty(4,4);
-    Transformation scale(4,4);
-    rotx.matrix = {
-        { 1, 0, 0, 0 },
-        { 0,  std::cos(tetax), std::sin(tetax), 0 },
-        { 0, -std::sin(tetax), std::cos(tetax), 0 },
-        { 0, 0, 0, 1 }
+    Transformation proj(4,4);
+    proj.matrix = {
+        {cy                , 0,         -sy,                  0},
+        {sx * sy           , cx,        sx*cy,                0},
+        {sy*cx             , -sx,       cx*cy,                0},
+        {sy*(-sx*y-cx*z)-cy, sx*z-cx*y, sy*x+cy*(-sx*y-cx*z), 1}
     };
 
-    roty.matrix = {
-        { std::cos(tetay), 0, -std::sin(tetay), 0 },
-        { 0, 1, 0, 0 },
-        { std::sin(tetay), 0, std::cos(tetay), 0 },
-        { 0, 0, 0, 1 }
-    };
-
-    return trans * rotx * roty;
+    return proj;
 }
 
 /*****************************************
@@ -405,12 +397,15 @@ void Window::animate () {
     real.position = Vector2::lerp(real.position, goal.position, smooth);
     //real.size = Vector2::lerp(real.size, goal.size, smooth);
 
+    // BALADA *********
     t += 0.016666667;
     float bpm = 123;
     float size = (pow(std::sin(t * bpm * 2 / 60), 4) + 1 ) * 5;
     real3.position = Vector3(std::cos(t), std::sin(t), std::cos(t)+1.1);
     real3.forward = Vector3(-real3.position.x(), -real3.position.y(), -real3.position.z());
     real.size = Vector2(size, size);
+    // BALADA *********
+
     // lerp ângulo
     float a = fmodf(real.angle, (float) M_PI * 2);
     float b = fmodf(goal.angle, (float) M_PI * 2);

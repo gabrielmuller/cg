@@ -30,7 +30,6 @@ struct Specs {
 
 struct Specs3D {
     Vector3 position;
-    Vector2 orthoSize;
     float fov;
     Vector3 forward;
     Specs3D();

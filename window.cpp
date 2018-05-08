@@ -3,6 +3,7 @@
 #include <iostream>
 
 
+float t;
 Vector2 Window::viewport(400, 400);
 float Window::smooth = 0.2;
 float Window::xl, Window::xr, Window::yd, Window::yu;
@@ -26,7 +27,7 @@ cairo_t* Window::cr;
 
 Specs::Specs () : position(Vector2(0, 0)), size(Vector2(10, 10)), angle(0) {}
 
-Specs3D::Specs3D () : position(Vector3(0, 0, 0)), orthoSize(Vector2(10, 10)), fov(75),
+Specs3D::Specs3D () : position(Vector3(0, 0, -10)), fov(75),
     forward(Vector3(0, 0, 1)) {}
 
 Specs Window::real;
@@ -40,7 +41,7 @@ Specs3D Window::real3;
 const Transformation Window::projection_matrix() {
 
     // Translação
-    const Vector3 vrp = Vector3(-(xl+xr/2), -(yu+yd/2), 0);
+    const Vector3 vrp (-real3.position.x(), -real3.position.y(), -real3.position.z());
     Transformation trans = Transformation::translation3D(vrp);
 
     const Vector3 normal = real3.forward;
@@ -49,24 +50,23 @@ const Transformation Window::projection_matrix() {
     float tetax = std::atan(normal.y() / normal.z());
     float tetay = std::atan(normal.x() / normal.z());
 
-    tetax = (180.0 / M_PI) * tetax;
-    tetay = (180.0 / M_PI) * tetay;
-
     Transformation rotx(4,4);
     Transformation roty(4,4);
+    Transformation scale(4,4);
     rotx.matrix = {
         { 1, 0, 0, 0 },
-        { 0,  std::cos(tetax), std::sin(tetay), 0 },
-        { 0, -std::sin(tetax), std::cos(tetay), 0 },
+        { 0,  std::cos(tetax), std::sin(tetax), 0 },
+        { 0, -std::sin(tetax), std::cos(tetax), 0 },
         { 0, 0, 0, 1 }
     };
 
     roty.matrix = {
-        { std::cos(tetax), 0, -std::sin(tetay), 0 },
+        { std::cos(tetay), 0, -std::sin(tetay), 0 },
         { 0, 1, 0, 0 },
-        { std::sin(tetax), 0, std::cos(tetay), 0 },
+        { std::sin(tetay), 0, std::cos(tetay), 0 },
         { 0, 0, 0, 1 }
     };
+
     return trans * rotx * roty;
 }
 
@@ -98,9 +98,7 @@ Vector2 Window::world_to_norm (Vector2 coords) {
 }
 
 Vector2 Window::world_to_norm (Vector3 coords) {
-    Vector3 minus (-real3.position.x(), -real3.position.y(), -real3.position.z());
-    Transformation translation = Transformation::translation3D(minus);
-    coords = coords * translation;
+    coords = coords * projection_matrix();
     return world_to_norm((Vector2)coords);
 }
 
@@ -170,9 +168,6 @@ void Window::draw_line (Edge line) {
 }
 
 void Window::draw_line (Edge3D line) {
-    Transformation m = projection_matrix();
-    line.a = line.a * m;
-    line.b = line.b * m;
     Edge norm (world_to_norm(line.a), world_to_norm(line.b));
     // fazer clipping 3D depois
     try {
@@ -212,6 +207,8 @@ Edge Window::clip_line (Edge line) {
     } else if (clipping_algorithm == LIANG_BARSKY) {
         return clip_lb(line);
     }
+
+    throw std::exception();
 }
 
 // Cohen-Sutherland
@@ -405,10 +402,15 @@ void Window::update_boundaries () {
 
 void Window::animate () {
     update_boundaries();
-    //rotate(0,0,0.01);
     real.position = Vector2::lerp(real.position, goal.position, smooth);
-    real.size = Vector2::lerp(real.size, goal.size, smooth);
+    //real.size = Vector2::lerp(real.size, goal.size, smooth);
 
+    t += 0.016666667;
+    float bpm = 123;
+    float size = (pow(std::sin(t * bpm * 2 / 60), 4) + 1 ) * 5;
+    real3.position = Vector3(std::cos(t), std::sin(t), std::cos(t)+1.1);
+    real3.forward = Vector3(-real3.position.x(), -real3.position.y(), -real3.position.z());
+    real.size = Vector2(size, size);
     // lerp ângulo
     float a = fmodf(real.angle, (float) M_PI * 2);
     float b = fmodf(goal.angle, (float) M_PI * 2);

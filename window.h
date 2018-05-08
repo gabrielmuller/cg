@@ -51,6 +51,8 @@ namespace Window {
 
     std::list<Edge> edges();
 
+    const Transformation projection_matrix();
+
     Vector2 world_to_screen (Vector2 coords);
     Vector2 world_to_norm (Vector2 coords);
     Vector2 world_to_norm (Vector3 coords);

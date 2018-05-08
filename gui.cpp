@@ -261,6 +261,7 @@ void GUI::on_rotate_button(GtkWidget **entry, GtkWidget *widget) {
         else
             shape->rotate(rad, Vector2(std::stof(coord_x), std::stof(coord_y)));
     } else {
+        //TODO rotaçao errada
         auto shape = Display::find_shape3D(shape_name);
         if(center)
             shape->rotate(Rotation(shape->center(), rad));
@@ -661,15 +662,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     GUI::app = app;
     GtkWidget* window;
     GtkWidget *grid;
-    GtkWidget *up_button, *down_button, *left_button, *right_button;
-    GtkWidget *in_button, *out_button;
-    GtkWidget *import_button, *export_button;
-    GtkWidget *rot_left_button, *rot_right_button;
-    GtkWidget *create_2D_button, *create_curve_button, *create_3D_button; 
-    GtkWidget *move_frame, *create_frame, *add_frame;
-    GtkWidget *combo_frame, *transform_frame, *clip_frame, *rotate_frame;
     GtkWidget *box, *big_box;
-    GtkWidget *radio1, *radio2, *radio_x, *radio_y, *radio_z;
 
     Display::create_all();
 
@@ -679,6 +672,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     gtk_window_set_default_size (GTK_WINDOW(window), 480, 480);
 
     // Botões de movimentação
+    GtkWidget *up_button, *down_button, *left_button, *right_button; 
     up_button = gtk_button_new_with_label("^");
     g_signal_connect_swapped(up_button, "clicked",
         G_CALLBACK (move_up), window);        
@@ -693,6 +687,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
         G_CALLBACK (move_right), window);
 
     // Botões de zoom
+    GtkWidget *in_button, *out_button;
     in_button = gtk_button_new_with_label("+");
     g_signal_connect_swapped(in_button, "clicked",
         G_CALLBACK (zoom_in), window);
@@ -701,6 +696,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
         G_CALLBACK (zoom_out), window);
 
     // Botoes de rotação
+    GtkWidget *rot_left_button, *rot_right_button;
     rot_right_button = gtk_button_new_with_label("↷");
     g_signal_connect_swapped(rot_right_button, "clicked",
         G_CALLBACK (rotate_right), window);
@@ -709,6 +705,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
         G_CALLBACK (rotate_left), window);
 
     // Escolher eixo de rotação (x,y,z)
+    GtkWidget *radio_x, *radio_y, *radio_z;
     radio_x = gtk_radio_button_new_with_label(NULL,"x");
     g_signal_connect_swapped(radio_x, "pressed",
         G_CALLBACK (set_rotation_axis_x), window);
@@ -720,6 +717,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
         G_CALLBACK (set_rotation_axis_z), window);
 
     // Grid de botões de movimento
+    GtkWidget *move_frame;
     grid = gtk_grid_new();
     gtk_grid_attach(GTK_GRID(grid), up_button, 1, 0, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), down_button, 1, 2, 1, 1);
@@ -738,6 +736,8 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     gtk_container_add(GTK_CONTAINER(move_frame), box);
 
     // Botoes para criacao de figuras
+    GtkWidget *create_2D_button, *create_curve_button, *create_3D_button;
+    GtkWidget *create_frame;
     Params* p = new Params();
     create_2D_button = gtk_button_new_with_label("2D");
     g_signal_connect_swapped(create_2D_button, "clicked",
@@ -756,6 +756,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     gtk_container_add(GTK_CONTAINER(create_frame), box);
 
     // Botoes de leitura e escrita de .obj
+    GtkWidget *import_button, *export_button, *add_frame;
     import_button = gtk_button_new_with_label("Importar");
     g_signal_connect_swapped(import_button, "clicked",
         G_CALLBACK (on_import_button), window);
@@ -770,6 +771,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     gtk_container_add(GTK_CONTAINER(add_frame), box);
 
     // ----------GtkComboBox (Lista de figuras)
+    GtkWidget *combo_frame;
     combo = gtk_combo_box_text_new();
     for (auto it = Display::shapes.begin(); it != Display::shapes.end(); ++it) {
         const char *sh_name = (*it)->name.c_str();
@@ -785,7 +787,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     // ----------GtkComboBox
     
     // ----------GtkNotebook de transformações
-    GtkWidget *notebook, *frame, *label;
+    GtkWidget *notebook, *frame, *label, *transform_frame;
     notebook = gtk_notebook_new();
     gtk_notebook_set_tab_pos (GTK_NOTEBOOK(notebook), GTK_POS_TOP);
     
@@ -801,12 +803,12 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     rotation_page(frame);
     label = gtk_label_new ("Rotacionar");
     gtk_notebook_append_page (GTK_NOTEBOOK (notebook), frame, label);
-    // ---------GtkNotebook
-
     transform_frame = gtk_frame_new("Transformações");
     gtk_container_add(GTK_CONTAINER(transform_frame), notebook);
+    // ---------GtkNotebook
 
-    // Botões para alterar clipping de linhas
+    // ---------GtkRadioButton (escolher clipping)
+    GtkWidget *radio1, *radio2, *clip_frame;
     radio1 = gtk_radio_button_new_with_label(NULL,"Cohen-Sutherland");
     g_signal_connect_swapped(radio1, "pressed",
         G_CALLBACK (set_cohen), window);
@@ -818,6 +820,11 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     gtk_box_pack_start(GTK_BOX(box), radio2, TRUE, TRUE, 0);
     clip_frame = gtk_frame_new("Algoritmo de clipping de linhas");
     gtk_container_add(GTK_CONTAINER(clip_frame), box);
+    // ---------GtkRadioButton
+
+    // --------- GtkScale (perspectiva)
+    GtkWidget *perspective_scale;
+    perspective_scale = gtk_scale_new_with_range (GTK_ORIENTATION_HORIZONTAL, 0, 100, 1);
 
     // Drawing area
     drawing_area = gtk_drawing_area_new();
@@ -840,6 +847,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     gtk_box_pack_start(GTK_BOX(box), add_frame, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), combo_frame, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), transform_frame, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(box), perspective_scale, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), clip_frame, TRUE, TRUE, 5);
 
     big_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);

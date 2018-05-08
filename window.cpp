@@ -1,5 +1,7 @@
 #include "window.h"
+#include "math.h"
 #include <iostream>
+
 
 Vector2 Window::viewport(400, 400);
 float Window::smooth = 0.2;
@@ -30,6 +32,43 @@ Specs3D::Specs3D () : position(Vector3(0, 0, 0)), orthoSize(Vector2(10, 10)), fo
 Specs Window::real;
 Specs Window::goal;
 Specs3D Window::real3;
+
+/*void Window::rotate(float angle) {
+    
+}*/
+
+const Transformation Window::projection_matrix() {
+
+    // Translação
+    const Vector3 vrp = Vector3(-(xl+xr/2), -(yu+yd/2), 0);
+    Transformation trans = Transformation::translation3D(vrp);
+
+    const Vector3 normal = real3.forward;
+
+    // Rotação x e y
+    float tetax = std::atan(normal.y() / normal.z());
+    float tetay = std::atan(normal.x() / normal.z());
+
+    tetax = (180.0 / M_PI) * tetax;
+    tetay = (180.0 / M_PI) * tetay;
+
+    Transformation rotx(4,4);
+    Transformation roty(4,4);
+    rotx.matrix = {
+        { 1, 0, 0, 0 },
+        { 0,  std::cos(tetax), std::sin(tetay), 0 },
+        { 0, -std::sin(tetax), std::cos(tetay), 0 },
+        { 0, 0, 0, 1 }
+    };
+
+    roty.matrix = {
+        { std::cos(tetax), 0, -std::sin(tetay), 0 },
+        { 0, 1, 0, 0 },
+        { std::sin(tetax), 0, std::cos(tetay), 0 },
+        { 0, 0, 0, 1 }
+    };
+    return trans * rotx * roty;
+}
 
 /*****************************************
  *
@@ -131,9 +170,11 @@ void Window::draw_line (Edge line) {
 }
 
 void Window::draw_line (Edge3D line) {
+    Transformation m = projection_matrix();
+    line.a = line.a * m;
+    line.b = line.b * m;
     Edge norm (world_to_norm(line.a), world_to_norm(line.b));
     // fazer clipping 3D depois
-
     try {
         norm = clip_line(norm);
     }
@@ -364,6 +405,7 @@ void Window::update_boundaries () {
 
 void Window::animate () {
     update_boundaries();
+    //rotate(0,0,0.01);
     real.position = Vector2::lerp(real.position, goal.position, smooth);
     real.size = Vector2::lerp(real.size, goal.size, smooth);
 

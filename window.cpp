@@ -27,7 +27,7 @@ cairo_t* Window::cr;
 
 Specs::Specs () : position(Vector2(0, 0)), size(Vector2(10, 10)), angle(0) {}
 
-Specs3D::Specs3D () : position(Vector3(0, 0, -10)), dist_pp(1),
+Specs3D::Specs3D () : position(Vector3(0, 0, -10)), dist_pp(9),
     forward(Vector3(0, 0, 1)) {}
 
 Specs Window::real;
@@ -63,7 +63,15 @@ const Transformation Window::cavalier_matrix() {
 }
 
 const Transformation Window::perspective_matrix() {
-    return Transformation(4, 4);
+    Transformation proj(4,4);
+    //TODO: colocar numa matriz só
+    proj.matrix = {
+        {1, 0, 0, 0},
+        {0, 1, 0, 0},
+        {0, 0, 1, 1/real3.dist_pp},
+        {0, 0, 0, 0}
+    };
+    return cavalier_matrix() * proj;
 }
 
 /*****************************************
@@ -94,7 +102,8 @@ Vector2 Window::world_to_norm (Vector2 coords) {
 }
 
 Vector2 Window::world_to_norm (Vector3 coords) {
-    coords = coords * cavalier_matrix();
+    coords = coords * perspective_matrix();
+    coords.homogenize();
     return world_to_norm((Vector2)coords);
 }
 
@@ -404,10 +413,10 @@ void Window::animate () {
     // BALADA *********
     t += 0.016666667;
     float bpm = 123;
-    float size = (pow(std::sin(t * bpm * 2 / 60), 4) + 1 ) * 5;
-    real3.position = Vector3(std::cos(t), std::sin(t), std::cos(t)+1.1);
+    float z = (pow(std::sin(t * bpm * 2 / 60), 2) - 1.2 ) * 15;
+    real3.position = Vector3(std::cos(t), std::sin(t), z);
     real3.forward = Vector3(-real3.position.x(), -real3.position.y(), -real3.position.z());
-    real.size = Vector2(size, size);
+    //real.size = Vector2(size, size);
     // BALADA *********
 
     // lerp ângulo

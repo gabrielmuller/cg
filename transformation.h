@@ -18,6 +18,9 @@ struct Transformation {
     Transformation (int m, int n);
     Transformation (std::vector<std::vector<float>> matrix);
     void transform (Transformation& t) const;
+
+    Transformation transpose () const;
+    Transformation homogenize ();
     
     static Transformation translation (const Vector2 distance);
     static Transformation scaling (const Vector2 amount, const Vector2 center);

@@ -47,6 +47,35 @@ void Transformation::transform (Transformation& t) const {
     t = t * *this;
 }
 
+Transformation Transformation::transpose () const {
+    Transformation t(n, m);
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            t.matrix[j][i] = matrix[i][j];
+        }
+    }
+    return t;
+}
+
+/**
+ *  Faz a última coluna ser feita de 1's
+ *  compensando as outras.
+ */
+Transformation Transformation::homogenize () {
+    for (int i = 0; i < m; i++) {
+        float w = matrix[i][n-1];
+        if (!w) {
+            throw std::domain_error("w é 0!");
+        }
+        for (int j = 0; j < n; j++) {
+            matrix[i][j] /= w;
+        }
+    }
+    return *this;
+}
+
+    
+
 /**
  *  Transformações 2D
  */

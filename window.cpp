@@ -53,9 +53,9 @@ const Transformation Window::cavalier_matrix() {
 
     Transformation proj(4,4);
     proj.matrix = {
-        {cy                , 0,         -sy,                  0},
-        {sx * sy           , cx,        sx*cy,                0},
-        {sy*cx             , -sx,       cx*cy,                0},
+        {cy,                 0,         -sy,                  0},
+        {sx * sy,            cx,        sx*cy,                0},
+        {sy*cx,              -sx,       cx*cy,                0},
         {sy*(-sx*y-cx*z)-cy, sx*z-cx*y, sy*x+cy*(-sx*y-cx*z), 1}
     };
 
@@ -65,6 +65,7 @@ const Transformation Window::cavalier_matrix() {
 const Transformation Window::perspective_matrix() {
     return Transformation(4, 4);
 }
+
 /*****************************************
  *
  *  Funções de transformação de coordenada

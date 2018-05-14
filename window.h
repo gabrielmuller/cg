@@ -30,7 +30,10 @@ struct Specs {
 
 struct Specs3D {
     Vector3 position;
-    float fov;
+
+    // distância até plano de projeção (perspectiva)
+    float dist_pp;
+
     Vector3 forward;
     Specs3D();
 };
@@ -50,7 +53,8 @@ namespace Window {
 
     std::list<Edge> edges();
 
-    const Transformation projection_matrix();
+    const Transformation cavalier_matrix();
+    const Transformation perspective_matrix();
 
     Vector2 world_to_screen (Vector2 coords);
     Vector2 world_to_norm (Vector2 coords);

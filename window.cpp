@@ -27,7 +27,7 @@ cairo_t* Window::cr;
 
 Specs::Specs () : position(Vector2(0, 0)), size(Vector2(10, 10)), angle(0) {}
 
-Specs3D::Specs3D () : position(Vector3(0, 0, -10)), fov(75),
+Specs3D::Specs3D () : position(Vector3(0, 0, -10)), dist_pp(1),
     forward(Vector3(0, 0, 1)) {}
 
 Specs Window::real;
@@ -38,7 +38,7 @@ Specs3D Window::real3;
     
 }*/
 
-const Transformation Window::projection_matrix() {
+const Transformation Window::cavalier_matrix() {
 
     float theta_x = std::atan(real3.forward.y() / real3.position.z());
     float theta_y = std::atan(real3.forward.x() / real3.position.z());
@@ -62,6 +62,9 @@ const Transformation Window::projection_matrix() {
     return proj;
 }
 
+const Transformation Window::perspective_matrix() {
+    return Transformation(4, 4);
+}
 /*****************************************
  *
  *  Funções de transformação de coordenada
@@ -90,7 +93,7 @@ Vector2 Window::world_to_norm (Vector2 coords) {
 }
 
 Vector2 Window::world_to_norm (Vector3 coords) {
-    coords = coords * projection_matrix();
+    coords = coords * cavalier_matrix();
     return world_to_norm((Vector2)coords);
 }
 

@@ -99,6 +99,12 @@ void GUI::rotate_left() {
     //gtk_widget_queue_draw(drawing_area);
 }
 
+void GUI::set_perspective(GtkAdjustment *perspective_scale) {
+    auto value = gtk_adjustment_get_value ((perspective_scale));
+    // ehhh ta errado isso aqui
+    Window::real3.dist_pp = value;
+}
+
 /*****************************************
  *
  *   "Páginas" ou frames 
@@ -824,7 +830,12 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
 
     // --------- GtkScale (perspectiva)
     GtkWidget *perspective_scale;
-    perspective_scale = gtk_scale_new_with_range (GTK_ORIENTATION_HORIZONTAL, 0, 100, 1);
+    GtkAdjustment *adj;
+    // value, lower, upper, step_increment, page_increment, page_size
+    adj = gtk_adjustment_new (0.0, 0.0, 100.0, 1.0, 1.0, 0.0);
+    perspective_scale = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT(adj));
+    g_signal_connect_swapped (adj, "value_changed",
+        G_CALLBACK (set_perspective), adj);
 
     // Drawing area
     drawing_area = gtk_drawing_area_new();

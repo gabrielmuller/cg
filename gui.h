@@ -56,6 +56,7 @@ namespace GUI {
     void zoom_in ();
     void rotate_right ();
     void rotate_left ();
+    void set_perspective (GtkAdjustment *perspective_scale);
 
     /*  Transformações  */
     void on_translate_button (GtkWidget **entry, GtkWidget *widget);

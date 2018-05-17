@@ -45,6 +45,9 @@ namespace GUI {
     void set_rotation_axis_x ();
     void set_rotation_axis_y ();
     void set_rotation_axis_z ();
+    void set_shape_axis_x();
+    void set_shape_axis_y();
+    void set_shape_axis_z();
 
     void move (Vector2 amount);
     void move_z (float amount);

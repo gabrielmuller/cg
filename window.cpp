@@ -1,6 +1,8 @@
 #include "window.h"
 #include "math.h"
+#include "rotation.h"
 #include <iostream>
+#include <cmath> //satan is not a member of std
 
 
 float t;
@@ -34,9 +36,12 @@ Specs Window::real;
 Specs Window::goal;
 Specs3D Window::real3;
 
-/*void Window::rotate(float angle) {
-    
-}*/
+void Window::rotate() {
+    //goal.angle -= 0.1;
+    auto t = Transformation::rotation3D(Rotation(Vector3(0,1,0), 0.1));
+    real3.forward = real3.forward * t;
+
+}
 
 const Transformation Window::cavalier_matrix() {
 
@@ -411,12 +416,13 @@ void Window::animate () {
     //real.size = Vector2::lerp(real.size, goal.size, smooth);
 
     // BALADA *********
+    /*
     t += 0.016666667;
     float bpm = 123;
     float z = (pow(std::sin(t * bpm * 2 / 60), 2) - 1.2 ) * 15;
     real3.position = Vector3(std::cos(t), std::sin(t), z);
     real3.forward = Vector3(-real3.position.x(), -real3.position.y(), -real3.position.z());
-    //real.size = Vector2(size, size);
+    //real.size = Vector2(size, size);*/
     // BALADA *********
 
     // lerp ângulo

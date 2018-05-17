@@ -1,4 +1,5 @@
 #include "gui.h"
+#include <iostream>
 
 GtkWidget* GUI::drawing_area;
 GtkApplication* GUI::app;
@@ -17,6 +18,7 @@ enum {
 
 enum Axis { X=0, Y=1, Z=2 };
 Axis axis = X;
+Axis shape_axis = X;
 //--- Local
 
 // desenha no drawing area
@@ -49,6 +51,9 @@ void GUI::set_liang() {
 void GUI::set_rotation_axis_x() { axis = X; }
 void GUI::set_rotation_axis_y() { axis = Y; }
 void GUI::set_rotation_axis_z() { axis = Z; }
+void GUI::set_shape_axis_x() { shape_axis = X; }
+void GUI::set_shape_axis_y() { shape_axis = Y; }
+void GUI::set_shape_axis_z() { shape_axis = Z; }
 
 void GUI::move (Vector2 amount) {
     Transformation rot = Transformation::rotation(-Window::goal.angle, Vector2(0, 0));
@@ -86,16 +91,16 @@ void GUI::zoom_out () {
 }
 
 void GUI::rotate_right() {
-    Window::goal.angle += 0.1;
+    //Window::goal.angle += 0.1;
     //TODO
-    //Window::rotate();
+    Window::rotate();
     //gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::rotate_left() {
-    Window::goal.angle -= 0.1;
+    //Window::goal.angle -= 0.1;
     //TODO
-    //Window::rotate();
+    Window::rotate();
     //gtk_widget_queue_draw(drawing_area);
 }
 
@@ -103,6 +108,10 @@ void GUI::set_perspective(GtkAdjustment *perspective_scale) {
     auto value = gtk_adjustment_get_value ((perspective_scale));
     // ehhh ta errado isso aqui
     Window::real3.dist_pp = value;
+    Window::real3.position = Vector3(Window::real3.position.x(),
+    Window::real3.position.y(),
+    -value);
+
 }
 
 /*****************************************
@@ -267,13 +276,21 @@ void GUI::on_rotate_button(GtkWidget **entry, GtkWidget *widget) {
         else
             shape->rotate(rad, Vector2(std::stof(coord_x), std::stof(coord_y)));
     } else {
-        //TODO rotaçao errada
+        //beautiful
         auto shape = Display::find_shape3D(shape_name);
+        Vector3 axis_vector;
+        if (shape_axis == X) 
+            axis_vector = Vector3(1,0,0);
+        else if (shape_axis == Y) 
+            axis_vector = Vector3(0,1,0);
+        else 
+            axis_vector = Vector3(0,0,1);
         if(center)
-            shape->rotate(Rotation(shape->center(), rad));
+            shape->rotate(Rotation(axis_vector, rad));
         else
             shape->rotate(Rotation( 
-                Vector3(std::stof(coord_x), std::stof(coord_y), std::stof(coord_z)), rad));
+                Vector3(std::stof(coord_x), std::stof(coord_y), std::stof(coord_z)), 
+                axis_vector, rad));
     }
     g_free(shape_name);
     //gtk_widget_queue_draw(drawing_area);
@@ -282,6 +299,17 @@ void GUI::on_rotate_button(GtkWidget **entry, GtkWidget *widget) {
 void GUI::rotation_page (GtkWidget* frame) {
     GtkWidget *grid, *rotate_button, *d_label, *d_entry;
     GtkWidget *x_label, *y_label, *x_entry, *y_entry, *z_label, *z_entry;
+    GtkWidget *radio_x, *radio_y, *radio_z;
+
+    radio_x = gtk_radio_button_new_with_label(NULL,"x");
+    g_signal_connect_swapped(radio_x, "pressed",
+        G_CALLBACK (set_shape_axis_x), NULL);
+    radio_y = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (radio_x),"y");
+    g_signal_connect_swapped(radio_y, "pressed",
+        G_CALLBACK (set_shape_axis_y), NULL);
+    radio_z = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (radio_x),"z");
+    g_signal_connect_swapped(radio_z, "pressed",
+        G_CALLBACK (set_shape_axis_z), NULL);
 
     // labels
     d_label = gtk_label_new("Graus");
@@ -319,7 +347,10 @@ void GUI::rotation_page (GtkWidget* frame) {
     gtk_grid_attach(GTK_GRID(grid), y_entry, 1, 2, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), z_label, 0, 3, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), z_entry, 1, 3, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), rotate_button, 0, 4, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), radio_x, 0, 4, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), radio_y, 1, 4, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), radio_z, 2, 4, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), rotate_button, 0, 5, 2, 1);
 
     gtk_container_add(GTK_CONTAINER(frame), grid);
 }
@@ -832,7 +863,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     GtkWidget *perspective_scale;
     GtkAdjustment *adj;
     // value, lower, upper, step_increment, page_increment, page_size
-    adj = gtk_adjustment_new (0.0, 0.0, 100.0, 1.0, 1.0, 0.0);
+    adj = gtk_adjustment_new (0.0, 1.0, 10.0, 1.0, 1.0, 0.0);
     perspective_scale = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT(adj));
     g_signal_connect_swapped (adj, "value_changed",
         G_CALLBACK (set_perspective), adj);

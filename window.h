@@ -53,6 +53,8 @@ namespace Window {
 
     std::list<Edge> edges();
 
+    void rotate();
+
     const Transformation cavalier_matrix();
     const Transformation perspective_matrix();
 

@@ -16,6 +16,7 @@ struct Vector3 : Transformation {
     Vector3 (const Transformation& other); 
     Vector3 normalized() const;
 
+    Vector3 operator+ (Vector3 other) const;
     operator std::string () const;
     bool operator== (Vector3 other) const;
 

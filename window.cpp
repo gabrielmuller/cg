@@ -38,7 +38,6 @@ Specs Window::goal;
 Specs3D Window::real3;
 
 void Window::rotate(const Vector3 axis, const float angle) {
-    //goal.angle -= 0.1;
     auto t = Transformation::rotation3D(Rotation(real3.position, axis, angle));
     real3.forward = real3.forward * t;
 }

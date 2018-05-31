@@ -68,10 +68,22 @@ void GUI::set_shape_axis_y() { shape_axis = Y; }
 void GUI::set_shape_axis_z() { shape_axis = Z; }
 
 void GUI::move (Vector2 amount) {
-    Transformation rot = Transformation::rotation(-Window::goal.angle, Vector2(0, 0));
-    amount = (Transformation) amount * rot;
-    Window::goal.position = Window::goal.position + amount;
-    //gtk_widget_queue_draw(drawing_area);
+    if (Window::render == ONLY_2D) {
+        Transformation rot = 
+            Transformation::rotation(-Window::goal.angle, Vector2(0, 0));
+        amount = (Transformation) amount * rot;
+        Window::goal.position = Window::goal.position + amount;
+    } else {
+        /*
+        Transformation rot =
+            Transformation::rotation3D(Rotation(
+            Window::real3.position, Window::real3.forward, 
+            Vector3(amount.x(), amount.y(), 0)));
+            */
+        //amount = (Transformation) amount * rot;
+        Window::real3.position =
+            Window::real3.position + Vector3(amount.x(), amount.y(), 0);
+    }
 }
 void GUI::move_z (float amount) {
     if (Window::goal.size.x() > amount && 
@@ -112,11 +124,14 @@ void GUI::rotate_left() {
 
 void GUI::rotate_cam(const bool right) {
     float amount = right ? 0.1 : -0.1;
-    Vector3 rot_axis;
-    rot_axis.matrix[0][axis] = 1;
-    Window::rotate(rot_axis, amount);
+    if (Window::render != ONLY_2D) {
+        Vector3 rot_axis;
+        rot_axis.matrix[0][axis] = 1;
+        Window::rotate(rot_axis, amount);
+    } else {
+        Window::goal.angle += amount;
+    }
 }
-
 
 void GUI::set_perspective(GtkAdjustment *perspective_scale) {
     auto value = gtk_adjustment_get_value ((perspective_scale));

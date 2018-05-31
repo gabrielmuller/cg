@@ -28,6 +28,12 @@ float Vector3::length() const {
     return sqrt(x()*x() + y()*y() + z()*z());
 }
 
+Vector3 Vector3::operator+ (Vector3 other) const {
+    Transformation t = Transformation::translation3D(other);
+    Vector3 result = (Transformation) *this * t;
+    return result;
+}
+
 Vector3::operator std::string () const {
     return "(" + std::to_string(x()) + ", " 
         + std::to_string(y()) + ", "

@@ -872,7 +872,6 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     // ---------GtkRadioButton
     
     // ---------GtkRadioButton (escolher entre 2D / 3D)
-    /*
     GtkWidget *render1, *render2, *render3, *render_frame;
     render1 = gtk_radio_button_new_with_label(NULL,"2D");
     g_signal_connect_swapped(render1, "pressed",
@@ -889,7 +888,6 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     gtk_box_pack_start(GTK_BOX(box), render3, TRUE, TRUE, 0);
     render_frame = gtk_frame_new("Modo de renderização");
     gtk_container_add(GTK_CONTAINER(render_frame), box);
-    */
     // ---------GtkRadioButton
 
     // --------- GtkScale (perspectiva)
@@ -909,6 +907,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
         G_CALLBACK(draw_cb), nullptr);
     gtk_widget_set_size_request(GTK_WIDGET(drawing_area), 500, 200);
 
+    gtk_frame_set_label_align(GTK_FRAME(render_frame), 0.5, 0.5);
     gtk_frame_set_label_align(GTK_FRAME(move_frame), 0.5, 0.5);
     gtk_frame_set_label_align(GTK_FRAME(create_frame), 0.5, 0.5);
     gtk_frame_set_label_align(GTK_FRAME(add_frame), 0.5, 0.5);
@@ -917,6 +916,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     gtk_frame_set_label_align(GTK_FRAME(clip_frame), 0.5, 0.5);
 
     box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1);
+    gtk_box_pack_start(GTK_BOX(box), render_frame, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), move_frame, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), create_frame, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), add_frame, TRUE, TRUE, 0);

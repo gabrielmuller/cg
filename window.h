@@ -15,6 +15,12 @@ enum {
 };
 
 enum {
+    ONLY_2D,
+    CAVALIER,
+    PERSPECTIVE
+};
+
+enum {
     XL = 0,
     XR = 1,
     YD = 2,
@@ -47,13 +53,14 @@ namespace Window {
     extern int clipping_algorithm;
     extern cairo_t* cr;
     extern float clip_margin;
+    extern int render;
 
     // extremidades da window
     extern float xr, xl, yu, yd;
 
     std::list<Edge> edges();
 
-    void rotate();
+    void rotate(const Vector3 axis, const float angle);
 
     const Transformation cavalier_matrix();
     const Transformation perspective_matrix();

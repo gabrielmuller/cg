@@ -83,13 +83,14 @@ void Display::create_all () {
 
 void Display::draw_all() {
     
-    /*
-    for (auto it : shapes) {
-        it->draw();
-    }
-    */
-    for (auto it : shapes3D) {
-        it->draw();
+    if (Window::render == ONLY_2D) {
+        for (auto it : shapes) {
+            it->draw();
+        }
+    } else {
+        for (auto it : shapes3D) {
+            it->draw();
+        }
     }
 }
 

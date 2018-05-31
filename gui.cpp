@@ -40,12 +40,24 @@ gboolean GUI::draw_cb(GtkWidget *widget, cairo_t* cr, gpointer* data) {
     return FALSE;
 }
 
-void GUI::set_cohen() {
+void GUI::set_cohen () {
     Window::clipping_algorithm = COHEN_SUTHERLAND;
 }
 
-void GUI::set_liang() {
+void GUI::set_liang () {
     Window::clipping_algorithm = LIANG_BARSKY;
+}
+
+void GUI::set_2D () {
+    Window::render = ONLY_2D;
+}
+
+void GUI::set_cavalier () {
+    Window::render = CAVALIER;
+}
+
+void GUI::set_cam_perspective () {
+    Window::render = PERSPECTIVE;
 }
 
 void GUI::set_rotation_axis_x() { axis = X; }
@@ -91,27 +103,27 @@ void GUI::zoom_out () {
 }
 
 void GUI::rotate_right() {
-    //Window::goal.angle += 0.1;
-    //TODO
-    Window::rotate();
-    //gtk_widget_queue_draw(drawing_area);
+    GUI::rotate_cam(true);
 }
 
 void GUI::rotate_left() {
-    //Window::goal.angle -= 0.1;
-    //TODO
-    Window::rotate();
-    //gtk_widget_queue_draw(drawing_area);
+    GUI::rotate_cam(false);
 }
+
+void GUI::rotate_cam(const bool right) {
+    float amount = right ? 0.1 : -0.1;
+    Vector3 rot_axis;
+    rot_axis.matrix[0][axis] = 1;
+    Window::rotate(rot_axis, amount);
+}
+
 
 void GUI::set_perspective(GtkAdjustment *perspective_scale) {
     auto value = gtk_adjustment_get_value ((perspective_scale));
-    // ehhh ta errado isso aqui
     Window::real3.dist_pp = value;
     Window::real3.position = Vector3(Window::real3.position.x(),
     Window::real3.position.y(),
     -value);
-
 }
 
 /*****************************************
@@ -358,7 +370,7 @@ void GUI::rotation_page (GtkWidget* frame) {
 /*****************************************
  *
  *  Frame e callbacks para criar figura 2D
- *  ou curva (de Bezier ou B-Splien)
+ *  ou curva (de Bezier ou B-Spline)
  *
  *****************************************/
 
@@ -849,7 +861,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     radio1 = gtk_radio_button_new_with_label(NULL,"Cohen-Sutherland");
     g_signal_connect_swapped(radio1, "pressed",
         G_CALLBACK (set_cohen), window);
-    radio2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (radio1),"Liang_Barsky");
+    radio2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (radio1),"Liang-Barsky");
     g_signal_connect_swapped(radio2, "pressed",
         G_CALLBACK (set_liang), window);
     box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 1);
@@ -858,12 +870,33 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     clip_frame = gtk_frame_new("Algoritmo de clipping de linhas");
     gtk_container_add(GTK_CONTAINER(clip_frame), box);
     // ---------GtkRadioButton
+    
+    // ---------GtkRadioButton (escolher entre 2D / 3D)
+    /*
+    GtkWidget *render1, *render2, *render3, *render_frame;
+    render1 = gtk_radio_button_new_with_label(NULL,"2D");
+    g_signal_connect_swapped(render1, "pressed",
+        G_CALLBACK (set_2D), window);
+    render2 = gtk_radio_button_new_with_label_from_widget(
+        GTK_RADIO_BUTTON (render1),"Cavaleira");
+    g_signal_connect_swapped(render2, "pressed",
+        G_CALLBACK (set_cavalier), window);
+    g_signal_connect_swapped(render3, "pressed",
+        G_CALLBACK (set_cam_perspective), window);
+    box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 1);
+    gtk_box_pack_start(GTK_BOX(box), render1, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(box), render2, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(box), render3, TRUE, TRUE, 0);
+    render_frame = gtk_frame_new("Modo de renderização");
+    gtk_container_add(GTK_CONTAINER(render_frame), box);
+    */
+    // ---------GtkRadioButton
 
     // --------- GtkScale (perspectiva)
     GtkWidget *perspective_scale;
     GtkAdjustment *adj;
     // value, lower, upper, step_increment, page_increment, page_size
-    adj = gtk_adjustment_new (0.0, 1.0, 10.0, 1.0, 1.0, 0.0);
+    adj = gtk_adjustment_new (5.0, 2.0, 15.0, 1.0, 1.0, 0.0);
     perspective_scale = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT(adj));
     g_signal_connect_swapped (adj, "value_changed",
         G_CALLBACK (set_perspective), adj);

@@ -12,6 +12,7 @@ struct Edge {
     Vector2 a;
     Vector2 b;
 
+    Edge ();
     Edge (Vector2 a, Vector2 b);
 };
 

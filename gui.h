@@ -42,12 +42,15 @@ namespace GUI {
 
     void set_cohen ();
     void set_liang ();
+    void set_2D ();
+    void set_cavalier ();
+    void set_cam_perspective ();
     void set_rotation_axis_x ();
     void set_rotation_axis_y ();
     void set_rotation_axis_z ();
-    void set_shape_axis_x();
-    void set_shape_axis_y();
-    void set_shape_axis_z();
+    void set_shape_axis_x ();
+    void set_shape_axis_y ();
+    void set_shape_axis_z ();
 
     void move (Vector2 amount);
     void move_z (float amount);
@@ -59,6 +62,7 @@ namespace GUI {
     void zoom_in ();
     void rotate_right ();
     void rotate_left ();
+    void rotate_cam (const bool right);
     void set_perspective (GtkAdjustment *perspective_scale);
 
     /*  Transformações  */

@@ -10,6 +10,7 @@ Vector2 Window::viewport(400, 400);
 float Window::smooth = 0.2;
 float Window::xl, Window::xr, Window::yd, Window::yu;
 float Window::clip_margin = 1.8;
+int Window::render = ONLY_2D;
 
 /**
  *  Bordas da Viewport. {esquerda, cima, direita, baixo}
@@ -27,26 +28,25 @@ int Window::clipping_algorithm = COHEN_SUTHERLAND;
 
 cairo_t* Window::cr;
 
-Specs::Specs () : position(Vector2(0, 0)), size(Vector2(10, 10)), angle(0) {}
+Specs::Specs () : position(Vector2(0, 0)), size(Vector2(5, 5)), angle(0) {}
 
-Specs3D::Specs3D () : position(Vector3(0, 0, -10)), dist_pp(9),
+Specs3D::Specs3D () : position(Vector3(0, 0, -5)), dist_pp(5),
     forward(Vector3(0, 0, 1)) {}
 
 Specs Window::real;
 Specs Window::goal;
 Specs3D Window::real3;
 
-void Window::rotate() {
+void Window::rotate(const Vector3 axis, const float angle) {
     //goal.angle -= 0.1;
-    auto t = Transformation::rotation3D(Rotation(Vector3(0,1,0), 0.1));
+    auto t = Transformation::rotation3D(Rotation(real3.position, axis, angle));
     real3.forward = real3.forward * t;
-
 }
 
 const Transformation Window::cavalier_matrix() {
 
-    float theta_x = std::atan(real3.forward.y() / real3.position.z());
-    float theta_y = std::atan(real3.forward.x() / real3.position.z());
+    float theta_x = -std::atan(real3.forward.y() / real3.position.z());
+    float theta_y = -std::atan(real3.forward.x() / real3.position.z());
 
     float sx = std::sin(theta_x);
     float sy = std::sin(theta_y);
@@ -76,7 +76,7 @@ const Transformation Window::perspective_matrix() {
         {0, 0, 1, 1/real3.dist_pp},
         {0, 0, 0, 0}
     };
-    return cavalier_matrix() * proj;
+    return proj;
 }
 
 /*****************************************
@@ -107,8 +107,22 @@ Vector2 Window::world_to_norm (Vector2 coords) {
 }
 
 Vector2 Window::world_to_norm (Vector3 coords) {
-    coords = coords * perspective_matrix();
-    coords.homogenize();
+    coords = coords * cavalier_matrix();
+
+    // clipping 3D simples:
+    // corta a reta no plano de projeção
+    /*
+    if (coords.z() < 0) {
+        // coordenada atrás da câmera!
+        throw std::exception();
+    }
+    */
+
+    if (render == PERSPECTIVE) {
+        coords = coords * perspective_matrix();
+        coords.homogenize();
+    };
+
     return world_to_norm((Vector2)coords);
 }
 
@@ -162,8 +176,7 @@ void Window::draw_line (Edge line) {
 
     try {
         line = clip_line(line);
-    }
-    catch (std::exception e) {
+    } catch (std::exception e) {
         // se não precisa renderizar retorna
         return;
     }
@@ -178,12 +191,12 @@ void Window::draw_line (Edge line) {
 }
 
 void Window::draw_line (Edge3D line) {
-    Edge norm (world_to_norm(line.a), world_to_norm(line.b));
-    // fazer clipping 3D depois
+    Edge norm;
     try {
+        norm.a = world_to_norm(line.a);
+        norm.b = world_to_norm(line.b);
         norm = clip_line(norm);
-    }
-    catch (std::exception e) {
+    } catch (std::exception e) {
         // se não precisa renderizar retorna
         return;
     }

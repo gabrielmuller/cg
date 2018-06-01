@@ -44,6 +44,20 @@ void Display::create_all () {
         Vector2(7,1)
     });
 
+    Polygon* poly = new Polygon("Poly");
+
+    poly->verts.push_back(Vector2(0, 0));
+    poly->verts.push_back(Vector2(0, 3));
+    poly->verts.push_back(Vector2(3, 5));
+    poly->verts.push_back(Vector2(0, 0));
+
+    Polygon* square = new Polygon("Square");
+    square->verts.push_back(Vector2(0, 0));
+    square->verts.push_back(Vector2(0, 2));
+    square->verts.push_back(Vector2(2, 2));
+    square->verts.push_back(Vector2(2, 0));
+    square->verts.push_back(Vector2(0, 0));
+
     Spline* b = new Spline ("Bbbb", {
         Vector2(0, 0),
         Vector2(0, 1),
@@ -66,17 +80,21 @@ void Display::create_all () {
 
     Point3D* ponto3d = new Point3D("Ponto3D", 0,0,0);
 
-    /*
-    std::vector<Shape3D*> import = DescOBJ::read_obj("Figuras.obj");
+    /*std::vector<Shape3D*> import = DescOBJ::read_obj("Figuras.obj");
+    for (auto i : import)  {
+        shapes3D.push_back(i);
+    }*/
+    auto import = DescOBJ::read_obj("Cube.obj");
     for (auto i : import)  {
         shapes3D.push_back(i);
     }
-    */
 
     shapes.push_back(curve);
     shapes.push_back(bezier);
     shapes.push_back(spline);
     shapes.push_back(b);
+    shapes.push_back(poly);
+    shapes.push_back(square);
     shapes3D.push_back(ponto3d);
     shapes3D.push_back(tetrahedron);
 }

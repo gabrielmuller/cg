@@ -58,9 +58,9 @@ const Transformation Window::cavalier_matrix() {
     Transformation proj(4,4);
     proj.matrix = {
         {cy,                 0,         -sy,                  0},
-        {sx * sy,            cx,        sx*cy,                0},
-        {sy*cx,              -sx,       cx*cy,                0},
-        {sy*(-sx*y-cx*z)-cy, sx*z-cx*y, sy*x+cy*(-sx*y-cx*z), 1}
+        {sx * sy,            cx,        -sx*cy,                0},
+        {sy*cx,              -sx,       -cx*cy,                0},
+        {sy*(-sx*y-cx*z)-cy*x, sx*z-cx*y, sy*x-cy*(-sx*y-cx*z), 1}
     };
 
     return proj;
@@ -87,12 +87,13 @@ const Transformation Window::perspective_matrix() {
 // converte uma coordenada do espaço no mundo para
 // coordenada normalizada
 Vector2 Window::world_to_norm (Vector2 coords) {
+    bool two = render == ONLY_2D;
     float s = sin(real.angle);
     float c = cos(real.angle);
-    float a = 2 / real.size.x();
-    float b = 2 / real.size.y();
-    float x = real.position.x();
-    float y = real.position.y();
+    float a = two ? 2 / real.size.x() : 0.5;
+    float b = two ? 2 / real.size.y() : 0.5;
+    float x = two ? real.position.x() : 0;
+    float y = two ? real.position.y() : 0;
 
     Transformation t (3, 3);
     t.matrix = {
@@ -425,7 +426,7 @@ void Window::update_boundaries () {
 void Window::animate () {
     update_boundaries();
     real.position = Vector2::lerp(real.position, goal.position, smooth);
-    //real.size = Vector2::lerp(real.size, goal.size, smooth);
+    real.size = Vector2::lerp(real.size, goal.size, smooth);
 
     // BALADA *********
     /*
@@ -434,8 +435,7 @@ void Window::animate () {
     float z = (pow(std::sin(t * bpm * 2 / 60), 2) - 1.2 ) * 15;
     real3.position = Vector3(std::cos(t), std::sin(t), z);
     real3.forward = Vector3(-real3.position.x(), -real3.position.y(), -real3.position.z());
-    //real.size = Vector2(size, size);*/
-    // BALADA *********
+    // BALADA *********/
 
     // lerp ângulo
     float a = fmodf(real.angle, (float) M_PI * 2);

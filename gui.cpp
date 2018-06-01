@@ -86,9 +86,13 @@ void GUI::move (Vector2 amount) {
     }
 }
 void GUI::move_z (float amount) {
-    if (Window::goal.size.x() > amount && 
-        Window::goal.size.y() > amount) {
-        Window::goal.size = Window::goal.size - Vector2(amount, amount);
+    if (Window::render == ONLY_2D) {
+        if (Window::goal.size.x() > amount && 
+            Window::goal.size.y() > amount) {
+            Window::goal.size = Window::goal.size - Vector2(amount, amount);
+        }
+    } else {
+        Window::real3.position = Window::real3.position + Vector3(0, 0, amount);
     }
 
     //gtk_widget_queue_draw(drawing_area);
@@ -193,7 +197,7 @@ void GUI::translation_page (GtkWidget* frame) {
     entries[1] = y_entry;
     entries[2] = z_entry;
 
-    // Botoes
+    // Botões
     translate_button = gtk_button_new_with_label("Ok");
     g_signal_connect_swapped(translate_button, "clicked",
         G_CALLBACK (on_translate_button), entries);
@@ -256,7 +260,7 @@ void GUI::scaling_page(GtkWidget* frame) {
     entries[1] = y_entry;
     entries[2] = z_entry;
 
-    // Botoes
+    // Botões
     scale_button = gtk_button_new_with_label("Ok");
     g_signal_connect_swapped(scale_button, "clicked",
         G_CALLBACK (on_scale_button), entries);
@@ -356,7 +360,7 @@ void GUI::rotation_page (GtkWidget* frame) {
     entries[2] = y_entry;
     entries[3] = z_entry;
 
-    // Botoes
+    // Botões
     rotate_button = gtk_button_new_with_label("Ok");
     g_signal_connect_swapped(rotate_button, "clicked",
         G_CALLBACK (on_rotate_button), entries);
@@ -497,7 +501,7 @@ void GUI::create_vertices_frame(bool isPoly) {
     gtk_widget_set_size_request(scrolledwindow, 100,20);
     gtk_container_add(GTK_CONTAINER(scrolledwindow), text_view);
 
-    // Botoes
+    // Botões
     add_vert_button = gtk_button_new_with_label("Adicionar vértice");
     g_signal_connect_swapped(add_vert_button, "clicked",
         G_CALLBACK (on_add_vert_button), entriesA);
@@ -618,7 +622,7 @@ void GUI::on_create_3D_button () {
     gtk_widget_set_size_request(scrolledwindow, 200,20);
     gtk_container_add(GTK_CONTAINER(scrolledwindow), text_view);
 
-    // Botoes
+    // Botões
     add_edge_button = gtk_button_new_with_label("Adicionar aresta");
     g_signal_connect_swapped(add_edge_button, "clicked",
         G_CALLBACK (on_add_edge_button), entriesA);
@@ -759,7 +763,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     g_signal_connect_swapped(out_button, "clicked",
         G_CALLBACK (zoom_out), window);
 
-    // Botoes de rotação
+    // Botões de rotação
     GtkWidget *rot_left_button, *rot_right_button;
     rot_right_button = gtk_button_new_with_label("↷");
     g_signal_connect_swapped(rot_right_button, "clicked",
@@ -799,7 +803,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     move_frame = gtk_frame_new("Movimentação");
     gtk_container_add(GTK_CONTAINER(move_frame), box);
 
-    // Botoes para criacao de figuras
+    // Botões para criação de figuras
     GtkWidget *create_2D_button, *create_curve_button, *create_3D_button;
     GtkWidget *create_frame;
     Params* p = new Params();
@@ -819,7 +823,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     create_frame = gtk_frame_new("Adicionar figura");
     gtk_container_add(GTK_CONTAINER(create_frame), box);
 
-    // Botoes de leitura e escrita de .obj
+    // Botões de leitura e escrita de .obj
     GtkWidget *import_button, *export_button, *add_frame;
     import_button = gtk_button_new_with_label("Importar");
     g_signal_connect_swapped(import_button, "clicked",
@@ -888,16 +892,22 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     
     // ---------GtkRadioButton (escolher entre 2D / 3D)
     GtkWidget *render1, *render2, *render3, *render_frame;
+
     render1 = gtk_radio_button_new_with_label(NULL,"2D");
-    g_signal_connect_swapped(render1, "pressed",
-        G_CALLBACK (set_2D), window);
     render2 = gtk_radio_button_new_with_label_from_widget(
         GTK_RADIO_BUTTON (render1),"Cavaleira");
+    render3 = gtk_radio_button_new_with_label_from_widget(
+        GTK_RADIO_BUTTON (render1),"Perspectiva");
+
+    g_signal_connect_swapped(render1, "pressed",
+        G_CALLBACK (set_2D), window);
     g_signal_connect_swapped(render2, "pressed",
         G_CALLBACK (set_cavalier), window);
     g_signal_connect_swapped(render3, "pressed",
         G_CALLBACK (set_cam_perspective), window);
+
     box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 1);
+
     gtk_box_pack_start(GTK_BOX(box), render1, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), render2, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(box), render3, TRUE, TRUE, 0);
@@ -966,5 +976,4 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
 ⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠁
 ⠀⠀⠛⢿⣿⣿⣿⣿⣿⣿⡿⠟
 ⠀⠀⠀⠀⠀⠉⠉⠉ 
-
 */

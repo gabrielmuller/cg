@@ -1,5 +1,7 @@
 *.o
-*.swp
+*.sw*
+.*.sw*
 *.log*
 *.orig
-*.swo
+*.vim
+.gdbinit

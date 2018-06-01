@@ -33,12 +33,12 @@ void Polygon::draw () {
     Vector2 pos = *it;
 
     for (; it != verts.end(); ++it) {
-        AB edge (pos, *it);
+        Edge edge (pos, *it);
         Window::draw_line(edge);
         pos = *it;
     }
     if (!open) {
-        AB edge (verts.back(), verts.front());
+        Edge edge (verts.back(), verts.front());
         Window::draw_line(edge);
     }
 }
@@ -61,7 +61,7 @@ void Polygon::draw_fill() {
         Vector2 p1 = input.back();
         for (auto p2 : input) {
             if (&p1 == &p2) continue;
-            AB line(p1, p2);
+            Edge line(p1, p2);
             if(Window::is_inside(p2, edge)) {
                 if (!Window::is_inside(p1, edge)) {
                     auto v = Window::clip_to_edge(edge, line);
@@ -79,7 +79,7 @@ void Polygon::draw_fill() {
     auto it = output.begin();
     auto pos = *it;
     for (; it != output.end(); ++it) {
-        AB edge (pos, *it);
+        Edge edge (pos, *it);
         Window::draw_pline(edge);
         pos = *it;
     }           

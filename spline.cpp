@@ -79,7 +79,7 @@ void Spline::fwdDiff (float n, float x, float dx, float d2x, float d3x,
         dy  += d2y;
         d2y += d3y;
         Vector2 b = Vector2(x, y);
-        Window::draw_line(AB(a, b));
+        Window::draw_line(Edge(a, b));
         a=b;
     }
 }

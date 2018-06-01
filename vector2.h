@@ -2,7 +2,6 @@
 #define VECTOR2_H
 
 #include <string>
-
 #include "transformation.h"
 
 struct Vector2 : Transformation {
@@ -11,6 +10,7 @@ struct Vector2 : Transformation {
 
     Vector2();
     Vector2 (float x, float y); 
+    Vector2 (const Vector3& other); 
     Vector2 (const Transformation& other); 
 
     operator std::string () const;
@@ -20,7 +20,7 @@ struct Vector2 : Transformation {
     Vector2 operator/ (float scalar) const;
     bool operator== (Vector2 other) const;
 
-    static Vector2 lerp (const Vector2& a, const Vector2& b, float p);
+    static Vector2 lerp (Vector2 a, Vector2 b, float p);
 
 };
 

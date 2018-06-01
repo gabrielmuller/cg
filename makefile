@@ -2,7 +2,7 @@ CC = g++
 OPT = -O3
 CVER = -std=c++11
 CFLAGS = `pkg-config --cflags gtk+-3.0`
-DBFLAGS = ''
+DBFLAGS = -q -iex "set auto-load safe-path /"
 VGFLAGS = --leak-check=yes --log-file="valgrind.log"
 LIBS = `pkg-config --libs gtk+-3.0`
 SRC = *.cpp
@@ -25,4 +25,7 @@ compile:
 	$(CC) $(OPT) $(CVER) $(CFLAGS) $(SRC) -o $(BIN) $(LIBS)
 run:
 	./$(BIN)
+
+clean:
+	git clean -dfX
 	

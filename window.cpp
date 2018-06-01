@@ -1,45 +1,99 @@
 #include "window.h"
 #include "math.h"
+#include "rotation.h"
 #include <iostream>
+#include <cmath> //satan is not a member of std
 
+
+float t;
 Vector2 Window::viewport(400, 400);
 float Window::smooth = 0.2;
 float Window::xl, Window::xr, Window::yd, Window::yu;
+float Window::clip_margin = 1.8;
+int Window::render = ONLY_2D;
 
 /**
  *  Bordas da Viewport. {esquerda, cima, direita, baixo}
  */
-std::list<AB> Window::edges() {
+std::list<Edge> Window::edges() {
     return {
-            AB(Vector2(xl, yd), Vector2(xl,yu)),
-            AB(Vector2(xl, yu), Vector2(xr,yu)),
-            AB(Vector2(xr, yu), Vector2(xr,yd)),
-            AB(Vector2(xr, yd), Vector2(xl,yd))
+            Edge(Vector2(xl, yd), Vector2(xl,yu)),
+            Edge(Vector2(xl, yu), Vector2(xr,yu)),
+            Edge(Vector2(xr, yu), Vector2(xr,yd)),
+            Edge(Vector2(xr, yd), Vector2(xl,yd))
         };
 }
 
 int Window::clipping_algorithm = COHEN_SUTHERLAND;
 
 cairo_t* Window::cr;
-// converte uma coordenada do espaço no mundo para tela
-Vector2 Window::world_to_screen(Vector2 coords) {
-    return norm_to_vp(world_to_norm(coords));
-}
 
-Specs::Specs () : position(Vector2(0, 0)), size(Vector2(10, 10)), angle(0) {}
+Specs::Specs () : position(Vector2(0, 0)), size(Vector2(5, 5)), angle(0) {}
+
+Specs3D::Specs3D () : position(Vector3(0, 0, -5)), dist_pp(5),
+    forward(Vector3(0, 0, 1)) {}
 
 Specs Window::real;
 Specs Window::goal;
+Specs3D Window::real3;
+
+void Window::rotate(const Vector3 axis, const float angle) {
+    auto t = Transformation::rotation3D(Rotation(real3.position, axis, angle));
+    real3.forward = real3.forward * t;
+}
+
+const Transformation Window::cavalier_matrix() {
+
+    float theta_x = -std::atan(real3.forward.y() / real3.position.z());
+    float theta_y = -std::atan(real3.forward.x() / real3.position.z());
+
+    float sx = std::sin(theta_x);
+    float sy = std::sin(theta_y);
+    float cx = std::cos(theta_x);
+    float cy = std::cos(theta_y);
+    float x = real3.position.x();
+    float y = real3.position.y();
+    float z = real3.position.z();
+
+    Transformation proj(4,4);
+    proj.matrix = {
+        {cy,                 0,         -sy,                  0},
+        {sx * sy,            cx,        -sx*cy,                0},
+        {sy*cx,              -sx,       -cx*cy,                0},
+        {sy*(-sx*y-cx*z)-cy*x, sx*z-cx*y, sy*x-cy*(-sx*y-cx*z), 1}
+    };
+
+    return proj;
+}
+
+const Transformation Window::perspective_matrix() {
+    Transformation proj(4,4);
+    //TODO: colocar numa matriz só
+    proj.matrix = {
+        {1, 0, 0, 0},
+        {0, 1, 0, 0},
+        {0, 0, 1, 1/real3.dist_pp},
+        {0, 0, 0, 0}
+    };
+    return proj;
+}
+
+/*****************************************
+ *
+ *  Funções de transformação de coordenada
+ *
+ *****************************************/
 
 // converte uma coordenada do espaço no mundo para
 // coordenada normalizada
 Vector2 Window::world_to_norm (Vector2 coords) {
+    bool two = render == ONLY_2D;
     float s = sin(real.angle);
     float c = cos(real.angle);
-    float a = 2 / real.size.x();
-    float b = 2 / real.size.y();
-    float x = real.position.x();
-    float y = real.position.y();
+    float a = two ? 2 / real.size.x() : 0.5;
+    float b = two ? 2 / real.size.y() : 0.5;
+    float x = two ? real.position.x() : 0;
+    float y = two ? real.position.y() : 0;
 
     Transformation t (3, 3);
     t.matrix = {
@@ -50,6 +104,26 @@ Vector2 Window::world_to_norm (Vector2 coords) {
 
     coords = (Transformation) coords * t;
     return coords;
+}
+
+Vector2 Window::world_to_norm (Vector3 coords) {
+    coords = coords * cavalier_matrix();
+
+    // clipping 3D simples:
+    // corta a reta no plano de projeção
+    /*
+    if (coords.z() < 0) {
+        // coordenada atrás da câmera!
+        throw std::exception();
+    }
+    */
+
+    if (render == PERSPECTIVE) {
+        coords = coords * perspective_matrix();
+        coords.homogenize();
+    };
+
+    return world_to_norm((Vector2)coords);
 }
 
 Vector2 Window::norm_to_vp (Vector2 coords) {
@@ -68,56 +142,11 @@ Vector2 Window::norm_to_vp (Vector2 coords) {
     return coords;
 }
 
-// Recebe uma linha em coordenadas de mundo,
-// transforma em coordenadas normalizadas,
-// faz clipping e desenha no viewport
-void Window::draw_line (AB line) {
-    line.a = world_to_norm(line.a);
-    line.b = world_to_norm(line.b);
-
-    line = clip_line(line);
-
-    line.a = norm_to_vp(line.a);
-    line.b = norm_to_vp(line.b);
-
-    cairo_move_to(cr, line.a.x(), line.a.y());
-    cairo_line_to(cr, line.b.x(), line.b.y());
-    cairo_stroke(cr);
-    
-}
-
-// Parecido com draw_line mas sem clipping
-// Usada para polígonos preenchidos
-void Window::draw_pline (AB line) {
-    line.a = norm_to_vp(line.a);
-    line.b = norm_to_vp(line.b);
-    cairo_line_to(cr, line.b.x(), line.b.y());
-    //cairo_stroke_preserve(cr);
-}
-
-// Checa se um ponto está dentro de uma borda da window
-bool Window::is_inside(Vector2 coord, AB edge) {
-    return (edge.b.x() - edge.a.x()) * (coord.y() - edge.a.y()) < 
-           (edge.b.y() - edge.a.y()) * (coord.x() - edge.a.x());
-}
-
-// Clipa linha pra uma borda, usado no clipping de polígonos
-Vector2 Window::clip_to_edge(AB edge, AB line) {
-    Vector2 v = (!is_inside(line.a,edge)) ? line.a : line.b;
-    float m = (line.a.y() - line.b.y()) / (line.a.x() - line.b.x());
-    if (edge.a.x() == edge.b.x()) //direita/esquerda
-    {   
-        float y = (edge.a.x()-v.x())*m + v.y();
-        v = Vector2(edge.a.x(), y);
-    } else //cima/baixo
-    {   
-        float x = 0;
-        if (m == 0) x = v.x();
-        else x = (edge.a.y()-v.y())/m + v.x();
-        v = Vector2(x, edge.a.y());
-    } 
-    return v;
-}
+/*****************************************
+ *
+ *  Funções de Draw
+ *
+ *****************************************/
 
 void Window::draw_point (Vector2 point) {
     point = world_to_norm(point);
@@ -134,15 +163,79 @@ void Window::draw_point (Vector2 point) {
     cairo_stroke(cr);
 }
 
-AB Window::clip_line (AB line) {
+void Window::draw_point (Vector3 point) {
+    draw_point(Vector2(point.x(), point.y()));
+}
+
+// Recebe uma linha em coordenadas de mundo,
+// transforma em coordenadas normalizadas,
+// faz clipping e desenha no viewport
+void Window::draw_line (Edge line) {
+    line.a = world_to_norm(line.a);
+    line.b = world_to_norm(line.b);
+
+    try {
+        line = clip_line(line);
+    } catch (std::exception e) {
+        // se não precisa renderizar retorna
+        return;
+    }
+
+    line.a = norm_to_vp(line.a);
+    line.b = norm_to_vp(line.b);
+
+    cairo_move_to(cr, line.a.x(), line.a.y());
+    cairo_line_to(cr, line.b.x(), line.b.y());
+    cairo_stroke(cr);
+    
+}
+
+void Window::draw_line (Edge3D line) {
+    Edge norm;
+    try {
+        norm.a = world_to_norm(line.a);
+        norm.b = world_to_norm(line.b);
+        norm = clip_line(norm);
+    } catch (std::exception e) {
+        // se não precisa renderizar retorna
+        return;
+    }
+
+    norm.a = norm_to_vp(norm.a);
+    norm.b = norm_to_vp(norm.b);
+
+    cairo_move_to(cr, norm.a.x(), norm.a.y());
+    cairo_line_to(cr, norm.b.x(), norm.b.y());
+    cairo_stroke(cr);
+}
+
+// Parecido com draw_line mas sem clipping
+// Usada para polígonos preenchidos
+void Window::draw_pline (Edge line) {
+    line.a = norm_to_vp(line.a);
+    line.b = norm_to_vp(line.b);
+    cairo_line_to(cr, line.b.x(), line.b.y());
+    //cairo_stroke_preserve(cr);
+}
+
+/*****************************************
+ *
+ *  Funções de Clipping
+ *
+ *****************************************/
+
+Edge Window::clip_line (Edge line) {
     if (clipping_algorithm == COHEN_SUTHERLAND) {
         return clip_cs(line);
     } else if (clipping_algorithm == LIANG_BARSKY) {
         return clip_lb(line);
     }
+
+    throw std::exception();
 }
 
-AB Window::clip_cs (AB line) {
+// Cohen-Sutherland
+Edge Window::clip_cs (Edge line) {
     int a_rc = get_rc(line.a);
     int b_rc = get_rc(line.b);
     
@@ -152,9 +245,9 @@ AB Window::clip_cs (AB line) {
     }
 
     // se o AND dos dois RC é diferente de 0000, está fora da janela
-    // retorna empty = true
+    // retorna exceção
     if (a_rc & b_rc) {
-        return AB();
+        throw std::exception();
     }
 
     // clipping de fato
@@ -177,28 +270,28 @@ AB Window::clip_cs (AB line) {
         // TODO código repetido, dá pra parametrizar
         if (rc[i] & (1 << XL)) {
             float y = m*(xl - p[i]->x()) + p[i]->y();
-            if (y < yu && y > yd) {
+            if (y <= yu && y >= yd) {
                 *p[i] = Vector2(xl, y);
                 changed = true;
             }
         }
         if (rc[i] & (1 << XR)) {
             float y = m*(xr - p[i]->x()) + p[i]->y();
-            if (y < yu && y > yd) {
+            if (y <= yu && y >= yd) {
                 *p[i] = Vector2(xr, y);
                 changed = true;
             }
         }
         if (rc[i] & (1 << YD)) {
             float x = (yd - p[i]->y())/m + p[i]->x();
-            if (x < xr && x > xl) {
+            if (x <= xr && x >= xl) {
                 *p[i] = Vector2(x, yd);
                 changed = true;
             }
         }
         if (rc[i] & (1 << YU)) {
             float x = (yu - p[i]->y())/m + p[i]->x();
-            if (x < xr && x > xl) {
+            if (x <= xr && x >= xl) {
                 *p[i] = Vector2(x, yu);
                 changed = true;
             }
@@ -207,13 +300,13 @@ AB Window::clip_cs (AB line) {
 
     // se não houve, a reta está completamente fora
     if (!changed) {
-        line = AB();
+        throw std::exception();
     }
     return line;
 }
 
-
-AB Window::clip_lb (AB line) {
+// Liang-Barsky
+Edge Window::clip_lb (Edge line) {
     float delta_x = line.b.x() - line.a.x();
     float delta_y = line.b.y() - line.a.y();
     float p[4] = {-delta_x, delta_x, -delta_y, delta_y};
@@ -222,7 +315,7 @@ AB Window::clip_lb (AB line) {
     for (int i = 0; i < 4; i ++) {
         if (p[i] == 0 && q[i] < 0)  {
             // linha completamente fora
-            return AB();
+            throw std::exception();
         }
     }
     float u1 = 0;
@@ -237,7 +330,7 @@ AB Window::clip_lb (AB line) {
     }
     if (u1 > u2) {
         // linha completamente fora
-        return AB();
+        throw std::exception();
     }
     if (u1 > 0) {
         // de fora pra dentro
@@ -249,6 +342,30 @@ AB Window::clip_lb (AB line) {
     }
 
     return line;
+}
+
+// Clipa linha pra uma borda, usado no clipping de polígonos
+Vector2 Window::clip_to_edge(Edge edge, Edge line) {
+    Vector2 v = (!is_inside(line.a,edge)) ? line.a : line.b;
+    float m = (line.a.y() - line.b.y()) / (line.a.x() - line.b.x());
+    if (edge.a.x() == edge.b.x()) //direita/esquerda
+    {   
+        float y = (edge.a.x()-v.x())*m + v.y();
+        v = Vector2(edge.a.x(), y);
+    } else //cima/baixo
+    {   
+        float x = 0;
+        if (m == 0) x = v.x();
+        else x = (edge.a.y()-v.y())/m + v.x();
+        v = Vector2(x, edge.a.y());
+    } 
+    return v;
+}
+
+// Checa se um ponto está dentro de uma borda da window
+bool Window::is_inside(Vector2 coord, Edge edge) {
+    return (edge.b.x() - edge.a.x()) * (coord.y() - edge.a.y()) < 
+           (edge.b.y() - edge.a.y()) * (coord.x() - edge.a.x());
 }
 
 /* Exemplo de RC:
@@ -269,10 +386,30 @@ int Window::get_rc (Vector2 point) {
     return rc;
 }
 
+/*****************************************
+ *
+ *  Margem para clipping
+ *
+ *****************************************/
+
+void Window::draw_borders () {
+    cairo_set_source_rgb(cr, 1, 0, 0);
+    Vector2 a = norm_to_vp(Vector2(xl, yu));
+    Vector2 b = norm_to_vp(Vector2(xr, yu));
+    Vector2 c = norm_to_vp(Vector2(xr, yd));
+    Vector2 d = norm_to_vp(Vector2(xl, yd));
+    cairo_move_to(cr, a.x(), a.y());
+    cairo_line_to(cr, b.x(), b.y());
+    cairo_line_to(cr, c.x(), c.y());
+    cairo_line_to(cr, d.x(), d.y());
+    cairo_line_to(cr, a.x(), a.y());
+    cairo_stroke(cr);
+}
+
 void Window::update_boundaries () {
     // margem para ver se clipping realmente funciona
     // em coordenadas normalizadas
-    Vector2 mock_size = Vector2(1.8, 1.8);
+    Vector2 mock_size = Vector2(clip_margin, clip_margin);
 
     xl = -mock_size.x()/2;
     xr =  mock_size.x()/2;
@@ -280,10 +417,25 @@ void Window::update_boundaries () {
     yu =  mock_size.y()/2;
 }
 
+/*****************************************
+ *
+ *  Função de animação
+ *
+ *****************************************/
+
 void Window::animate () {
     update_boundaries();
     real.position = Vector2::lerp(real.position, goal.position, smooth);
     real.size = Vector2::lerp(real.size, goal.size, smooth);
+
+    // BALADA *********
+    /*
+    t += 0.016666667;
+    float bpm = 123;
+    float z = (pow(std::sin(t * bpm * 2 / 60), 2) - 1.2 ) * 15;
+    real3.position = Vector3(std::cos(t), std::sin(t), z);
+    real3.forward = Vector3(-real3.position.x(), -real3.position.y(), -real3.position.z());
+    // BALADA *********/
 
     // lerp ângulo
     float a = fmodf(real.angle, (float) M_PI * 2);

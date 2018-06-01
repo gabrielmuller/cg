@@ -7,25 +7,22 @@
 #include <sstream>
 #include <iostream>
 #include <algorithm>
+
 #include "shape.h"
 #include "point.h"
 #include "line.h"
 #include "polygon.h"
 #include "vector2.h"
+#include "vector3.h"
+#include "edge3d.h"
+#include "polyhedron.h"
 
 /**
  *  Descritor para arquivos .obj
- *  Lê/escreve uma figura/objeto em um arquivo, de modo que
- *  cada arquivo representa um objeto, ex:
- *  figura.obj:
- *  "
- *  v 1 1
- *  v -1 -1
- *  "
- *  Representa uma linha de (1,1) a (-1, -1)
+ *  Lê/escreve figuras de um arquivo.obj
  */
 namespace DescOBJ {
-    std::vector<Shape*> read_obj(const std::string &path);
+    std::vector<Shape3D*> read_obj(const std::string &path);
     void save_obj(const std::string &path, Shape *sh);
     const std::vector<std::string> split(const std::string &s, char dl);
 }
